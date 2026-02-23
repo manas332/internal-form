@@ -86,6 +86,7 @@ export interface InvoiceItem {
   hsn_or_sac?: string;
   unit?: string;
   carat_size?: number; // optional, 2 decimal places
+  final_price?: number; // user-entered tax-inclusive price per unit
 }
 
 // --- Custom Field ---

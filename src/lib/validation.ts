@@ -22,12 +22,13 @@ export const invoiceItemsStepSchema = z.object({
         price: z.number().min(0, 'Rate must be 0 or more'),
         description: z.string().optional(),
         hsn_or_sac: z.string().optional(),
-        tax_id: z.string().optional(),
+        tax_id: z.string().min(1, 'Tax is required — choose a rate or "No Tax"'),
         tax_amount: z.number().optional(),
         item_total: z.number().optional(),
         product_id: z.string().optional(),
         unit: z.string().optional(),
         carat_size: z.number().optional(),
+        final_price: z.number().optional(),
     })).min(1, 'Add at least one item to the invoice'),
 });
 

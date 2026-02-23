@@ -22,8 +22,11 @@ export default function LineItemRow({
     onRemove,
     canRemove,
 }: LineItemRowProps) {
-    const itemBase = (Number(item.quantity) || 0) * (Number(item.price) || 0);
-    const itemTotal = itemBase + (item.tax_amount || 0);
+    const preTaxRate = Number(item.price) || 0;
+    const qty = Number(item.quantity) || 0;
+    const preTaxTotal = qty * preTaxRate;
+    const taxAmount = item.tax_amount || 0;
+    const itemTotal = preTaxTotal + taxAmount;
 
     return (
         <div className="line-item-row">
@@ -114,38 +117,51 @@ export default function LineItemRow({
                     />
                 </div>
 
-                <div className="line-item-field line-item-price">
-                    <label>Rate (₹) *</label>
-                    <input
-                        type="number"
-                        className="form-input"
-                        min="0"
-                        step="0.01"
-                        value={item.price}
-                        onChange={(e) => onChange(index, { price: Number(e.target.value) || 0 })}
-                        required
-                    />
-                </div>
-
+                {/* Tax selector — required, shown before Final Price so user picks tax first */}
                 <div className="line-item-field line-item-tax">
-                    <label>Tax</label>
+                    <label>Tax *</label>
                     <select
                         className="form-input"
                         value={item.tax_id || ''}
                         onChange={(e) => onChange(index, { tax_id: e.target.value })}
+                        required
                     >
-                        <option value="">None</option>
+                        <option value="" disabled>Select tax…</option>
+                        <option value="NO_TAX">No Tax (0%)</option>
                         {zohoTaxes.map(t => (
                             <option key={t.tax_id} value={t.tax_id}>{t.tax_name} ({t.tax_percentage}%)</option>
                         ))}
                     </select>
                 </div>
 
+                {/* User enters the final (tax-inclusive) price per unit */}
+                <div className="line-item-field line-item-price">
+                    <label>Final Price (₹) *</label>
+                    <input
+                        type="number"
+                        className="form-input"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={item.final_price !== undefined && item.final_price !== 0 ? item.final_price : ''}
+                        onChange={(e) => {
+                            const raw = e.target.value;
+                            onChange(index, { final_price: raw === '' ? undefined : Number(raw) });
+                        }}
+                        required
+                    />
+                    {preTaxRate > 0 && taxAmount > 0 && (
+                        <div className="text-xs text-gray-500 mt-1">
+                            Rate: ₹{preTaxRate.toFixed(2)} + Tax: ₹{taxAmount.toFixed(2)}
+                        </div>
+                    )}
+                </div>
+
                 <div className="line-item-field line-item-total">
                     <label>Amount</label>
                     <div className="line-item-total-value">
                         ₹{itemTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        {!!item.tax_amount && <div className="text-xs text-gray-500 font-normal mt-1">+ ₹{item.tax_amount.toFixed(2)} tax</div>}
+                        {!!taxAmount && <div className="text-xs text-gray-500 font-normal mt-1">incl. ₹{taxAmount.toFixed(2)} tax</div>}
                     </div>
                 </div>
             </div>

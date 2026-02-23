@@ -36,6 +36,10 @@ const emptyItem = (): InvoiceItem => ({
     description: '',
     quantity: 1,
     price: 0,
+    final_price: undefined,
+    tax_id: 'NO_TAX',
+    tax_amount: 0,
+    item_total: 0,
 });
 
 export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev }: Props) {
@@ -66,29 +70,64 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
         loadData();
     }, []);
 
-    const handleItemChange = (index: number, updates: Partial<InvoiceItem>) => {
-        const newItems = [...formData.invoice_items];
-        newItems[index] = { ...newItems[index], ...updates };
+    /**
+     * Reverse-calculates pre-tax rate and tax amount from the user-supplied
+     * tax-inclusive final price.
+     *
+     * Formula: pre_tax_rate = final_price / (1 + tax_pct / 100)
+     *          tax_amount    = final_price - pre_tax_rate
+     */
+    const recalcFromFinalPrice = (
+        item: InvoiceItem,
+        overrides: Partial<InvoiceItem>,
+        taxes: ZohoTax[]
+    ): Partial<InvoiceItem> => {
+        const merged = { ...item, ...overrides };
 
-        // Auto calculate item total and tax
-        const q = Number(newItems[index].quantity) || 0;
-        const p = Number(newItems[index].price) || 0;
-        const d = Number(newItems[index].discount) || 0;
+        const qty = Number(merged.quantity) || 0;
+        const finalPricePerUnit = Number(merged.final_price) || 0;
+        const taxId = merged.tax_id ?? '';
 
-        const itemBaseVal = (q * p) - d;
+        let preTaxRate = finalPricePerUnit;
+        let taxAmount = 0;
 
-        // Recalculate tax
-        let taxAmt = 0;
-        if (newItems[index].tax_id) {
-            const foundTax = zohoTaxes.find(t => t.tax_id === newItems[index].tax_id);
-            if (foundTax) {
-                taxAmt = itemBaseVal * (foundTax.tax_percentage / 100);
+        if (taxId && taxId !== 'NO_TAX') {
+            const foundTax = taxes.find(t => t.tax_id === taxId);
+            if (foundTax && foundTax.tax_percentage > 0) {
+                preTaxRate = finalPricePerUnit / (1 + foundTax.tax_percentage / 100);
+                taxAmount = finalPricePerUnit - preTaxRate;
             }
         }
 
-        newItems[index].tax_amount = taxAmt;
-        newItems[index].item_total = itemBaseVal;
+        // Multiply tax amount by quantity for the line total
+        const totalTaxAmount = taxAmount * qty;
+        const itemTotal = preTaxRate * qty; // pre-tax subtotal for this line
 
+        return {
+            ...overrides,
+            price: preTaxRate,
+            tax_amount: totalTaxAmount,
+            item_total: itemTotal,
+        };
+    };
+
+    const handleItemChange = (index: number, updates: Partial<InvoiceItem>) => {
+        const newItems = [...formData.invoice_items];
+        const currentItem = newItems[index];
+
+        // Determine if the update involves anything that affects the reverse calculation
+        const needsRecalc =
+            'final_price' in updates ||
+            'tax_id' in updates ||
+            'quantity' in updates;
+
+        let finalUpdates: Partial<InvoiceItem> = updates;
+
+        if (needsRecalc) {
+            finalUpdates = recalcFromFinalPrice(currentItem, updates, zohoTaxes);
+        }
+
+        newItems[index] = { ...currentItem, ...finalUpdates };
         updateForm({ invoice_items: newItems });
     };
 
@@ -106,7 +145,6 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
     const totalAdjustment = Number(formData.adjustment) || 0;
     const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment;
 
-    // Add initial item if empty
     // Add initial item if empty
     useEffect(() => {
         if (formData.invoice_items.length === 0) {
@@ -181,7 +219,7 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
 
                 <div className="totals-right">
                     <div className="total-row">
-                        <span>Subtotal</span>
+                        <span>Subtotal (pre-tax)</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                     </div>
                     <div className="total-row items-center">
