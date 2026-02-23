@@ -167,3 +167,57 @@ export async function createCustomer(body: Record<string, unknown>) {
     const data = await res.json();
     return { status: res.status, data };
 }
+
+// ============================================================
+// ITEMS
+// ============================================================
+
+/**
+ * Fetch all active items from Zoho Billing.
+ */
+export async function fetchItems() {
+    const headers = await zohoHeaders();
+
+    const params = new URLSearchParams({
+        status: 'active',
+        // Fetch up to 200 items to power the dropdown
+        per_page: '200',
+    });
+
+    const res = await fetch(`${ZOHO_API_BASE}/items?${params.toString()}`, {
+        method: 'GET',
+        headers,
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Failed to fetch items from Zoho: ${res.status} — ${text}`);
+    }
+
+    const data = await res.json();
+    return { status: res.status, data: data.items || [] };
+}
+
+// ============================================================
+// TAXES
+// ============================================================
+
+/**
+ * Fetch all taxes from Zoho Billing.
+ */
+export async function fetchTaxes() {
+    const headers = await zohoHeaders();
+
+    const res = await fetch(`${ZOHO_API_BASE}/settings/taxes`, {
+        method: 'GET',
+        headers,
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Failed to fetch taxes from Zoho: ${res.status} — ${text}`);
+    }
+
+    const data = await res.json();
+    return { status: res.status, data: data.taxes || [] };
+}

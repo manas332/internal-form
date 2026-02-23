@@ -1,9 +1,9 @@
-import InvoiceForm from '@/components/InvoiceForm';
+import CombinedWizard from '@/components/CombinedWizard';
 
 export default function Home() {
   return (
     <div className="app-container">
-      <InvoiceForm />
+      <CombinedWizard />
     </div>
   );
 }

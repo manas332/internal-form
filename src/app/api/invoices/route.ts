@@ -83,6 +83,14 @@ export async function POST(request: NextRequest) {
 
         const result = await createInvoice(payload);
 
+        if (result.status !== 200 && result.status !== 201) {
+            console.error('Zoho Invoice Creation Failed:', JSON.stringify(result.data, null, 2));
+            return NextResponse.json(
+                { error: result.data.message || 'Zoho API Error' },
+                { status: result.status }
+            );
+        }
+
         return NextResponse.json(result.data, { status: result.status });
     } catch (error) {
         console.error('Invoice creation error:', error);

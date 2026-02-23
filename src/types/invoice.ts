@@ -81,6 +81,7 @@ export interface InvoiceItem {
   price: number;
   discount?: number;
   tax_id?: string;
+  tax_amount?: number; // UI only
   item_total?: number;
   hsn_or_sac?: string;
   unit?: string;

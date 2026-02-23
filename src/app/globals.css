@@ -745,3 +745,199 @@ select.form-input {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================================================= */
+/* DELHIIVERY WIZARD & TRACKING UI                                           */
+/* ========================================================================= */
+
+/* --- Navigation --- */
+.main-nav {
+  background: rgba(18, 18, 26, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.logo-text {
+  font-size: 1.2rem;
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.nav-link.active {
+  color: var(--accent);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* --- Wizard Container --- */
+.wizard-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* --- Stepper --- */
+.wizard-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  position: relative;
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.stepper-item-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.stepper-item-wrapper:last-child {
+  flex: 0;
+}
+
+.stepper-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+  width: 60px;
+}
+
+.stepper-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-main);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.stepper-item.active .stepper-circle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+}
+
+.stepper-item.completed .stepper-circle {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+.stepper-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  position: absolute;
+  top: 40px;
+}
+
+.stepper-item.active .stepper-label {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.stepper-item.completed .stepper-label {
+  color: var(--success);
+}
+
+.stepper-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border-color);
+  margin: 0 10px;
+  position: absolute;
+  top: 15px;
+  left: 45px;
+  right: -15px;
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.stepper-line.completed {
+  background: var(--success);
+}
+
+/* --- Misc Custom --- */
+.section-icon {
+  margin-right: 0.5rem;
+  font-size: 1.2em;
+}
+
+.btn-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .wizard-stepper {
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+  }
+  .stepper-line {
+    display: none;
+  }
+  .stepper-item-wrapper {
+    flex: 0 0 auto;
+  }
+}

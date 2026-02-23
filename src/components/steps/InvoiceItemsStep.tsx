@@ -1,0 +1,218 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+
+import { CombinedFormData } from '@/types/wizard';
+import LineItemRow from '../LineItemRow'; // Reusing existing UI
+import { InvoiceItem } from '@/types/invoice';
+
+// Added a global type for brevity; in a real app this would go to a types file
+export interface ZohoItem {
+    item_id: string;
+    name: string;
+    description: string;
+    rate: number;
+    hsn_or_sac: string;
+}
+
+export interface ZohoTax {
+    tax_id: string;
+    tax_name: string;
+    tax_percentage: number;
+    tax_type: string;
+}
+
+interface Props {
+    formData: CombinedFormData;
+    updateForm: (data: Partial<CombinedFormData>) => void;
+    onNext: () => void;
+    onPrev: () => void;
+}
+
+const emptyItem = (): InvoiceItem => ({
+    name: '',
+    description: '',
+    quantity: 1,
+    price: 0,
+});
+
+export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev }: Props) {
+    const [zohoItems, setZohoItems] = useState<ZohoItem[]>([]);
+    const [zohoTaxes, setZohoTaxes] = useState<ZohoTax[]>([]);
+    const [isLoadingItems, setIsLoadingItems] = useState(true);
+
+    useEffect(() => {
+        async function loadData() {
+            try {
+                const [itemsRes, taxesRes] = await Promise.all([
+                    fetch('/api/zoho/items'),
+                    fetch('/api/zoho/taxes')
+                ]);
+
+                if (itemsRes.ok) {
+                    const data = await itemsRes.json();
+                    setZohoItems(data);
+                }
+
+                if (taxesRes.ok) {
+                    const data = await taxesRes.json();
+                    setZohoTaxes(data);
+                }
+            } catch (err) {
+                console.error("Failed to load zoho data:", err);
+            } finally {
+                setIsLoadingItems(false);
+            }
+        }
+        loadData();
+    }, []);
+
+    const handleItemChange = (index: number, field: keyof InvoiceItem, value: string | number) => {
+        const newItems = [...formData.invoice_items];
+        newItems[index] = { ...newItems[index], [field]: value };
+
+        // Auto calculate item total and tax
+        if (field === 'quantity' || field === 'price' || field === 'discount' || field === 'tax_id') {
+            const q = Number(newItems[index].quantity) || 0;
+            const p = Number(newItems[index].price) || 0;
+            const d = Number(newItems[index].discount) || 0;
+
+            const itemBaseVal = (q * p) - d;
+
+            // Recalculate tax if a tax is selected
+            let taxAmt = 0;
+            if (newItems[index].tax_id) {
+                const foundTax = zohoTaxes.find(t => t.tax_id === newItems[index].tax_id);
+                if (foundTax) {
+                    taxAmt = itemBaseVal * (foundTax.tax_percentage / 100);
+                }
+            }
+
+            newItems[index].tax_amount = taxAmt;
+            newItems[index].item_total = itemBaseVal;
+        }
+
+        updateForm({ invoice_items: newItems });
+    };
+
+    const addItem = () => {
+        updateForm({ invoice_items: [...formData.invoice_items, emptyItem()] });
+    };
+
+    const removeItem = (index: number) => {
+        updateForm({ invoice_items: formData.invoice_items.filter((_, i) => i !== index) });
+    };
+
+    const subtotal = formData.invoice_items.reduce((acc, item) => acc + (item.item_total || 0), 0);
+    const totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
+    const totalDiscount = Number(formData.discount) || 0;
+    const totalAdjustment = Number(formData.adjustment) || 0;
+    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment;
+
+    // Add initial item if empty
+    // Add initial item if empty
+    useEffect(() => {
+        if (formData.invoice_items.length === 0) {
+            addItem();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formData.invoice_items.length]);
+
+    const isFormValid = formData.invoice_items.length > 0 && formData.invoice_items.every(i => i.name && i.price > 0 && i.quantity > 0);
+
+    return (
+        <div className="form-section animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h3 className="section-title">
+                <span className="section-icon">📦</span> Invoice Line Items
+            </h3>
+
+            <div className="line-items-container">
+                {formData.invoice_items.map((item, index) => (
+                    <LineItemRow
+                        key={index}
+                        index={index}
+                        item={item}
+                        zohoItems={zohoItems}
+                        zohoTaxes={zohoTaxes}
+                        onChange={handleItemChange}
+                        onRemove={() => removeItem(index)}
+                        canRemove={formData.invoice_items.length > 1}
+                    />
+                ))}
+
+                <button type="button" className="btn-add-item" onClick={addItem}>
+                    + Add another item
+                </button>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-gray-800 totals-grid">
+                <div className="totals-left">
+                    <div className="form-group">
+                        <label>Notes</label>
+                        <textarea
+                            className="form-input form-textarea"
+                            value={formData.notes}
+                            onChange={(e) => updateForm({ notes: e.target.value })}
+                        />
+                    </div>
+                </div>
+
+                <div className="totals-right">
+                    <div className="total-row">
+                        <span>Subtotal</span>
+                        <span>₹{subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="total-row items-center">
+                        <span>Discount (Overall)</span>
+                        <input
+                            type="number"
+                            className="form-input w-32 text-right py-1"
+                            value={formData.discount}
+                            onChange={(e) => updateForm({ discount: e.target.value })}
+                            placeholder="0.00"
+                        />
+                    </div>
+                    {totalTax > 0 && (
+                        <div className="total-row">
+                            <span>Total Tax</span>
+                            <span>₹{totalTax.toFixed(2)}</span>
+                        </div>
+                    )}
+                    <div className="total-row items-center">
+                        <span className="flex-1">Adjustment</span>
+                        <input
+                            className="form-input w-24 text-xs mr-2 py-1"
+                            placeholder="Reason"
+                            value={formData.adjustment_description}
+                            onChange={(e) => updateForm({ adjustment_description: e.target.value })}
+                        />
+                        <input
+                            type="number"
+                            className="form-input w-24 text-right py-1"
+                            value={formData.adjustment}
+                            onChange={(e) => updateForm({ adjustment: e.target.value })}
+                            placeholder="0.00"
+                        />
+                    </div>
+                    <div className="total-row total-grand">
+                        <span>Invoice Total</span>
+                        <span>₹{grandTotal.toFixed(2)}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mt-8 flex justify-between">
+                <button className="btn btn-secondary" onClick={onPrev}>
+                    🡨 Back
+                </button>
+                <button
+                    className="btn btn-submit w-auto px-8"
+                    onClick={onNext}
+                    disabled={!isFormValid}
+                >
+                    Next: Shipping ➔
+                </button>
+            </div>
+        </div>
+    );
+}
