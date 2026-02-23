@@ -53,7 +53,7 @@ export default function SuccessModal({
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             }, 100);
-        } catch (err) {
+        } catch {
             alert('Failed to download PDF. Please try again.');
         } finally {
             setDownloading(false);

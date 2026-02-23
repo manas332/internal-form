@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import LineItemRow from '../LineItemRow'; // Reusing existing UI
 import { InvoiceItem } from '@/types/invoice';
+import { toast } from 'sonner';
+import { invoiceItemsStepSchema } from '@/lib/validation';
 
 // Added a global type for brevity; in a real app this would go to a types file
 export interface ZohoItem {
@@ -39,7 +41,6 @@ const emptyItem = (): InvoiceItem => ({
 export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev }: Props) {
     const [zohoItems, setZohoItems] = useState<ZohoItem[]>([]);
     const [zohoTaxes, setZohoTaxes] = useState<ZohoTax[]>([]);
-    const [isLoadingItems, setIsLoadingItems] = useState(true);
 
     useEffect(() => {
         async function loadData() {
@@ -60,8 +61,6 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                 }
             } catch (err) {
                 console.error("Failed to load zoho data:", err);
-            } finally {
-                setIsLoadingItems(false);
             }
         }
         loadData();
@@ -116,7 +115,32 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData.invoice_items.length]);
 
-    const isFormValid = formData.invoice_items.length > 0 && formData.invoice_items.every(i => i.name && i.price > 0 && i.quantity > 0);
+    const handleNext = () => {
+        const result = invoiceItemsStepSchema.safeParse(formData);
+        if (!result.success) {
+            const issues = result.error.issues;
+            issues.forEach((issue) => {
+                // path looks like ["invoice_items", 0, "name"]
+                const path = issue.path;
+                let label = issue.message;
+
+                if (path[0] === 'invoice_items' && typeof path[1] === 'number') {
+                    const itemNum = (path[1] as number) + 1;
+                    const field = (path[2] as string | undefined) || '';
+                    const fieldLabel = field
+                        ? field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                        : '';
+                    label = fieldLabel
+                        ? `Item ${itemNum} — ${fieldLabel}: ${issue.message}`
+                        : `Item ${itemNum}: ${issue.message}`;
+                }
+
+                toast.error(label);
+            });
+            return;
+        }
+        onNext();
+    };
 
     return (
         <div className="form-section animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -205,8 +229,7 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                 </button>
                 <button
                     className="btn btn-submit w-auto px-8"
-                    onClick={onNext}
-                    disabled={!isFormValid}
+                    onClick={handleNext}
                 >
                     Next: Shipping ➔
                 </button>

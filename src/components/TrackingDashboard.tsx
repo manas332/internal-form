@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TrackingShipmentData, TrackingScan } from '@/types/delhivery';
+import { TrackingShipmentData } from '@/types/delhivery';
+import Link from 'next/link';
 
 interface StoredOrder {
     waybill: string;
@@ -142,8 +143,8 @@ export default function TrackingDashboard() {
                             <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Order ID: <span className="text-gray-700 dark:text-gray-300">{trackingData.Shipment.ReferenceNo}</span></p>
                         </div>
 
-                        <div className={`mt-4 md:mt-0 px-4 py-2 border rounded-full text-sm font-bold tracking-wider ${getStatusColor(trackingData.Shipment.CurrentStatus?.StatusType)}`}>
-                            {trackingData.Shipment.CurrentStatus?.Status || 'UNKNOWN STATUS'}
+                        <div className={`mt-4 md:mt-0 px-4 py-2 border rounded-full text-sm font-bold tracking-wider ${getStatusColor((trackingData.Shipment.CurrentStatus || trackingData.Shipment.Status)?.StatusType || '')}`}>
+                            {(trackingData.Shipment.CurrentStatus || trackingData.Shipment.Status)?.Status || 'UNKNOWN STATUS'}
                         </div>
                     </div>
 
@@ -168,23 +169,26 @@ export default function TrackingDashboard() {
 
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tracking History</h3>
                     <div className="space-y-0 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#3a3a4a] before:to-transparent">
-                        {trackingData.Shipment.Scans?.map((scan, idx) => (
-                            <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#12121a] bg-accent text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 ms-0 md:mx-auto">
-                                    <span className="w-2 h-2 bg-white rounded-full"></span>
-                                </div>
-                                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-[#16161f] border border-[#2a2a38] p-4 rounded-xl shadow ml-4 md:ml-0 md:group-odd:mr-4 md:group-even:ml-4">
-                                    <div className="flex flex-col sm:flex-row justify-between items-start mb-1">
-                                        <h4 className="font-semibold text-white text-sm">{scan.ScanType || scan.Scan}</h4>
-                                        <span className="text-xs text-gray-400 whitespace-nowrap mt-1 sm:mt-0 font-mono">
-                                            {new Date(scan.ScanDateTime).toLocaleString()}
-                                        </span>
+                        {trackingData.Shipment.Scans?.map((scanItem, idx) => {
+                            const scan = 'ScanDetail' in scanItem ? scanItem.ScanDetail : scanItem;
+                            return (
+                                <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#12121a] bg-accent text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 ms-0 md:mx-auto">
+                                        <span className="w-2 h-2 bg-white rounded-full"></span>
                                     </div>
-                                    <p className="text-sm text-gray-400">{scan.Instructions || '-'}</p>
-                                    {scan.ScannedLocation && <p className="text-xs text-accent mt-2">📍 {scan.ScannedLocation}</p>}
+                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-[#16161f] border border-[#2a2a38] p-4 rounded-xl shadow ml-4 md:ml-0 md:group-odd:mr-4 md:group-even:ml-4">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start mb-1">
+                                            <h4 className="font-semibold text-white text-sm">{scan.ScanType || scan.Scan || '-'}</h4>
+                                            <span className="text-xs text-gray-400 whitespace-nowrap mt-1 sm:mt-0 font-mono">
+                                                {scan.ScanDateTime ? new Date(scan.ScanDateTime).toLocaleString() : '—'}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-gray-400">{scan.Instructions || '-'}</p>
+                                        {scan.ScannedLocation && <p className="text-xs text-accent mt-2">📍 {scan.ScannedLocation}</p>}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </div>
             ) : null}
@@ -287,7 +291,7 @@ export default function TrackingDashboard() {
 
             {!trackingData && recentOrders.length === 0 && dbOrders.length === 0 && (
                 <div className="text-center py-12 text-gray-500 border border-dashed border-[#2a2a38] rounded-xl">
-                    No recent orders found on this device or database. Create one from the <a href="/" className="text-accent hover:underline">Create Order page</a>.
+                    No recent orders found on this device or database. Create one from the <Link href="/" className="text-accent hover:underline">Create Order page</Link>.
                 </div>
             )}
         </div>

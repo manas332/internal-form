@@ -136,6 +136,10 @@ export interface TrackingScan {
   StatusCode: string;
 }
 
+export interface TrackingScanWrapper {
+  ScanDetail: TrackingScan;
+}
+
 export interface TrackingShipmentData {
   Shipment: {
     PickUpDate: string;
@@ -165,13 +169,20 @@ export interface TrackingShipmentData {
       Telephone1: string;
       Telephone2: string;
     };
-    CurrentStatus: {
+    CurrentStatus?: {
       Status: string;
       StatusDateTime: string;
       StatusLocation: string;
       StatusType: string;
     };
-    Scans: TrackingScan[];
+    Status?: {
+      Status: string;
+      StatusDateTime: string;
+      StatusLocation: string;
+      StatusType: string;
+      Instructions?: string;
+    };
+    Scans: TrackingScanWrapper[] | TrackingScan[];
   };
 }
 

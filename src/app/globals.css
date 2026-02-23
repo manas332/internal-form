@@ -29,6 +29,7 @@
   /* Text */
   --text-primary: #111827;
   --text-secondary: #4b5563;
+  --text-label: #374151;
   --text-muted: #9ca3af;
 
   /* Border */
@@ -61,6 +62,7 @@
   /* Text */
   --text-primary: #f0f0f5;
   --text-secondary: #9898a8;
+  --text-label: #c8c8d8;
   --text-muted: #5c5c6e;
 
   /* Border */
@@ -149,7 +151,7 @@ body {
 
 .section-title {
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 1.25rem;
   display: flex;
@@ -182,8 +184,8 @@ body {
 
 .form-group label {
   font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--text-label);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -542,15 +544,15 @@ select.form-input {
 .line-item-fields {
   flex: 1;
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 0.7fr 1fr 1fr;
+  grid-template-columns: 2fr 2fr 1fr 0.8fr 0.7fr 1fr 1fr;
   gap: 0.6rem;
   align-items: end;
 }
 
 .line-item-field label {
   font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--text-label);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.2rem;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type {
     Customer,
     InvoiceItem,
@@ -56,6 +56,20 @@ export default function InvoiceForm() {
         customerName: string;
         currencySymbol: string;
     } | null>(null);
+
+    // Fetch default Terms & Notes on mount
+    useEffect(() => {
+        fetch('/api/zoho/settings')
+            .then(res => res.json())
+            .then(data => {
+                if (data && !data.error) {
+                    if (data.notes && !notes) setNotes(data.notes);
+                    if (data.terms && !terms) setTerms(data.terms);
+                }
+            })
+            .catch(err => console.error('Failed to fetch invoice settings', err));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // --- Computed totals ---
     const subtotal = items.reduce(

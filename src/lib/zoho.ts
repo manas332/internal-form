@@ -221,3 +221,27 @@ export async function fetchTaxes() {
     const data = await res.json();
     return { status: res.status, data: data.taxes || [] };
 }
+
+// ============================================================
+// SETTINGS
+// ============================================================
+
+/**
+ * Fetch default invoice settings (notes, terms, etc.) from Zoho Billing.
+ */
+export async function fetchInvoiceSettings() {
+    const headers = await zohoHeaders();
+
+    const res = await fetch(`${ZOHO_API_BASE}/invoices/editpage`, {
+        method: 'GET',
+        headers,
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Failed to fetch invoice settings from Zoho: ${res.status} — ${text}`);
+    }
+
+    const data = await res.json();
+    return { status: res.status, data: data.invoice_settings || {} };
+}

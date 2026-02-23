@@ -145,21 +145,28 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             // Pull the exact total calculate from Zoho to ensure taxes match 100% on the shipping label
             const zohoCalculatedTotal = invoiceData.invoice.total || grandTotal;
 
+            // Build a product description for the Delhivery label using item names + carat info
+            const autoProductsDesc = formData.invoice_items
+                .map(it => it.carat_size != null
+                    ? `${it.name} ${it.carat_size.toFixed(2)} carat`
+                    : it.name)
+                .join(', ');
+
             const shipmentData: ShipmentData = {
                 name: formData.customer_name,
-                add: formData.phone ? `${formData.address}, Ph: ${formData.phone}` : formData.address,
+                add: formData.phone ? `${formData.address}, Ph: ${formData.country_code} ${formData.phone}` : formData.address,
                 pin: parseInt(formData.pincode, 10), // Cast to integer per Delhivery API doc
                 city: formData.city,
                 state: formData.state,
                 country: formData.country,
-                phone: formData.phone,
+                phone: `${formData.country_code}${formData.phone}`,
                 order: createdInvoiceNumber, // Use Zoho Invoice Number as Order ID
                 payment_mode: formData.payment_mode,
                 total_amount: zohoCalculatedTotal,
                 cod_amount: formData.payment_mode === 'COD' ? zohoCalculatedTotal : 0,
                 weight: formData.weight,
                 shipping_mode: formData.shipping_mode,
-                products_desc: formData.products_desc,
+                products_desc: autoProductsDesc || formData.products_desc,
                 quantity: "1", // Delhivery expects this as a explicitly "1" string in B2C
             };
 
@@ -280,7 +287,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                             <div className="space-y-2 px-1 py-1">
                                 <p className="flex items-start justify-between"><span className="text-gray-500 font-medium">Address</span> <span className="text-right max-w-[200px] leading-tight">{formData.address}</span></p>
                                 <p className="flex justify-between"><span className="text-gray-500 font-medium">Location</span> <span className="text-right font-medium">{formData.city}, {formData.state} {formData.pincode}</span></p>
-                                <p className="flex justify-between"><span className="text-gray-500 font-medium">Phone</span> <span className="text-right">{formData.phone}</span></p>
+                                <p className="flex justify-between"><span className="text-gray-500 font-medium">Phone</span> <span className="text-right">{formData.country_code} {formData.phone}</span></p>
                             </div>
                         </div>
 
@@ -298,14 +305,19 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100 dark:divide-[#2a2a38]">
-                                        {formData.invoice_items.map((it, idx) => (
-                                            <tr key={idx} className="text-gray-700 dark:text-gray-300">
-                                                <td className="px-2 py-2.5 font-medium">{it.name}</td>
-                                                <td className="px-2 py-2.5 text-center">{it.quantity}</td>
-                                                <td className="px-2 py-2.5 text-right text-xs text-gray-500">{it.tax_amount ? `₹${it.tax_amount.toFixed(2)}` : '-'}</td>
-                                                <td className="px-2 py-2.5 text-right font-medium text-gray-900 dark:text-white">₹{((it.item_total || 0) + (it.tax_amount || 0)).toFixed(2)}</td>
-                                            </tr>
-                                        ))}
+                                        {formData.invoice_items.map((it, idx) => {
+                                            const displayName = it.carat_size != null
+                                                ? `${it.name} ${it.carat_size.toFixed(2)} carat`
+                                                : it.name;
+                                            return (
+                                                <tr key={idx} className="text-gray-700 dark:text-gray-300">
+                                                    <td className="px-2 py-2.5 font-medium">{displayName}</td>
+                                                    <td className="px-2 py-2.5 text-center">{it.quantity}</td>
+                                                    <td className="px-2 py-2.5 text-right text-xs text-gray-500">{it.tax_amount ? `₹${it.tax_amount.toFixed(2)}` : '-'}</td>
+                                                    <td className="px-2 py-2.5 text-right font-medium text-gray-900 dark:text-white">₹{((it.item_total || 0) + (it.tax_amount || 0)).toFixed(2)}</td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

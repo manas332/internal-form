@@ -176,7 +176,7 @@ export async function trackShipment(waybill?: string, refId?: string) {
     let data;
     try {
         data = JSON.parse(text);
-    } catch (e) {
+    } catch {
         throw new Error(`Delhivery API returned invalid JSON (Status ${res.status}): ${text}`);
     }
 
@@ -207,7 +207,7 @@ export async function fetchBulkWaybills(count: number = 10) {
     let data;
     try {
         data = JSON.parse(text);
-    } catch (e) {
+    } catch {
         throw new Error(`Delhivery Bulk Waybill API returned invalid JSON (Status ${res.status}): ${text}`);
     }
 

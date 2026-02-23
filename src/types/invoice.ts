@@ -58,7 +58,7 @@ export const INDIAN_STATE_NAMES: Record<string, string> = {
 };
 
 // --- Salesperson ---
-export const SALESPERSONS = ['Utkarsh', 'Karamveer', 'Aviral'] as const;
+export const SALESPERSONS = ['Utkarsh', 'Karamveer', 'Aviral', 'Raj'] as const;
 export type Salesperson = (typeof SALESPERSONS)[number];
 
 // --- Address ---
@@ -85,6 +85,7 @@ export interface InvoiceItem {
   item_total?: number;
   hsn_or_sac?: string;
   unit?: string;
+  carat_size?: number; // optional, 2 decimal places
 }
 
 // --- Custom Field ---

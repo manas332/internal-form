@@ -15,6 +15,7 @@ export interface CombinedFormData {
     customer_id: string; // If selected from Zoho
     customer_name: string;
     email: string;
+    country_code: string;
     phone: string;
     address: string;
     city: string;
@@ -63,6 +64,7 @@ export const INITIAL_WIZARD_STATE: CombinedFormData = {
     customer_id: '',
     customer_name: '',
     email: '',
+    country_code: '+91',
     phone: '',
     address: '',
     city: '',

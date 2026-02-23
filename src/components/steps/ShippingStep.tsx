@@ -2,6 +2,8 @@
 
 import { CombinedFormData } from '@/types/wizard';
 import { DELHIIVERY_WAREHOUSES } from '@/config/warehouses';
+import { toast } from 'sonner';
+import { shippingStepSchema } from '@/lib/validation';
 
 interface Props {
     formData: CombinedFormData;
@@ -12,7 +14,14 @@ interface Props {
 
 export default function ShippingStep({ formData, updateForm, onNext, onPrev }: Props) {
 
-    const isFormValid = formData.weight > 0 && formData.warehouse && formData.products_desc;
+    const handleNext = () => {
+        const result = shippingStepSchema.safeParse(formData);
+        if (!result.success) {
+            toast.error(result.error.issues[0].message);
+            return;
+        }
+        onNext();
+    };
 
     return (
         <div className="form-section animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -150,8 +159,7 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
                 </button>
                 <button
                     className="btn btn-submit w-auto px-8"
-                    onClick={onNext}
-                    disabled={!isFormValid}
+                    onClick={handleNext}
                 >
                     Preview & Calculate Cost ➔
                 </button>

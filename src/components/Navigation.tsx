@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
 
@@ -12,9 +13,11 @@ export default function Navigation() {
             <div className="nav-container">
                 <div className="nav-logo flex items-center gap-2">
                     <ThemeToggle />
-                    <img
+                    <Image
                         src="/hp_logo.png"
                         alt="HP Logo"
+                        width={120}
+                        height={36}
                         style={{ height: '36px', width: 'auto', maxWidth: '120px' }}
                         className="mix-blend-multiply dark:mix-blend-normal object-contain"
                     />

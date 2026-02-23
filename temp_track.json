@@ -1,0 +1,80 @@
+﻿{
+  "ShipmentData": [
+    {
+      "Shipment": {
+        "AWB": "44324210002903",
+        "CODAmount": 0,
+        "ChargedWeight": null,
+        "Consignee": {
+          "Address1": [],
+          "Address2": [],
+          "Address3": "",
+          "City": "Yamuna Nagar",
+          "Country": "India",
+          "Name": "Ajit More",
+          "PinCode": 135001,
+          "State": "Haryana",
+          "Telephone1": "",
+          "Telephone2": ""
+        },
+        "DeliveryDate": null,
+        "DestRecieveDate": null,
+        "Destination": "Yamuna Nagar",
+        "DispatchCount": 0,
+        "Ewaybill": [],
+        "ExpectedDeliveryDate": null,
+        "Extras": "",
+        "FirstAttemptDate": null,
+        "InvoiceAmount": 70,
+        "OrderType": "Pre-paid",
+        "Origin": "Jaipur_Mansrover_C (Rajasthan)",
+        "OriginRecieveDate": null,
+        "OutDestinationDate": null,
+        "PickUpDate": "2026-02-23T14:17:11.293",
+        "PickedupDate": null,
+        "PickupLocation": "ganpati jaipur",
+        "PromisedDeliveryDate": null,
+        "Quantity": "1",
+        "RTOStartedDate": null,
+        "ReferenceNo": "INV-000144",
+        "ReturnPromisedDeliveryDate": null,
+        "ReturnedDate": null,
+        "ReverseInTransit": false,
+        "Scans": [
+          {
+            "ScanDetail": {
+              "Instructions": "Manifest uploaded",
+              "Scan": "Manifested",
+              "ScanDateTime": "2026-02-23T14:17:11.343",
+              "ScanType": "UD",
+              "ScannedLocation": "Jaipur_Mansrover_C (Rajasthan)",
+              "StatusCode": "X-UCI",
+              "StatusDateTime": "2026-02-23T14:17:11.343"
+            }
+          },
+          {
+            "ScanDetail": {
+              "Instructions": "Bad/Incomplete Address",
+              "Scan": "Manifested",
+              "ScanDateTime": "2026-02-23T14:17:20.467",
+              "ScanType": "UD",
+              "ScannedLocation": "Jaipur_Mansrover_C (Rajasthan)",
+              "StatusCode": "ST-102",
+              "StatusDateTime": "2026-02-23T14:17:20.467"
+            }
+          }
+        ],
+        "SenderName": "04eeec-DADHARMSATHIPRIVATEL-do",
+        "Status": {
+          "Instructions": "Bad/Incomplete Address",
+          "RecievedBy": "",
+          "Status": "Manifested",
+          "StatusCode": "ST-102",
+          "StatusDateTime": "2026-02-23T14:17:20.467",
+          "StatusLocation": "Jaipur_Mansrover_C (Rajasthan)",
+          "StatusType": "UD"
+        }
+      }
+    }
+  ]
+}

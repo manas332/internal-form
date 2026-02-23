@@ -83,6 +83,24 @@ export default function LineItemRow({
                     />
                 </div>
 
+                <div className="line-item-field line-item-carat">
+                    <label>Carat Size</label>
+                    <input
+                        type="number"
+                        className="form-input"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={item.carat_size ?? ''}
+                        onChange={(e) => {
+                            const raw = e.target.value;
+                            onChange(index, {
+                                carat_size: raw === '' ? undefined : Math.round(Number(raw) * 100) / 100,
+                            });
+                        }}
+                    />
+                </div>
+
                 <div className="line-item-field line-item-qty">
                     <label>Qty *</label>
                     <input

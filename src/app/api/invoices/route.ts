@@ -30,8 +30,16 @@ export async function POST(request: NextRequest) {
         // Clean up invoice items — ensure numbers
         const cleanItems = body.invoice_items.map(
             (item: Record<string, unknown>) => {
+                // Append carat size to the item name when provided
+                const caratSize = item.carat_size != null && item.carat_size !== ''
+                    ? Number(item.carat_size)
+                    : null;
+                const itemName = caratSize != null
+                    ? `${item.name} ${caratSize.toFixed(2)} carat`
+                    : item.name;
+
                 const cleaned: Record<string, unknown> = {
-                    name: item.name,
+                    name: itemName,
                     quantity: Number(item.quantity) || 1,
                     price: Number(item.price) || 0,
                 };

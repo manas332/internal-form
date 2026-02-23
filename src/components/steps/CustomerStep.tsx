@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
-import { GSTTreatment, INDIAN_STATES, INDIAN_STATE_NAMES, SALESPERSONS } from '@/types/invoice';
+import { INDIAN_STATES, INDIAN_STATE_NAMES, SALESPERSONS, Customer } from '@/types/invoice';
 import CustomerSearch from '../CustomerSearch'; // Reusing the existing component
 import stateCodesData from '@/data/state-codes.json';
+import { toast } from 'sonner';
+import { customerStepSchema } from '@/lib/validation';
 
 interface Props {
     formData: CombinedFormData;
@@ -64,7 +66,15 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
         }
     };
 
-    const isFormValid = formData.customer_name && formData.phone && formData.address && formData.pincode && formData.date && formData.isPincodeServiceable !== false;
+    const handleNext = () => {
+        const result = customerStepSchema.safeParse(formData);
+        if (!result.success) {
+            // Show first error message
+            toast.error(result.error.issues[0].message);
+            return;
+        }
+        onNext();
+    };
 
     return (
         <div className="form-section animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -76,12 +86,54 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                 <label className="text-sm font-medium text-gray-400 mb-2 block">Search Existing Customer</label>
                 <CustomerSearch
                     onSelect={(customer) => {
+                        const KNOWN_CODES = ['+91', '+1', '+44', '+971', '+61', '+65', '+60', '+49'];
+
+                        // Zoho can store phone under 'mobile' or 'phone', prefer mobile
+                        const rawPhone = ((customer as Customer & { mobile?: string, phone?: string }).mobile)
+                            || ((customer as Customer & { mobile?: string, phone?: string }).phone)
+                            || '';
+
+                        let parsedCountryCode = '+91'; // default India
+                        let parsedPhone = '';
+
+                        if (rawPhone) {
+                            // Strip all non-digit chars except leading +
+                            const cleaned = '+' === rawPhone[0]
+                                ? '+' + rawPhone.slice(1).replace(/\D/g, '')
+                                : rawPhone.replace(/\D/g, '');
+
+                            if (cleaned.startsWith('+') && cleaned.length > 10) {
+                                // Has country code prefix - try matching known codes greedily from longest
+                                const sortedCodes = [...KNOWN_CODES].sort((a, b) => b.length - a.length);
+                                let matched = false;
+                                for (const code of sortedCodes) {
+                                    if (cleaned.startsWith(code)) {
+                                        const rest = cleaned.slice(code.length);
+                                        if (rest.length === 10) {
+                                            parsedCountryCode = code;
+                                            parsedPhone = rest;
+                                            matched = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (!matched) {
+                                    // Cannot match known code exactly — take last 10 as phone, keep +91
+                                    parsedPhone = cleaned.slice(-10);
+                                }
+                            } else {
+                                // No "+", just digits — assume +91, take last 10
+                                const digitsOnly = cleaned.replace('+', '');
+                                parsedPhone = digitsOnly.slice(-10);
+                            }
+                        }
+
                         updateForm({
                             customer_id: customer.customer_id,
                             customer_name: customer.display_name || '',
                             email: customer.email || '',
-                            // Use customer's phone if available, else keep whatever was typed, or clear if both missing
-                            phone: (customer as any).mobile || (customer as any).phone || formData.phone || '',
+                            country_code: parsedCountryCode,
+                            phone: parsedPhone,
                             gst_treatment: customer.gst_treatment || 'consumer',
                         });
                     }}
@@ -119,13 +171,36 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                 </div>
                 <div className="form-group">
                     <label>Phone *</label>
-                    <input
-                        className="form-input"
-                        value={formData.phone}
-                        onChange={(e) => updateForm({ phone: e.target.value })}
-                        placeholder="9876543210"
-                        maxLength={10}
-                    />
+                    <div className="flex gap-2 items-end">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-400 mb-1">Code</span>
+                            <select
+                                className="form-input"
+                                style={{ width: '110px' }}
+                                value={formData.country_code}
+                                onChange={(e) => updateForm({ country_code: e.target.value })}
+                            >
+                                <option value="+91">🇮🇳 +91 (India)</option>
+                                <option value="+1">🇺🇸 +1 (USA)</option>
+                                <option value="+44">🇬🇧 +44 (UK)</option>
+                                <option value="+971">🇦🇪 +971 (UAE)</option>
+                                <option value="+61">🇦🇺 +61 (AUS)</option>
+                                <option value="+65">🇸🇬 +65 (SG)</option>
+                                <option value="+60">🇲🇾 +60 (MY)</option>
+                                <option value="+49">🇩🇪 +49 (DE)</option>
+                            </select>
+                        </div>
+                        <div className="flex flex-col flex-1">
+                            <span className="text-xs text-gray-400 mb-1">10-digit number</span>
+                            <input
+                                className="form-input"
+                                value={formData.phone}
+                                onChange={(e) => updateForm({ phone: e.target.value.replace(/\D/g, '') })}
+                                placeholder="9876543210"
+                                maxLength={10}
+                            />
+                        </div>
+                    </div>
                 </div>
                 <div className="form-group">
                     <label>Address *</label>
@@ -202,8 +277,7 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
             <div className="mt-8 flex justify-end">
                 <button
                     className="btn btn-submit"
-                    onClick={onNext}
-                    disabled={!isFormValid}
+                    onClick={handleNext}
                 >
                     Next: Add Items ➔
                 </button>
