@@ -27,25 +27,31 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
             if (data.delivery_codes && data.delivery_codes.length > 0) {
                 const deliveryCenter = data.delivery_codes[0].postal_code;
 
-                // Delhivery returns the string name of the state (e.g., "Haryana")
+                // Delhivery API returns state_code (e.g., "HR") and district/city
+                const delhiveryStateCode = deliveryCenter.state_code || '';
                 const delhiveryStateName = deliveryCenter.state || '';
-                const delhiveryCity = deliveryCenter.district || deliveryCenter.center || '';
+                const delhiveryCity = deliveryCenter.district || deliveryCenter.city || deliveryCenter.center || '';
 
-                // Try to find the exact Zoho 2-letter state code using the user-provided JSON
-                let mappedStateCode = '';
-                const match = stateCodesData.find(
-                    (s) => s.name.toLowerCase() === delhiveryStateName.toLowerCase()
-                );
+                let mappedStateName = '';
 
-                if (match) {
-                    mappedStateCode = match.name; // we actually want the full name because INDIAN_STATE_NAMES map values are used in options
-                    // The select box uses the full name as the selected value!
+                // 1. Try mapping the 2-letter state_code directly using INDIAN_STATE_NAMES
+                if (delhiveryStateCode && INDIAN_STATE_NAMES[delhiveryStateCode]) {
+                    mappedStateName = INDIAN_STATE_NAMES[delhiveryStateCode];
+                }
+                // 2. Fallback to name-based lookup using stateCodesData
+                else if (delhiveryStateName) {
+                    const match = stateCodesData.find(
+                        (s) => s.name.toLowerCase() === delhiveryStateName.toLowerCase()
+                    );
+                    if (match) {
+                        mappedStateName = match.name;
+                    }
                 }
 
                 updateForm({
                     isPincodeServiceable: true,
                     city: delhiveryCity,
-                    state: mappedStateCode || delhiveryStateName // fallback to raw string if not found
+                    state: mappedStateName || delhiveryStateName // fallback to raw string if found nothing
                 });
             } else {
                 updateForm({ isPincodeServiceable: false });
@@ -74,7 +80,8 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                             customer_id: customer.customer_id,
                             customer_name: customer.display_name || '',
                             email: customer.email || '',
-                            phone: '', // Need to ask user, zoho response might not have phone at root
+                            // Use customer's phone if available, else keep whatever was typed, or clear if both missing
+                            phone: (customer as any).mobile || (customer as any).phone || formData.phone || '',
                             gst_treatment: customer.gst_treatment || 'consumer',
                         });
                     }}

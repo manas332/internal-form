@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Navigation from '@/components/Navigation';
+import { ThemeProvider } from 'next-themes';
 import './globals.css';
 
 const inter = Inter({
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
   title: 'Invoice Generator — Internal Sales Tool',
   description:
     'Internal invoice generation form for the sales team. Create and download invoices via Zoho Billing.',
+  icons: {
+    icon: '/hp_logo.png',
+  },
 };
 
 export default function RootLayout({
@@ -21,10 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
-        <Navigation />
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Navigation />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

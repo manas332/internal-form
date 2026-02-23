@@ -147,7 +147,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
 
             const shipmentData: ShipmentData = {
                 name: formData.customer_name,
-                add: formData.address,
+                add: formData.phone ? `${formData.address}, Ph: ${formData.phone}` : formData.address,
                 pin: parseInt(formData.pincode, 10), // Cast to integer per Delhivery API doc
                 city: formData.city,
                 state: formData.state,
@@ -257,78 +257,112 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             )}
 
             {loadingPreview ? (
-                <div className="py-12 text-center text-gray-400">
-                    <div className="btn-spinner border-2 border-accent border-t-transparent rounded-full w-8 h-8 mx-auto mb-4"></div>
-                    Loading shipping estimates...
+                <div className="py-16 text-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#16161f] rounded-xl border border-dashed border-gray-200 dark:border-[#2a2a38] animate-pulse">
+                    <div className="btn-spinner border-[3px] border-accent border-t-transparent rounded-full w-10 h-10 mx-auto mb-4"></div>
+                    <p className="font-medium">Calculating shipping estimates & routing...</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     {/* Left Column - Invoice Details */}
-                    <div className="bg-[#16161f] border border-[#2a2a38] rounded-xl p-5">
-                        <h4 className="text-accent font-semibold mb-4 border-b border-[#2a2a38] pb-2">Invoice Details</h4>
+                    <div className="bg-white dark:bg-[#16161f] border border-gray-200 dark:border-[#2a2a38] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <h4 className="text-gray-900 dark:text-accent font-bold mb-5 border-b border-gray-100 dark:border-[#2a2a38] pb-3 flex items-center gap-2 text-lg">
+                            📄 Invoice Summary
+                        </h4>
 
-                        <div className="text-sm space-y-2 text-gray-300">
-                            <p><span className="text-gray-500 w-24 inline-block">Customer:</span> <strong className="text-white">{formData.customer_name}</strong></p>
-                            <p><span className="text-gray-500 w-24 inline-block">Address:</span> {formData.address}</p>
-                            <p><span className="text-gray-500 w-24 inline-block">City/State:</span> {formData.city}, {formData.state}</p>
-                            <p><span className="text-gray-500 w-24 inline-block">Pincode:</span> {formData.pincode}</p>
-                            <p><span className="text-gray-500 w-24 inline-block">Phone:</span> {formData.phone}</p>
+                        <div className="text-sm space-y-3 text-gray-600 dark:text-gray-300">
+                            <div className="bg-gray-50 dark:bg-[#1c1c28] p-3.5 rounded-xl border border-gray-100 dark:border-transparent flex justify-between items-center">
+                                <span className="text-gray-500 font-medium">Customer</span>
+                                <strong className="text-gray-900 dark:text-white font-semibold flex items-center gap-1.5">
+                                    👤 {formData.customer_name}
+                                </strong>
+                            </div>
+                            <div className="space-y-2 px-1 py-1">
+                                <p className="flex items-start justify-between"><span className="text-gray-500 font-medium">Address</span> <span className="text-right max-w-[200px] leading-tight">{formData.address}</span></p>
+                                <p className="flex justify-between"><span className="text-gray-500 font-medium">Location</span> <span className="text-right font-medium">{formData.city}, {formData.state} {formData.pincode}</span></p>
+                                <p className="flex justify-between"><span className="text-gray-500 font-medium">Phone</span> <span className="text-right">{formData.phone}</span></p>
+                            </div>
                         </div>
 
-                        <div className="mt-5 pt-4 border-t border-[#2a2a38]">
-                            <h5 className="text-xs uppercase text-gray-500 mb-2 font-medium">Items ({formData.invoice_items.length})</h5>
-                            <ul className="text-sm space-y-1 mb-4">
-                                {formData.invoice_items.map((it, idx) => (
-                                    <li key={idx} className="flex justify-between text-gray-300">
-                                        <span>
-                                            {it.quantity}x {it.name}
-                                            {!!it.tax_amount && <span className="text-gray-500 text-xs ml-2">+ tax</span>}
-                                        </span>
-                                        <span>₹{((it.item_total || 0) + (it.tax_amount || 0)).toFixed(2)}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                        <div className="mt-6 pt-5 border-t border-gray-100 dark:border-[#2a2a38]">
+                            <h5 className="text-xs uppercase text-gray-400 mb-3 font-bold tracking-wider">Line Items ({formData.invoice_items.length})</h5>
+
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left mb-4">
+                                    <thead className="text-xs text-gray-500 bg-gray-50 dark:bg-[#1c1c28] uppercase border-b border-gray-100 dark:border-[#2a2a38]">
+                                        <tr>
+                                            <th className="px-2 py-2 rounded-l-lg font-semibold">Item</th>
+                                            <th className="px-2 py-2 font-semibold text-center">Qty</th>
+                                            <th className="px-2 py-2 font-semibold text-right">Tax</th>
+                                            <th className="px-2 py-2 rounded-r-lg font-semibold text-right">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100 dark:divide-[#2a2a38]">
+                                        {formData.invoice_items.map((it, idx) => (
+                                            <tr key={idx} className="text-gray-700 dark:text-gray-300">
+                                                <td className="px-2 py-2.5 font-medium">{it.name}</td>
+                                                <td className="px-2 py-2.5 text-center">{it.quantity}</td>
+                                                <td className="px-2 py-2.5 text-right text-xs text-gray-500">{it.tax_amount ? `₹${it.tax_amount.toFixed(2)}` : '-'}</td>
+                                                <td className="px-2 py-2.5 text-right font-medium text-gray-900 dark:text-white">₹{((it.item_total || 0) + (it.tax_amount || 0)).toFixed(2)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
                             {totalTax > 0 && (
-                                <div className="flex justify-between text-gray-400 text-sm pb-2">
-                                    <span>Total Tax</span>
+                                <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm pb-3 px-2">
+                                    <span className="font-medium">Total Tax</span>
                                     <span>₹{totalTax.toFixed(2)}</span>
                                 </div>
                             )}
-                            <div className="flex justify-between font-bold text-white pt-2 border-t border-[#2a2a38] border-dashed">
+                            <div className="flex justify-between font-bold text-gray-900 dark:text-white pt-3 border-t border-gray-200 dark:border-[#2a2a38] border-dashed text-lg px-2 bg-gray-50 dark:bg-transparent rounded-b-lg">
                                 <span>Grand Total</span>
-                                <span>₹{grandTotal.toFixed(2)}</span>
+                                <span className="text-accent">₹{grandTotal.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Right Column - Shipping Details */}
-                    <div className="bg-[#16161f] border border-[#2a2a38] rounded-xl p-5">
-                        <h4 className="text-accent font-semibold mb-4 border-b border-[#2a2a38] pb-2">Shipping Details</h4>
+                    <div className="bg-white dark:bg-[#16161f] border border-gray-200 dark:border-[#2a2a38] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <h4 className="text-gray-900 dark:text-accent font-bold mb-5 border-b border-gray-100 dark:border-[#2a2a38] pb-3 flex items-center gap-2 text-lg">
+                            🚚 Shipping Routing
+                        </h4>
 
-                        <div className="text-sm space-y-3 text-gray-300">
-                            <div className="flex justify-between items-center bg-[#1c1c28] p-2 rounded">
-                                <span className="text-gray-500">Serviceability:</span>
+                        <div className="text-sm space-y-4 text-gray-600 dark:text-gray-300">
+                            <div className="flex justify-between items-center bg-gray-50 dark:bg-[#1c1c28] p-3.5 rounded-xl border border-gray-100 dark:border-transparent">
+                                <span className="text-gray-500 font-medium">Serviceability Status</span>
                                 {formData.isPincodeServiceable ?
-                                    <span className="text-green-500 font-medium">✓ Serviceable</span> :
-                                    <span className="text-red-500 font-medium">✗ Verify Pincode</span>
+                                    <span className="text-green-700 bg-green-100 dark:bg-green-500/20 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-green-200 dark:border-green-500/30 shadow-sm flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Serviceable
+                                    </span> :
+                                    <span className="text-red-700 bg-red-100 dark:bg-red-500/20 dark:text-red-400 px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-red-200 dark:border-red-500/30 flex items-center gap-1.5">
+                                        ✗ Verify Pincode
+                                    </span>
                                 }
                             </div>
 
-                            <p><span className="text-gray-500 w-32 inline-block">Warehouse:</span> <span className="text-white">{formData.warehouse}</span></p>
-                            <p><span className="text-gray-500 w-32 inline-block">Mode:</span> {formData.shipping_mode} / {formData.payment_mode}</p>
-                            <p><span className="text-gray-500 w-32 inline-block">Weight:</span> {formData.weight}g</p>
+                            <div className="space-y-3 px-1 py-1">
+                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 font-medium">Origin Warehouse</span> <span className="text-gray-900 dark:text-white font-medium bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-xs">{formData.warehouse}</span></p>
+                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 font-medium">Fulfillment Mode</span> <span className="font-semibold text-gray-900 dark:text-white uppercase tracking-wide text-xs">{formData.shipping_mode}</span></p>
+                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 font-medium">Payment terms</span> <span className={`font-bold px-2 py-0.5 rounded-md text-xs ${formData.payment_mode === 'Prepaid' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>{formData.payment_mode}</span></p>
+                                <p className="flex justify-between items-center"><span className="text-gray-500 font-medium">Gross Weight</span> <span className="font-medium text-gray-900 dark:text-white">{formData.weight} <span className="text-gray-400 text-xs">g</span></span></p>
+                            </div>
 
-                            <div className="mt-4 p-4 bg-gradient-to-br from-[#1c1c28] to-[#22222e] rounded-lg border border-accent/20">
-                                <h5 className="text-xs uppercase text-accent mb-3 font-semibold tracking-wider">Delhivery Estimates</h5>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">Est. Shipping Cost:</span>
-                                        <span className="font-semibold text-white">{shippingCost ? `₹${shippingCost}` : 'Calculating...'}</span>
+                            <div className="mt-6 p-5 bg-gradient-to-br from-indigo-50 to-white dark:from-[#1c1c28] dark:to-[#22222e] rounded-xl border border-indigo-100 dark:border-accent/30 shadow-sm relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                                <h5 className="text-xs uppercase text-accent mb-4 font-bold tracking-widest flex items-center gap-2">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    Delhivery Estimates
+                                </h5>
+                                <div className="space-y-3 relative z-10">
+                                    <div className="flex justify-between items-center bg-white/50 dark:bg-black/20 p-2.5 rounded-lg">
+                                        <span className="text-gray-600 dark:text-gray-400 font-medium text-xs">Est. Shipping Cost</span>
+                                        <span className="font-bold text-gray-900 dark:text-white text-base">{shippingCost ? `₹${shippingCost}` : <span className="text-gray-400 font-normal italic text-sm">Calculating...</span>}</span>
                                     </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">Expected Delivery:</span>
-                                        <span className="font-semibold text-white">{expectedTat ? new Date(expectedTat).toLocaleDateString() : 'Calculating...'}</span>
+                                    <div className="flex justify-between items-center bg-white/50 dark:bg-black/20 p-2.5 rounded-lg">
+                                        <span className="text-gray-600 dark:text-gray-400 font-medium text-xs">Expected Delivery</span>
+                                        <span className="font-bold text-gray-900 dark:text-white text-base">{expectedTat ? new Date(expectedTat).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) : <span className="text-gray-400 font-normal italic text-sm">Calculating...</span>}</span>
                                     </div>
                                 </div>
                             </div>

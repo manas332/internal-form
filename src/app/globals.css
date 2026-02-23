@@ -1,32 +1,22 @@
-/* =============================================================
-   Invoice Generator — Custom Stylesheet
-   Premium dark theme with glassmorphism accents
-   ============================================================= */
+@import "tailwindcss";
 
-/* --- Reset & Base --- */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+
 
 :root {
   --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Dark palette */
-  --bg-app: #0a0a0f;
-  --bg-card: #12121a;
-  --bg-section: #16161f;
-  --bg-input: #1c1c28;
-  --bg-hover: #22222e;
+  /* Light palette */
+  --bg-app: #f9fafb;
+  --bg-card: #ffffff;
+  --bg-section: #f3f4f6;
+  --bg-input: #ffffff;
+  --bg-hover: #e5e7eb;
 
   /* Accent */
   --accent: #6c63ff;
   --accent-hover: #554de0;
-  --accent-soft: rgba(108, 99, 255, 0.12);
-  --accent-glow: rgba(108, 99, 255, 0.25);
+  --accent-soft: rgba(108, 99, 255, 0.08);
+  --accent-glow: rgba(108, 99, 255, 0.15);
 
   /* Success */
   --success: #22c55e;
@@ -37,23 +27,49 @@
   --danger-soft: rgba(239, 68, 68, 0.1);
 
   /* Text */
-  --text-primary: #f0f0f5;
-  --text-secondary: #9898a8;
-  --text-muted: #5c5c6e;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
 
   /* Border */
-  --border: #2a2a38;
+  --border: #e5e7eb;
   --border-focus: #6c63ff;
-  --border-hover: #3a3a4a;
+  --border-hover: #d1d5db;
+  --border-color: #e5e7eb;
 
   /* Misc */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  /* Dark palette */
+  --bg-app: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-section: #16161f;
+  --bg-input: #1c1c28;
+  --bg-hover: #22222e;
+
+  --accent-soft: rgba(108, 99, 255, 0.12);
+  --accent-glow: rgba(108, 99, 255, 0.25);
+
+  /* Text */
+  --text-primary: #f0f0f5;
+  --text-secondary: #9898a8;
+  --text-muted: #5c5c6e;
+
+  /* Border */
+  --border: #2a2a38;
+  --border-hover: #3a3a4a;
+  --border-color: #2a2a38;
+
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
   --shadow-dropdown: 0 12px 40px rgba(0, 0, 0, 0.6);
-  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html {
@@ -72,7 +88,7 @@ body {
 /* --- App Container --- */
 .app-container {
   min-height: 100vh;
-  padding: 2rem 1rem;
+  padding: 2rem 1.5rem;
   background:
     radial-gradient(ellipse at top left, rgba(108, 99, 255, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at bottom right, rgba(108, 99, 255, 0.04) 0%, transparent 50%),
@@ -81,7 +97,7 @@ body {
 
 /* --- Invoice Form --- */
 .invoice-form {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -314,8 +330,13 @@ select.form-input {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .form-submit-section {
@@ -620,8 +641,13 @@ select.form-input {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
@@ -641,6 +667,7 @@ select.form-input {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -752,7 +779,7 @@ select.form-input {
 
 /* --- Navigation --- */
 .main-nav {
-  background: rgba(18, 18, 26, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
@@ -760,10 +787,14 @@ select.form-input {
   z-index: 50;
 }
 
+.dark .main-nav {
+  background: rgba(18, 18, 26, 0.85);
+}
+
 .nav-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 0.75rem 2rem;
+  padding: 0.75rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -809,9 +840,9 @@ select.form-input {
 
 /* --- Wizard Container --- */
 .wizard-container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 2rem auto;
-  padding: 0 1rem;
+  padding: 0;
 }
 
 /* --- Stepper --- */
@@ -924,8 +955,13 @@ select.form-input {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
@@ -934,9 +970,11 @@ select.form-input {
     gap: 2rem;
     justify-content: center;
   }
+
   .stepper-line {
     display: none;
   }
+
   .stepper-item-wrapper {
     flex: 0 0 auto;
   }

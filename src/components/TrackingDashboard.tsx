@@ -101,17 +101,17 @@ export default function TrackingDashboard() {
     return (
         <div className="max-w-4xl mx-auto py-8 px-4">
             <div className="text-center mb-10">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent mb-2">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400 bg-clip-text text-transparent mb-2">
                     Track Shipments
                 </h1>
-                <p className="text-gray-400">Search by Waybill Number or Order ID</p>
+                <p className="text-gray-500 dark:text-gray-400">Search by Waybill Number or Order ID</p>
             </div>
 
             {/* Search Bar */}
             <div className="flex gap-3 mb-12 max-w-2xl mx-auto">
                 <input
                     type="text"
-                    className="form-input flex-1 p-3 text-lg bg-[#16161f]"
+                    className="form-input flex-1 p-3 text-lg bg-white dark:bg-[#16161f] text-gray-900 dark:text-white border-gray-300 dark:border-[#2a2a38] shadow-sm"
                     placeholder="e.g. 1122345678722 or INV-1002"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
@@ -135,11 +135,11 @@ export default function TrackingDashboard() {
 
             {/* Tracking Results Area */}
             {trackingData ? (
-                <div className="bg-[#12121a] border border-[#2a2a38] rounded-xl p-6 shadow-2xl animate-in fade-in slide-in-from-bottom-4 mb-12">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#2a2a38] pb-4 mb-6">
+                <div className="bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] rounded-xl p-6 shadow-xl dark:shadow-2xl animate-in fade-in slide-in-from-bottom-4 mb-12">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 dark:border-[#2a2a38] pb-4 mb-6">
                         <div>
-                            <h2 className="text-2xl font-bold text-white mb-1">{trackingData.Shipment.AWB}</h2>
-                            <p className="text-gray-400 text-sm">Order ID: {trackingData.Shipment.ReferenceNo}</p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{trackingData.Shipment.AWB}</h2>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Order ID: <span className="text-gray-700 dark:text-gray-300">{trackingData.Shipment.ReferenceNo}</span></p>
                         </div>
 
                         <div className={`mt-4 md:mt-0 px-4 py-2 border rounded-full text-sm font-bold tracking-wider ${getStatusColor(trackingData.Shipment.CurrentStatus?.StatusType)}`}>
@@ -148,25 +148,25 @@ export default function TrackingDashboard() {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                        <div>
-                            <p className="text-gray-500 text-xs uppercase mb-1">Expected Delivery</p>
-                            <p className="text-white font-medium">{trackingData.Shipment.ExpectedDeliveryDate ? new Date(trackingData.Shipment.ExpectedDeliveryDate).toLocaleDateString() : '—'}</p>
+                        <div className="bg-gray-50 dark:bg-[#16161f] p-3 rounded-lg border border-gray-100 dark:border-transparent">
+                            <p className="text-gray-500 text-xs uppercase mb-1 font-semibold">Expected Delivery</p>
+                            <p className="text-gray-900 dark:text-white font-medium">{trackingData.Shipment.ExpectedDeliveryDate ? new Date(trackingData.Shipment.ExpectedDeliveryDate).toLocaleDateString() : '—'}</p>
                         </div>
-                        <div>
-                            <p className="text-gray-500 text-xs uppercase mb-1">Consignee</p>
-                            <p className="text-white font-medium">{trackingData.Shipment.Consignee?.Name || '—'}</p>
+                        <div className="bg-gray-50 dark:bg-[#16161f] p-3 rounded-lg border border-gray-100 dark:border-transparent">
+                            <p className="text-gray-500 text-xs uppercase mb-1 font-semibold">Consignee</p>
+                            <p className="text-gray-900 dark:text-white font-medium">{trackingData.Shipment.Consignee?.Name || '—'}</p>
                         </div>
-                        <div>
-                            <p className="text-gray-500 text-xs uppercase mb-1">Destination</p>
-                            <p className="text-white font-medium">{trackingData.Shipment.Destination || '—'}</p>
+                        <div className="bg-gray-50 dark:bg-[#16161f] p-3 rounded-lg border border-gray-100 dark:border-transparent">
+                            <p className="text-gray-500 text-xs uppercase mb-1 font-semibold">Destination</p>
+                            <p className="text-gray-900 dark:text-white font-medium">{trackingData.Shipment.Destination || '—'}</p>
                         </div>
-                        <div>
-                            <p className="text-gray-500 text-xs uppercase mb-1">Amount to Collect</p>
-                            <p className="text-white font-medium">₹{trackingData.Shipment.InvoiceAmount || 0}</p>
+                        <div className="bg-gray-50 dark:bg-[#16161f] p-3 rounded-lg border border-gray-100 dark:border-transparent">
+                            <p className="text-gray-500 text-xs uppercase mb-1 font-semibold">Amount to Collect</p>
+                            <p className="text-gray-900 dark:text-white font-bold text-lg text-accent">₹{trackingData.Shipment.InvoiceAmount || 0}</p>
                         </div>
                     </div>
 
-                    <h3 className="text-lg font-semibold text-white mb-4">Tracking History</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tracking History</h3>
                     <div className="space-y-0 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#3a3a4a] before:to-transparent">
                         {trackingData.Shipment.Scans?.map((scan, idx) => (
                             <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
@@ -192,16 +192,16 @@ export default function TrackingDashboard() {
             {!trackingData && dbOrders.length > 0 && (
                 <div className="animate-in fade-in duration-500 mb-12">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-white">Allocated Waybills</h3>
-                        <span className="text-xs bg-accent/20 text-accent px-2 py-1 rounded-full border border-accent/30 flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span> Database
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Allocated Waybills</h3>
+                        <span className="text-xs bg-accent/10 dark:bg-accent/20 text-accent px-3 py-1.5 rounded-full border border-accent/20 dark:border-accent/30 flex items-center gap-1.5 font-medium shadow-sm">
+                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(108,99,255,0.8)]"></span> Database
                         </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {dbOrders.map((order, idx) => (
                             <div
                                 key={idx}
-                                className="bg-[#12121a] border border-[#2a2a38] hover:border-accent/50 p-4 rounded-xl cursor-pointer transition-all hover:bg-[#16161f]"
+                                className="bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] hover:border-accent dark:hover:border-accent/50 p-5 rounded-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-accent/5 hover:bg-gray-50 dark:hover:bg-[#16161f] group"
                                 onClick={() => {
                                     setSearchQuery(order.waybill);
                                     if (order.status === 'UNUSED') {
@@ -212,16 +212,27 @@ export default function TrackingDashboard() {
                                     }
                                 }}
                             >
-                                <div className="flex justify-between items-center mb-2 gap-2">
-                                    <span className={`text-xs px-2 py-0.5 rounded font-medium ${order.status === 'UNUSED' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                                <div className="flex justify-between items-start mb-3 gap-2">
+                                    <span className={`text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide ${order.status === 'UNUSED' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 border border-green-200 dark:border-green-500/30' : 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30'}`}>
                                         {order.status}
                                     </span>
-                                    <span className="text-gray-500 text-xs text-right whitespace-nowrap">
-                                        {new Date(order.createdAt).toLocaleDateString()}
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs font-medium flex items-center gap-1">
+                                        📅 {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </span>
                                 </div>
-                                <p className="text-white font-bold mb-1">{order.waybill}</p>
-                                <p className="text-gray-400 text-sm">{order.orderId ? `Order: ${order.orderId}` : 'Not assigned to order yet'}</p>
+                                <div className="mb-4">
+                                    <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Waybill Number</p>
+                                    <p className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-accent transition-colors">{order.waybill}</p>
+                                </div>
+                                <div className="pt-3 border-t border-gray-100 dark:border-[#2a2a38] flex items-center justify-between">
+                                    <div>
+                                        <p className="text-xs text-gray-400 mb-0.5">Assigned Order</p>
+                                        <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">{order.orderId ? order.orderId : '—'}</p>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-[#1c1c28] flex items-center justify-center text-gray-400 group-hover:text-accent group-hover:bg-accent/10 transition-colors">
+                                        ➔
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -232,25 +243,42 @@ export default function TrackingDashboard() {
             {!trackingData && recentOrders.length > 0 && (
                 <div className="animate-in fade-in duration-500 mb-12">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-white">Your Recent Shipments</h3>
-                        <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full border border-gray-700">Local Device</span>
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Your Recent Shipments</h3>
+                        <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 font-medium flex items-center gap-1.5 shadow-sm">
+                            💻 Local Device
+                        </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {recentOrders.map((order, idx) => (
                             <div
                                 key={idx}
-                                className="bg-[#12121a] border border-[#2a2a38] hover:border-accent/50 p-4 rounded-xl cursor-pointer transition-all hover:bg-[#16161f]"
+                                className="bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] hover:border-accent dark:hover:border-accent/50 p-5 rounded-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-accent/5 hover:bg-gray-50 dark:hover:bg-[#16161f] group"
                                 onClick={() => {
                                     setSearchQuery(order.waybill);
                                     fetchTracking(order.waybill);
                                 }}
                             >
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-accent text-sm font-medium">{order.orderId}</span>
-                                    <span className="text-gray-500 text-xs">{new Date(order.date).toLocaleDateString()}</span>
+                                <div className="flex justify-between items-start mb-3">
+                                    <span className="bg-accent/10 text-accent border border-accent/20 text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide flex items-center gap-1">
+                                        📦 {order.orderId}
+                                    </span>
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs font-medium flex items-center gap-1">
+                                        📅 {new Date(order.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </span>
                                 </div>
-                                <p className="text-white font-bold mb-1">{order.waybill}</p>
-                                <p className="text-gray-400 text-sm">{order.consignee}</p>
+                                <div className="mb-4">
+                                    <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Waybill Number</p>
+                                    <p className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-accent transition-colors">{order.waybill}</p>
+                                </div>
+                                <div className="pt-3 border-t border-gray-100 dark:border-[#2a2a38] flex items-center justify-between">
+                                    <div>
+                                        <p className="text-xs text-gray-400 mb-0.5">Consignee</p>
+                                        <p className="text-gray-700 dark:text-gray-300 text-sm font-medium truncate max-w-[150px]" title={order.consignee}>{order.consignee}</p>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-[#1c1c28] flex items-center justify-center text-gray-400 group-hover:text-accent group-hover:bg-accent/10 transition-colors">
+                                        ➔
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>

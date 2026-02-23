@@ -1,0 +1,110 @@
+{
+  "delivery_codes": [
+    {
+      "postal_code": {
+        "remarks": "",
+        "pin": 302001,
+        "country_code": "IN",
+        "state_code": "RJ",
+        "cod": "Y",
+        "pre_paid": "Y",
+        "pickup": "Y",
+        "cash": "Y",
+        "repl": "Y",
+        "district": "Jaipur",
+        "is_oda": "N",
+        "sort_code": "JAI/RRI",
+        "max_amount": 0,
+        "max_weight": 0,
+        "covid_zone": "G",
+        "inc": "Jaipur_JawarNgrCircle_C (Rajasthan)",
+        "center": [
+          {
+            "code": "IND302006AAA",
+            "e": "2020-02-05T15:41:56.818",
+            "cn": "Jaipur (Rajasthan)",
+            "s": "2015-09-12T15:08:48.610",
+            "u": "Aayush.Agarwal",
+            "sort_code": "JAI/BAI",
+            "ud": "2015-09-12T15:08:48.610"
+          },
+          {
+            "code": "INRJAAOL",
+            "e": "2021-07-20T18:51:43.912",
+            "cn": "Jaipur_BaisGodam_D (Rajasthan)",
+            "s": "2020-02-05T15:41:56.818",
+            "u": "marathe.vs",
+            "ud": "2020-02-05T15:41:56.818",
+            "sort_code": "JAI/HUB"
+          },
+          {
+            "code": "INRJAMSZ",
+            "e": "2022-03-05T14:13:02.376",
+            "cn": "Jaipur_BaisGodamArea_D (Rajasthan)",
+            "s": "2021-07-20T18:51:43.912",
+            "u": "kritin.syal",
+            "sort_code": "JAI/SEI",
+            "ud": "2021-07-20T18:51:43.912"
+          },
+          {
+            "code": "INRJAQLW",
+            "e": "2022-03-05T17:55:27.425",
+            "cn": "Jaipur_Sodala_D (Rajasthan)",
+            "s": "2022-03-05T14:13:02.376",
+            "u": "rajdeep.chaudhary",
+            "ud": "2022-03-05T14:13:02.376",
+            "sort_code": "JAI/SEI"
+          },
+          {
+            "code": "INRJAMSZ",
+            "e": "2022-03-08T13:51:25.762",
+            "cn": "Jaipur_BaisGodamArea_D (Rajasthan)",
+            "s": "2022-03-05T17:55:27.425",
+            "u": "rajdeep.chaudhary",
+            "sort_code": "JAI/SEI",
+            "ud": "2022-03-05T17:55:27.425"
+          },
+          {
+            "code": "INRJAQAN",
+            "e": "2023-05-24T10:20:10.688",
+            "cn": "Jaipur_SharmaColony_D (Rajasthan)",
+            "s": "2022-03-08T13:51:25.762",
+            "u": "rajdeep.chaudhary",
+            "ud": "2022-03-08T13:51:25.762",
+            "sort_code": "JAI/SEI"
+          },
+          {
+            "code": "NSZ",
+            "e": "2023-05-27T14:19:22.745",
+            "cn": "NSZ",
+            "s": "2023-05-24T10:20:10.688",
+            "u": "meenakshi.negi",
+            "sort_code": "None",
+            "ud": "2023-05-24T10:20:10.688"
+          },
+          {
+            "code": "INRJAQAN",
+            "e": "2024-09-18T23:19:55.623",
+            "cn": "Jaipur_SharmaColony_D (Rajasthan)",
+            "s": "2023-05-27T14:19:22.745",
+            "u": "meenakshi.negi",
+            "ud": "2023-05-27T14:19:22.745",
+            "sort_code": "JAI/RRI"
+          },
+          {
+            "code": "INRJAZRQ",
+            "cn": "Jaipur_RamNagar_D (Rajasthan)",
+            "s": "2024-09-18T23:19:55.623",
+            "u": "ajay.sahrawat",
+            "sort_code": "JAI/RRI",
+            "ud": "2024-09-18T23:19:55.623"
+          }
+        ],
+        "city": "Jaipur",
+        "sun_tat": true,
+        "protect_blacklist": false,
+        "srv_wt_th": 10000
+      }
+    }
+  ]
+}

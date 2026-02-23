@@ -3,11 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm install
+        - npm install -g bun
+        - bun install
     build:
       commands:
-        - env | grep -e ZOHO_ >> .env.production
-        - npm run build
+        - env | grep -e ZOHO_ -e DELHIVERY_ -e MONGODB_ -e FREEASTRO_ -e AZURE_ -e ADMIN_ -e HP_ >> .env.production
+        - bun run build
   artifacts:
     baseDirectory: .next
     files:
@@ -22,3 +23,10 @@ frontend:
       ZOHO_CLIENT_SECRET: ${ZOHO_CLIENT_SECRET}
       ZOHO_REFRESH_TOKEN: ${ZOHO_REFRESH_TOKEN}
       ZOHO_ORG_ID: ${ZOHO_ORG_ID}
+      DELHIVERY_API_TOKEN: ${DELHIVERY_API_TOKEN}
+      DELHIVERY_ENV: ${DELHIVERY_ENV}
+      MONGODB_URI: ${MONGODB_URI}
+      FREEASTRO_API_KEY: ${FREEASTRO_API_KEY}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
+      HP_API_KEY: ${HP_API_KEY}

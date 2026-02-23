@@ -8,7 +8,7 @@ interface LineItemRowProps {
     index: number;
     zohoItems?: ZohoItem[];
     zohoTaxes?: ZohoTax[];
-    onChange: (index: number, field: keyof InvoiceItem, value: string | number) => void;
+    onChange: (index: number, updates: Partial<InvoiceItem>) => void;
     onRemove: (index: number) => void;
     canRemove: boolean;
 }
@@ -40,16 +40,17 @@ export default function LineItemRow({
                         value={item.name}
                         onChange={(e) => {
                             const val = e.target.value;
-                            onChange(index, 'name', val);
+                            const updates: Partial<InvoiceItem> = { name: val };
 
                             // Check if val matches a Zoho item
                             const matched = zohoItems.find(z => z.name === val);
                             if (matched) {
                                 // Auto-populate other fields
-                                if (matched.description) onChange(index, 'description', matched.description);
-                                if (matched.rate) onChange(index, 'price', matched.rate);
-                                if (matched.hsn_or_sac) onChange(index, 'hsn_or_sac', matched.hsn_or_sac);
+                                if (matched.description) updates.description = matched.description;
+                                if (matched.rate) updates.price = matched.rate;
+                                if (matched.hsn_or_sac) updates.hsn_or_sac = matched.hsn_or_sac;
                             }
+                            onChange(index, updates);
                         }}
                         required
                     />
@@ -67,7 +68,7 @@ export default function LineItemRow({
                         className="form-input"
                         placeholder="Brief description"
                         value={item.description || ''}
-                        onChange={(e) => onChange(index, 'description', e.target.value)}
+                        onChange={(e) => onChange(index, { description: e.target.value })}
                     />
                 </div>
 
@@ -78,7 +79,7 @@ export default function LineItemRow({
                         className="form-input"
                         placeholder="HSN code"
                         value={item.hsn_or_sac || ''}
-                        onChange={(e) => onChange(index, 'hsn_or_sac', e.target.value)}
+                        onChange={(e) => onChange(index, { hsn_or_sac: e.target.value })}
                     />
                 </div>
 
@@ -90,7 +91,7 @@ export default function LineItemRow({
                         min="1"
                         step="1"
                         value={item.quantity}
-                        onChange={(e) => onChange(index, 'quantity', e.target.value)}
+                        onChange={(e) => onChange(index, { quantity: Number(e.target.value) || 0 })}
                         required
                     />
                 </div>
@@ -103,7 +104,7 @@ export default function LineItemRow({
                         min="0"
                         step="0.01"
                         value={item.price}
-                        onChange={(e) => onChange(index, 'price', e.target.value)}
+                        onChange={(e) => onChange(index, { price: Number(e.target.value) || 0 })}
                         required
                     />
                 </div>
@@ -113,7 +114,7 @@ export default function LineItemRow({
                     <select
                         className="form-input"
                         value={item.tax_id || ''}
-                        onChange={(e) => onChange(index, 'tax_id', e.target.value)}
+                        onChange={(e) => onChange(index, { tax_id: e.target.value })}
                     >
                         <option value="">None</option>
                         {zohoTaxes.map(t => (

@@ -59,6 +59,12 @@ export async function POST(request: NextRequest) {
         if (body.place_of_contact) payload.place_of_contact = body.place_of_contact;
         if (body.billing_address) payload.billing_address = body.billing_address;
 
+        // Pass phone/mobile to Zoho
+        if (body.phone) {
+            payload.phone = body.phone;
+            payload.mobile = body.phone;
+        }
+
         const result = await createCustomer(payload);
 
         return NextResponse.json(result.data, { status: result.status });

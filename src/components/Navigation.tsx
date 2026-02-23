@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navigation() {
     const pathname = usePathname();
@@ -9,23 +10,15 @@ export default function Navigation() {
     return (
         <nav className="main-nav">
             <div className="nav-container">
-                <div className="nav-logo">
-                    <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-accent"
-                    >
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                    </svg>
-                    <span className="logo-text">Internal Sales Tool</span>
+                <div className="nav-logo flex items-center gap-2">
+                    <ThemeToggle />
+                    <img
+                        src="/hp_logo.png"
+                        alt="HP Logo"
+                        style={{ height: '36px', width: 'auto', maxWidth: '120px' }}
+                        className="mix-blend-multiply dark:mix-blend-normal object-contain"
+                    />
+                    <span className="logo-text hidden sm:inline-block">Internal Sales Tool</span>
                 </div>
                 <div className="nav-links">
                     <Link

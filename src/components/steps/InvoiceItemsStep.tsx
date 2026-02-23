@@ -67,30 +67,28 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
         loadData();
     }, []);
 
-    const handleItemChange = (index: number, field: keyof InvoiceItem, value: string | number) => {
+    const handleItemChange = (index: number, updates: Partial<InvoiceItem>) => {
         const newItems = [...formData.invoice_items];
-        newItems[index] = { ...newItems[index], [field]: value };
+        newItems[index] = { ...newItems[index], ...updates };
 
         // Auto calculate item total and tax
-        if (field === 'quantity' || field === 'price' || field === 'discount' || field === 'tax_id') {
-            const q = Number(newItems[index].quantity) || 0;
-            const p = Number(newItems[index].price) || 0;
-            const d = Number(newItems[index].discount) || 0;
+        const q = Number(newItems[index].quantity) || 0;
+        const p = Number(newItems[index].price) || 0;
+        const d = Number(newItems[index].discount) || 0;
 
-            const itemBaseVal = (q * p) - d;
+        const itemBaseVal = (q * p) - d;
 
-            // Recalculate tax if a tax is selected
-            let taxAmt = 0;
-            if (newItems[index].tax_id) {
-                const foundTax = zohoTaxes.find(t => t.tax_id === newItems[index].tax_id);
-                if (foundTax) {
-                    taxAmt = itemBaseVal * (foundTax.tax_percentage / 100);
-                }
+        // Recalculate tax
+        let taxAmt = 0;
+        if (newItems[index].tax_id) {
+            const foundTax = zohoTaxes.find(t => t.tax_id === newItems[index].tax_id);
+            if (foundTax) {
+                taxAmt = itemBaseVal * (foundTax.tax_percentage / 100);
             }
-
-            newItems[index].tax_amount = taxAmt;
-            newItems[index].item_total = itemBaseVal;
         }
+
+        newItems[index].tax_amount = taxAmt;
+        newItems[index].item_total = itemBaseVal;
 
         updateForm({ invoice_items: newItems });
     };

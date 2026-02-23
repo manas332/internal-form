@@ -27,6 +27,7 @@ export default function CustomerSearch({
         gst_no: '',
         gst_treatment: 'business_gst' as GSTTreatment,
         place_of_contact: '',
+        phone: '',
     });
     const [creating, setCreating] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -121,6 +122,7 @@ export default function CustomerSearch({
                     gst_no: '',
                     gst_treatment: 'business_gst',
                     place_of_contact: '',
+                    phone: '',
                 });
             } else {
                 alert(data.message || 'Failed to create customer');

@@ -1,0 +1,56 @@
+{
+  "delivery_codes": [
+    {
+      "postal_code": {
+        "remarks": "",
+        "pin": 110001,
+        "country_code": "IN",
+        "state_code": "DL",
+        "cod": "Y",
+        "pre_paid": "Y",
+        "pickup": "Y",
+        "cash": "Y",
+        "repl": "Y",
+        "district": "New Delhi",
+        "is_oda": "N",
+        "sort_code": "DEL./MII",
+        "max_amount": 0,
+        "max_weight": 0,
+        "covid_zone": "G",
+        "inc": "Faridabad_MathuraRoad_GW (Haryana)",
+        "center": [
+          {
+            "code": "IND110005AAA",
+            "e": "2020-01-21T16:44:53.423",
+            "cn": "Delhi_Todapur_DC (Delhi)",
+            "s": "2016-01-02T16:42:41.876",
+            "u": "Himanshu.Gupta",
+            "sort_code": "DEL/JHA",
+            "ud": "2016-01-02T16:42:41.876"
+          },
+          {
+            "code": "INDLAAEL",
+            "e": "2023-06-29T11:15:04.929",
+            "cn": "Delhi_Karolbagh_D (Delhi)",
+            "s": "2020-01-21T16:44:53.423",
+            "u": "marathe.vs",
+            "sort_code": "DEL/KRB",
+            "ud": "2020-01-21T16:44:53.423"
+          },
+          {
+            "code": "INDLAWEC",
+            "cn": "Delhi_Motiakhan_D (Delhi)",
+            "s": "2023-06-29T11:15:04.929",
+            "u": "meenakshi.negi",
+            "ud": "2023-06-29T11:15:04.929",
+            "sort_code": "DEL./MII"
+          }
+        ],
+        "city": "Delhi",
+        "sun_tat": true,
+        "protect_blacklist": false,
+        "srv_wt_th": 10000
+      }
+    }
+  ]
+}
