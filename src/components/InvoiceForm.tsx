@@ -69,11 +69,10 @@ export default function InvoiceForm() {
     // --- Item handlers ---
     const handleItemChange = (
         index: number,
-        field: keyof InvoiceItem,
-        value: string | number
+        updates: Partial<InvoiceItem>
     ) => {
         setItems(items.map((item, i) =>
-            i === index ? { ...item, [field]: value } : item
+            i === index ? { ...item, ...updates } : item
         ));
     };
 
