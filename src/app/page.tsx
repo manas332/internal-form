@@ -1,9 +1,9 @@
-import CombinedWizard from '@/components/CombinedWizard';
+import CreateOrderFlow from '@/components/CreateOrderFlow';
 
 export default function Home() {
   return (
     <div className="app-container">
-      <CombinedWizard />
+      <CreateOrderFlow />
     </div>
   );
 }

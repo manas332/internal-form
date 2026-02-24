@@ -153,6 +153,21 @@ export async function searchCustomers(query: string) {
 }
 
 /**
+ * Get full customer details by ID.
+ */
+export async function getCustomer(customerId: string) {
+    const headers = await zohoHeaders();
+
+    const res = await fetch(`${ZOHO_API_BASE}/customers/${customerId}`, {
+        method: 'GET',
+        headers,
+    });
+
+    const data = await res.json();
+    return { status: res.status, data };
+}
+
+/**
  * Create a new customer.
  */
 export async function createCustomer(body: Record<string, unknown>) {

@@ -75,6 +75,9 @@ export interface ShipmentData {
   return_state?: string;
   return_country?: string;
   return_phone?: string;
+  seller_name?: string;
+  seller_add?: string;
+  seller_inv?: string;
 }
 
 export interface ShipmentPayload {

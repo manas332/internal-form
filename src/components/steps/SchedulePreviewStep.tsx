@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import { ShipmentData } from '@/types/delhivery';
-import stateCodesData from '@/data/state-codes.json';
 
 interface Props {
     formData: CombinedFormData;
@@ -12,7 +11,7 @@ interface Props {
     onPrev: () => void;
 }
 
-export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Props) {
+export default function SchedulePreviewStep({ formData, updateForm, onNext, onPrev }: Props) {
     const [shippingCost, setShippingCost] = useState<number | null>(null);
     const [expectedTat, setExpectedTat] = useState<string | null>(null);
     const [loadingPreview, setLoadingPreview] = useState(true);
@@ -25,8 +24,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
     const totalAdjustment = Number(formData.adjustment) || 0;
     const shippingCharge = formData.include_shipping ? 100 : 0;
     const codCharge = formData.include_cod ? 50 : 0;
-    const combinedShippingCharge = shippingCharge + codCharge;
-    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment + combinedShippingCharge;
+    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment + shippingCharge + codCharge;
 
     useEffect(() => {
         async function fetchPreviewData() {
@@ -37,7 +35,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 const costParams = new URLSearchParams({
                     md: formData.shipping_mode === 'Express' ? 'E' : 'S',
                     cgm: String(formData.weight),
-                    o_pin: '302001', // Example origin pin since we don't have it in the form. Assumed Jaipur for now based on facility. 
+                    o_pin: '302001', // Example origin
                     d_pin: formData.pincode,
                     ss: 'Delivered',
                     pt: formData.payment_mode === 'Prepaid' ? 'Pre-paid' : 'COD'
@@ -46,14 +44,12 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 const costRes = await fetch(`/api/delhivery/shipping-cost?${costParams.toString()}`);
                 if (costRes.ok) {
                     const costData = await costRes.json();
-                    // Find total amount from response (assuming first object has total_amount)
                     if (costData && costData.length > 0 && costData[0].total_amount) {
                         setShippingCost(costData[0].total_amount);
                     }
                 }
 
                 // 2. Fetch Expected TAT
-                // We need an origin pin for TAT as well. Defaulting to 302001.
                 const tatParams = new URLSearchParams({
                     origin_pin: '302001',
                     destination_pin: formData.pincode,
@@ -64,13 +60,10 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 if (tatRes.ok) {
                     const tatData = await tatRes.json();
                     if (tatData.data && typeof tatData.data.tat === 'number') {
-                        // The track.delhivery.com endpoint returns { data: { tat: 3 } }
-                        // Calculate expected date by adding TAT days to today
                         const expectedDate = new Date();
                         expectedDate.setDate(expectedDate.getDate() + tatData.data.tat);
                         setExpectedTat(expectedDate.toISOString());
                     } else if (tatData.expected_delivery_date) {
-                        // Fallback in case it ever returns the old format
                         setExpectedTat(tatData.expected_delivery_date);
                     }
                 }
@@ -97,7 +90,6 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 date: new Date().toISOString()
             };
 
-            // Keep only last 5
             const newHistory = [newOrder, ...history].slice(0, 5);
             localStorage.setItem('delhivery_recent_orders', JSON.stringify(newHistory));
         } catch (e) {
@@ -110,103 +102,35 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
         setErrorMsg('');
 
         try {
-            // 1. Create Zoho Invoice
-            const finalInvoiceItems = [...formData.invoice_items];
-
-            if (shippingCharge > 0) {
-                finalInvoiceItems.push({
-                    name: 'Shipping Charges',
-                    description: 'Shipping and handling',
-                    quantity: 1,
-                    price: shippingCharge,
-                    tax_id: 'NO_TAX',
-                    tax_amount: 0,
-                    item_total: shippingCharge,
-                });
+            if (!formData.orderId) {
+                throw new Error("Missing Order ID");
             }
 
-            if (codCharge > 0) {
-                finalInvoiceItems.push({
-                    name: 'COD Charges',
-                    description: 'Cash on Delivery fee',
-                    quantity: 1,
-                    price: codCharge,
-                    tax_id: 'NO_TAX',
-                    tax_amount: 0,
-                    item_total: codCharge,
-                });
-            }
-
-            const invoicePayload = {
-                customer_id: formData.customer_id,
-                date: formData.date,
-                due_date: formData.due_date || undefined,
-                reference_number: formData.reference_number || undefined,
-                gst_treatment: formData.gst_treatment,
-                salesperson_name: formData.salesperson_name || undefined,
-                gst_no: undefined, // removed as per user sync
-                place_of_supply: stateCodesData.find(s => s.name === formData.state)?.code || formData.state,
-                invoice_items: finalInvoiceItems,
-                discount: Number(formData.discount) || undefined,
-                discount_type: formData.discount_type,
-                adjustment: Number(formData.adjustment) || undefined,
-                adjustment_description: formData.adjustment_description || undefined,
-                notes: formData.notes,
-                terms: formData.terms,
-            };
-
-            const invoiceRes = await fetch('/api/invoices', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(invoicePayload)
-            });
-
-            const invoiceData = await invoiceRes.json();
-
-            if (!invoiceRes.ok) {
-                throw new Error(invoiceData.error || 'Failed to create invoice in Zoho');
-            }
-
-            const createdInvoiceId = invoiceData.invoice.invoice_id;
-            const createdInvoiceNumber = invoiceData.invoice.invoice_number;
-
-            // 2. Create Delhivery Shipment
-            // Pull the exact total calculate from Zoho to ensure taxes match 100% on the shipping label
-            const zohoCalculatedTotal = invoiceData.invoice.total || grandTotal;
-
-            const resolvedFinalPrice = formData.shipping_final_price !== undefined ? formData.shipping_final_price : zohoCalculatedTotal;
+            // Create Delhivery Shipment
+            const resolvedFinalPrice = formData.shipping_final_price !== undefined ? formData.shipping_final_price : grandTotal;
 
             const shipmentData: ShipmentData = {
                 name: formData.customer_name,
                 add: formData.phone ? `${formData.address}, Ph: ${formData.country_code} ${formData.phone}` : formData.address,
-                pin: parseInt(formData.pincode, 10), // Cast to integer per Delhivery API doc
+                pin: parseInt(formData.pincode, 10),
                 city: formData.city,
                 state: formData.state,
                 country: formData.country,
                 phone: `${formData.country_code}${formData.phone}`,
-                order: createdInvoiceNumber, // Use Zoho Invoice Number as Order ID
+                order: formData.orderId,
                 payment_mode: formData.payment_mode,
                 total_amount: resolvedFinalPrice,
                 cod_amount: formData.payment_mode === 'COD' ? resolvedFinalPrice : 0,
                 weight: formData.weight,
                 shipping_mode: formData.shipping_mode,
                 products_desc: formData.shipping_item_desc || "Spritual Items",
-                quantity: "1", // Delhivery expects this as a explicitly "1" string in B2C
+                quantity: "1",
             };
 
-            // Only append optional fields if they actually have a value to prevent Delhivery backend crashes on empty strings
-            if (formData.fragile) {
-                shipmentData.fragile_shipment = "true";
-            }
-            if (formData.length) {
-                shipmentData.shipment_length = formData.length;
-            }
-            if (formData.width) {
-                shipmentData.shipment_width = formData.width;
-            }
-            if (formData.height) {
-                shipmentData.shipment_height = formData.height;
-            }
+            if (formData.fragile) shipmentData.fragile_shipment = "true";
+            if (formData.length) shipmentData.shipment_length = formData.length;
+            if (formData.width) shipmentData.shipment_width = formData.width;
+            if (formData.height) shipmentData.shipment_height = formData.height;
 
             const finalShipmentPayload: any = {
                 ...shipmentData,
@@ -244,12 +168,9 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             const shipmentResult = await shipmentRes.json();
 
             if (!shipmentRes.ok || !shipmentResult.success) {
-                // Even if it failed, we generated an invoice. 
-                console.warn("Shipment creation failed, but invoice was created.", shipmentResult);
                 let errorStr = 'Failed to create Delhivery shipment.';
 
                 if (shipmentResult.rmk) {
-                    // Delhivery B2C API uses "rmk" for the root error string
                     errorStr = shipmentResult.rmk;
                 } else if (shipmentResult.error && typeof shipmentResult.error === 'string') {
                     errorStr = shipmentResult.error;
@@ -259,18 +180,27 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                     errorStr = shipmentResult.packages[0].remarks;
                 }
 
-                throw new Error(`Zoho Invoice Created (#${createdInvoiceNumber}), but Delhivery Shipment Failed: ${errorStr}`);
+                throw new Error(`Delhivery Shipment Failed: ${errorStr}`);
             }
 
             const generatedWaybill = shipmentResult.packages[0].waybill;
 
             // Save to tracking history
-            saveWaybillToHistory(generatedWaybill, createdInvoiceNumber, formData.customer_name);
+            saveWaybillToHistory(generatedWaybill, formData.orderId, formData.customer_name);
 
-            // 3. Update state and proceed
+            // Update order status in DB to SHIPPED and store waybill / labelUrl
+            await fetch(`/api/orders/${formData.orderId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: 'SHIPPED',
+                    waybill: generatedWaybill,
+                    shippingCost: shippingCost || 0
+                })
+            });
+
+            // Update state and proceed
             updateForm({
-                invoiceId: createdInvoiceId,
-                orderId: createdInvoiceNumber,
                 waybill: generatedWaybill
             });
 
@@ -287,7 +217,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
     return (
         <div className="form-section animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h3 className="section-title">
-                <span className="section-icon">🔍</span> Final Review & Confirmation
+                <span className="section-icon">🔍</span> Confirm Shipping
             </h3>
 
             {errorMsg && (
@@ -303,101 +233,16 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                     <p className="font-medium">Calculating shipping estimates & routing...</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                    {/* Left Column - Invoice Details */}
-                    <div className="bg-white dark:bg-[#16161f] border border-gray-200 dark:border-[#2a2a38] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-full">
+                    <div className="bg-white dark:bg-[#16161f] border border-gray-200 dark:border-[#2a2a38] rounded-2xl p-6 shadow-sm">
                         <h4 className="text-gray-900 dark:text-accent font-bold mb-5 border-b border-gray-100 dark:border-[#2a2a38] pb-3 flex items-center gap-2 text-lg">
-                            📄 Invoice Summary
-                        </h4>
-
-                        <div className="text-sm space-y-3 text-gray-600 dark:text-gray-300">
-                            <div className="bg-gray-50 dark:bg-[#1c1c28] p-3.5 rounded-xl border border-gray-100 dark:border-transparent flex justify-between items-center">
-                                <span className="text-gray-500 font-medium">Customer</span>
-                                <strong className="text-gray-900 dark:text-white font-semibold flex items-center gap-1.5">
-                                    👤 {formData.customer_name}
-                                </strong>
-                            </div>
-                            <div className="space-y-2 px-1 py-1">
-                                <p className="flex items-start justify-between"><span className="text-gray-500 font-medium">Address</span> <span className="text-right max-w-[200px] leading-tight">{formData.address}</span></p>
-                                <p className="flex justify-between"><span className="text-gray-500 font-medium">Location</span> <span className="text-right font-medium">{formData.city}, {formData.state} {formData.pincode}</span></p>
-                                <p className="flex justify-between"><span className="text-gray-500 font-medium">Phone</span> <span className="text-right">{formData.country_code} {formData.phone}</span></p>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 pt-5 border-t border-gray-100 dark:border-[#2a2a38]">
-                            <h5 className="text-xs uppercase text-gray-400 mb-3 font-bold tracking-wider">Line Items ({formData.invoice_items.length})</h5>
-
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left mb-4">
-                                    <thead className="text-xs text-gray-500 bg-gray-50 dark:bg-[#1c1c28] uppercase border-b border-gray-100 dark:border-[#2a2a38]">
-                                        <tr>
-                                            <th className="px-2 py-2 rounded-l-lg font-semibold">Item</th>
-                                            <th className="px-2 py-2 font-semibold text-center">Qty</th>
-                                            <th className="px-2 py-2 font-semibold text-right">Tax</th>
-                                            <th className="px-2 py-2 rounded-r-lg font-semibold text-right">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100 dark:divide-[#2a2a38]">
-                                        {formData.invoice_items.map((it, idx) => {
-                                            const displayName = it.carat_size != null
-                                                ? `${it.name} ${it.carat_size.toFixed(2)} carat`
-                                                : it.name;
-                                            return (
-                                                <tr key={idx} className="text-gray-700 dark:text-gray-300">
-                                                    <td className="px-2 py-2.5 font-medium">{displayName}</td>
-                                                    <td className="px-2 py-2.5 text-center">{it.quantity}</td>
-                                                    <td className="px-2 py-2.5 text-right text-xs text-gray-500">{it.tax_amount ? `₹${it.tax_amount.toFixed(2)}` : '-'}</td>
-                                                    <td className="px-2 py-2.5 text-right font-medium text-gray-900 dark:text-white">₹{((it.item_total || 0) + (it.tax_amount || 0)).toFixed(2)}</td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {totalTax > 0 && (
-                                <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm pb-3 px-2">
-                                    <span className="font-medium">Total Tax</span>
-                                    <span>₹{totalTax.toFixed(2)}</span>
-                                </div>
-                            )}
-                            {shippingCharge > 0 && (
-                                <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm pb-1 px-2">
-                                    <span className="font-medium">Shipping Charges</span>
-                                    <span>₹{shippingCharge.toFixed(2)}</span>
-                                </div>
-                            )}
-                            {codCharge > 0 && (
-                                <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm pb-3 px-2">
-                                    <span className="font-medium">COD Charges</span>
-                                    <span>₹{codCharge.toFixed(2)}</span>
-                                </div>
-                            )}
-                            <div className="flex justify-between font-bold text-gray-900 dark:text-white pt-3 border-t border-gray-200 dark:border-[#2a2a38] border-dashed text-lg px-2 bg-gray-50 dark:bg-transparent rounded-b-lg">
-                                <span>Grand Total</span>
-                                <span className="text-accent">₹{grandTotal.toFixed(2)}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Column - Shipping Details */}
-                    <div className="bg-white dark:bg-[#16161f] border border-gray-200 dark:border-[#2a2a38] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <h4 className="text-gray-900 dark:text-accent font-bold mb-5 border-b border-gray-100 dark:border-[#2a2a38] pb-3 flex items-center gap-2 text-lg">
-                            🚚 Shipping Routing
+                            🚚 Shipping Routing ({formData.orderId})
                         </h4>
 
                         <div className="text-sm space-y-4 text-gray-600 dark:text-gray-300">
                             <div className="flex justify-between items-center bg-gray-50 dark:bg-[#1c1c28] p-3.5 rounded-xl border border-gray-100 dark:border-transparent">
-                                <span className="text-gray-500 font-medium">Serviceability Status</span>
-                                {formData.isPincodeServiceable ?
-                                    <span className="text-green-700 bg-green-100 dark:bg-green-500/20 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-green-200 dark:border-green-500/30 shadow-sm flex items-center gap-1.5">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Serviceable
-                                    </span> :
-                                    <span className="text-red-700 bg-red-100 dark:bg-red-500/20 dark:text-red-400 px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-red-200 dark:border-red-500/30 flex items-center gap-1.5">
-                                        ✗ Verify Pincode
-                                    </span>
-                                }
+                                <span className="text-gray-500 font-medium">Destination</span>
+                                <span className="font-semibold text-gray-900 dark:text-white uppercase tracking-wide text-xs">{formData.city}, {formData.state} {formData.pincode}</span>
                             </div>
 
                             <div className="space-y-3 px-1 py-1">
@@ -408,7 +253,6 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                             </div>
 
                             <div className="mt-6 p-5 bg-gradient-to-br from-indigo-50 to-white dark:from-[#1c1c28] dark:to-[#22222e] rounded-xl border border-indigo-100 dark:border-accent/30 shadow-sm relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
                                 <h5 className="text-xs uppercase text-accent mb-4 font-bold tracking-widest flex items-center gap-2">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                     Delhivery Estimates
@@ -426,7 +270,6 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                             </div>
                         </div>
                     </div>
-
                 </div>
             )}
 
@@ -437,12 +280,12 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 <button
                     className="btn btn-submit w-auto px-8"
                     onClick={handleConfirm}
-                    disabled={loadingPreview || submitting || formData.isPincodeServiceable === false}
+                    disabled={loadingPreview || submitting}
                 >
                     {submitting ? (
                         <><span className="btn-spinner border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2 inline-block"></span> Processing...</>
                     ) : (
-                        'Confirm & Create Order ➔'
+                        'Schedule Shipment ➔'
                     )}
                 </button>
             </div>

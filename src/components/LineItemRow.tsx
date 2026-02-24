@@ -8,6 +8,7 @@ interface LineItemRowProps {
     index: number;
     zohoItems?: ZohoItem[];
     zohoTaxes?: ZohoTax[];
+    isInterstate?: boolean;
     onChange: (index: number, updates: Partial<InvoiceItem>) => void;
     onRemove: (index: number) => void;
     canRemove: boolean;
@@ -18,6 +19,7 @@ export default function LineItemRow({
     index,
     zohoItems = [],
     zohoTaxes = [],
+    isInterstate = true,
     onChange,
     onRemove,
     canRemove,
@@ -50,8 +52,15 @@ export default function LineItemRow({
                             if (matched) {
                                 // Auto-populate other fields
                                 if (matched.description) updates.description = matched.description;
-                                if (matched.rate) updates.price = matched.rate;
+                                if (matched.rate) updates.final_price = matched.rate;
                                 if (matched.hsn_or_sac) updates.hsn_or_sac = matched.hsn_or_sac;
+
+                                // Auto-apply tax preference (prefer intra/GST or inter/IGST based on state)
+                                const taxSpec = isInterstate ? 'inter' : 'intra';
+                                const taxPref = matched.item_tax_preferences?.find(t => t.tax_specification === taxSpec) || matched.item_tax_preferences?.[0];
+                                if (taxPref && taxPref.tax_id) {
+                                    updates.tax_id = taxPref.tax_id;
+                                }
                             }
                             onChange(index, updates);
                         }}
@@ -128,9 +137,20 @@ export default function LineItemRow({
                     >
                         <option value="" disabled>Select tax…</option>
                         <option value="NO_TAX">No Tax (0%)</option>
-                        {zohoTaxes.map(t => (
-                            <option key={t.tax_id} value={t.tax_id}>{t.tax_name} ({t.tax_percentage}%)</option>
-                        ))}
+                        {zohoTaxes
+                            .filter(t => {
+                                // Filter dropdown to only show appropriate taxes for the state
+                                const name = t.tax_name.toUpperCase();
+                                if (isInterstate) {
+                                    return name.includes('IGST') || (!name.includes('GST') && t.tax_type === 'tax');
+                                } else {
+                                    // Intrastate: hide IGST, show GST/CGST/tax_groups
+                                    return !name.includes('IGST');
+                                }
+                            })
+                            .map(t => (
+                                <option key={t.tax_id} value={t.tax_id}>{t.tax_name} ({t.tax_percentage}%)</option>
+                            ))}
                     </select>
                 </div>
 

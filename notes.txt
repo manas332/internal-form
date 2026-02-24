@@ -1,0 +1,16 @@
+a) 
+b) Label: vishal sir (to be choosen from dropdown)
+
+
+3 types of people
+a) sales -> invoice
+b) management (delhivery label)
+c) admin control (read grivences, update grivences, mail grivences)
+
+Add option of shipping charges of Rs 100
+COD charges on Rs 50 (both editable)
+
+
+3% all crystals
+0.25% gemstones
+0% rudrakshas

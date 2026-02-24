@@ -153,6 +153,64 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
                 </div>
             </div>
 
+            {/* Optional Overrides */}
+            <div className="mt-8">
+                <h4 className="text-gray-900 dark:text-accent font-bold mb-4 border-b border-gray-100 dark:border-[#2a2a38] pb-2 flex items-center gap-2">
+                    🏷️ Label Overrides (Optional)
+                </h4>
+                <p className="text-xs text-gray-500 mb-4">
+                    Leave blank to use default safe values (hides seller info, shows "Spritual Items" & calculates final price).
+                </p>
+                <div className="form-grid-2">
+                    <div className="form-group">
+                        <label>Custom Sender Name</label>
+                        <input
+                            className="form-input"
+                            value={formData.shipping_seller_name || ''}
+                            onChange={(e) => updateForm({ shipping_seller_name: e.target.value })}
+                            placeholder="e.g. Vendor"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Custom Sender Phone</label>
+                        <input
+                            className="form-input"
+                            value={formData.shipping_seller_phone || ''}
+                            onChange={(e) => updateForm({ shipping_seller_phone: e.target.value })}
+                            placeholder="e.g. 9876543210"
+                        />
+                    </div>
+                    <div className="form-group col-span-1 md:col-span-2">
+                        <label>Custom Sender Address</label>
+                        <input
+                            className="form-input"
+                            value={formData.shipping_seller_address || ''}
+                            onChange={(e) => updateForm({ shipping_seller_address: e.target.value })}
+                            placeholder="e.g. Haryana"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Custom Item Description</label>
+                        <input
+                            className="form-input"
+                            value={formData.shipping_item_desc || ''}
+                            onChange={(e) => updateForm({ shipping_item_desc: e.target.value })}
+                            placeholder='Default: "Spritual Items"'
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Custom Final Price (₹)</label>
+                        <input
+                            className="form-input"
+                            type="number"
+                            value={formData.shipping_final_price === undefined ? '' : formData.shipping_final_price}
+                            onChange={(e) => updateForm({ shipping_final_price: e.target.value ? Number(e.target.value) : undefined })}
+                            placeholder="Defaults to invoice total"
+                        />
+                    </div>
+                </div>
+            </div>
+
             <div className="mt-8 flex justify-between">
                 <button className="btn btn-secondary" onClick={onPrev}>
                     🡨 Back

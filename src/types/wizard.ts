@@ -41,6 +41,10 @@ export interface CombinedFormData {
     notes: string;
     terms: string;
 
+    // --- Added for Shipping/COD Charges ---
+    include_shipping: boolean;
+    include_cod: boolean;
+
     // --- Step 3: Shipping ---
     warehouse: Warehouse | string;
     shipping_mode: 'Surface' | 'Express';
@@ -58,6 +62,13 @@ export interface CombinedFormData {
     waybill?: string;
     labelUrl?: string; // S3 link for shipping label
     orderId?: string; // Unique reference num generated
+
+    // --- Optional Shipping Overrides ---
+    shipping_seller_name?: string;
+    shipping_seller_phone?: string;
+    shipping_seller_address?: string;
+    shipping_item_desc?: string;
+    shipping_final_price?: number;
 }
 
 export const INITIAL_WIZARD_STATE: CombinedFormData = {
@@ -85,6 +96,8 @@ export const INITIAL_WIZARD_STATE: CombinedFormData = {
     adjustment_description: '',
     notes: 'Thanks for your business.',
     terms: 'Terms and conditions apply.',
+    include_shipping: true,
+    include_cod: false,
     warehouse: 'ganpati jaipur',
     shipping_mode: 'Surface',
     payment_mode: 'Prepaid',
@@ -94,4 +107,11 @@ export const INITIAL_WIZARD_STATE: CombinedFormData = {
     height: undefined,
     fragile: false,
     products_desc: '',
+
+    // Optional Shipping Overrides
+    shipping_seller_name: '',
+    shipping_seller_phone: '',
+    shipping_seller_address: '',
+    shipping_item_desc: '',
+    shipping_final_price: undefined,
 };

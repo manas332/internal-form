@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
                 if (item.product_id) cleaned.product_id = item.product_id;
                 if (item.description) cleaned.description = item.description;
                 if (item.discount) cleaned.discount = Number(item.discount);
-                if (item.tax_id) cleaned.tax_id = item.tax_id;
+                if (item.tax_id && item.tax_id !== 'NO_TAX') cleaned.tax_id = item.tax_id;
                 if (item.hsn_or_sac) cleaned.hsn_or_sac = item.hsn_or_sac;
                 if (item.unit) cleaned.unit = item.unit;
 

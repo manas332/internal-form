@@ -15,6 +15,11 @@ export interface ZohoItem {
     description: string;
     rate: number;
     hsn_or_sac: string;
+    item_tax_preferences?: Array<{
+        tax_specification: string;
+        tax_id: string;
+        tax_percentage: number;
+    }>;
 }
 
 export interface ZohoTax {
@@ -143,7 +148,9 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
     const totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
     const totalDiscount = Number(formData.discount) || 0;
     const totalAdjustment = Number(formData.adjustment) || 0;
-    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment;
+    const shippingCharge = formData.include_shipping ? 100 : 0;
+    const codCharge = formData.include_cod ? 50 : 0;
+    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment + shippingCharge + codCharge;
 
     // Add initial item if empty
     useEffect(() => {
@@ -194,6 +201,7 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                         item={item}
                         zohoItems={zohoItems}
                         zohoTaxes={zohoTaxes}
+                        isInterstate={formData.state !== 'Haryana'}
                         onChange={handleItemChange}
                         onRemove={() => removeItem(index)}
                         canRemove={formData.invoice_items.length > 1}
@@ -253,6 +261,32 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                             onChange={(e) => updateForm({ adjustment: e.target.value })}
                             placeholder="0.00"
                         />
+                    </div>
+
+                    <div className="total-row items-center mt-2">
+                        <label className="flex items-center gap-2 cursor-pointer cursor-checkbox">
+                            <input
+                                type="checkbox"
+                                checked={formData.include_shipping ?? true}
+                                onChange={(e) => updateForm({ include_shipping: e.target.checked })}
+                                className="form-checkbox h-4 w-4 text-accent rounded border-gray-300 dark:border-gray-600 focus:ring-accent"
+                            />
+                            <span className="text-sm">Shipping Charges (₹100)</span>
+                        </label>
+                        <span>{formData.include_shipping ? '₹100.00' : '₹0.00'}</span>
+                    </div>
+
+                    <div className="total-row items-center border-b border-gray-100 dark:border-[#2a2a38] pb-2 mb-2">
+                        <label className="flex items-center gap-2 cursor-pointer cursor-checkbox">
+                            <input
+                                type="checkbox"
+                                checked={formData.include_cod ?? false}
+                                onChange={(e) => updateForm({ include_cod: e.target.checked })}
+                                className="form-checkbox h-4 w-4 text-accent rounded border-gray-300 dark:border-gray-600 focus:ring-accent"
+                            />
+                            <span className="text-sm">COD Charges (₹50)</span>
+                        </label>
+                        <span>{formData.include_cod ? '₹50.00' : '₹0.00'}</span>
                     </div>
                     <div className="total-row total-grand">
                         <span>Invoice Total</span>

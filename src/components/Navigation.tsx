@@ -31,10 +31,22 @@ export default function Navigation() {
                         Create Order
                     </Link>
                     <Link
+                        href="/schedule-order"
+                        className={`nav-link ${pathname === '/schedule-order' ? 'active' : ''}`}
+                    >
+                        Schedule Order
+                    </Link>
+                    <Link
                         href="/tracking"
                         className={`nav-link ${pathname === '/tracking' ? 'active' : ''}`}
                     >
                         Track Orders
+                    </Link>
+                    <Link
+                        href="/grievance"
+                        className={`nav-link ${pathname === '/grievance' ? 'active' : ''}`}
+                    >
+                        Grievances
                     </Link>
                 </div>
             </div>

@@ -17,9 +17,8 @@ interface Props {
 export default function CustomerStep({ formData, updateForm, onNext }: Props) {
     const [checkingPincode, setCheckingPincode] = useState(false);
 
-    const handlePincodeBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-        const pin = e.target.value;
-        if (pin.length !== 6) return;
+    const checkPincodeServiceability = async (pin: string) => {
+        if (!pin || pin.length !== 6) return;
 
         setCheckingPincode(true);
         try {
@@ -66,6 +65,12 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
         }
     };
 
+    const handlePincodeBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+        const pin = e.target.value;
+        if (pin.length !== 6) return;
+        await checkPincodeServiceability(pin);
+    };
+
     const handleNext = () => {
         const result = customerStepSchema.safeParse(formData);
         if (!result.success) {
@@ -85,16 +90,42 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
             <div className="mb-6">
                 <label className="text-sm font-medium text-gray-400 mb-2 block">Search Existing Customer</label>
                 <CustomerSearch
-                    onSelect={(customer) => {
+                    onSelect={async (customer) => {
                         const KNOWN_CODES = ['+91', '+1', '+44', '+971', '+61', '+65', '+60', '+49'];
 
-                        // Zoho can store phone under 'mobile' or 'phone', prefer mobile
-                        const rawPhone = ((customer as Customer & { mobile?: string, phone?: string }).mobile)
+                        let rawPhone = ((customer as Customer & { mobile?: string, phone?: string }).mobile)
                             || ((customer as Customer & { mobile?: string, phone?: string }).phone)
                             || '';
 
                         let parsedCountryCode = '+91'; // default India
                         let parsedPhone = '';
+
+                        // Fetch full customer details to get billing_address
+                        try {
+                            const res = await fetch(`/api/customers/${customer.customer_id}`);
+                            if (res.ok) {
+                                const data = await res.json();
+                                if (data.customer) {
+                                    rawPhone = data.customer.mobile || data.customer.phone || rawPhone;
+
+                                    const billing_address = data.customer.billing_address;
+                                    if (billing_address) {
+                                        updateForm({
+                                            address: billing_address.street2 ? `${billing_address.address}\n${billing_address.street2}` : billing_address.address || '',
+                                            pincode: billing_address.zip || '',
+                                            city: billing_address.city || '',
+                                            state: billing_address.state || '',
+                                        });
+
+                                        if (billing_address.zip && billing_address.zip.length === 6) {
+                                            checkPincodeServiceability(billing_address.zip);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Failed to fetch full customer details:', error);
+                        }
 
                         if (rawPhone) {
                             // Strip all non-digit chars except leading +
