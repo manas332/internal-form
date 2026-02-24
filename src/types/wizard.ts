@@ -63,7 +63,7 @@ export interface CombinedFormData {
     labelUrl?: string; // S3 link for shipping label
     orderId?: string; // Unique reference num generated
 
-    // --- Optional Shipping Overrides ---
+    // --- Optional Shipping Overrides (removed from UI; kept in type for backward compat) ---
     shipping_seller_name?: string;
     shipping_seller_phone?: string;
     shipping_seller_address?: string;
@@ -82,7 +82,7 @@ export const INITIAL_WIZARD_STATE: CombinedFormData = {
     state: 'Delhi',
     country: 'India',
     pincode: '',
-    date: '',
+    date: new Date().toISOString().split('T')[0], // Default to today
     due_date: '',
     payment_terms: 0,
     reference_number: '',
@@ -99,19 +99,12 @@ export const INITIAL_WIZARD_STATE: CombinedFormData = {
     include_shipping: true,
     include_cod: false,
     warehouse: 'ganpati jaipur',
-    shipping_mode: 'Surface',
+    shipping_mode: 'Express',
     payment_mode: 'Prepaid',
-    weight: 0,
+    weight: 200,
     length: undefined,
     width: undefined,
     height: undefined,
     fragile: false,
-    products_desc: '',
-
-    // Optional Shipping Overrides
-    shipping_seller_name: '',
-    shipping_seller_phone: '',
-    shipping_seller_address: '',
-    shipping_item_desc: '',
-    shipping_final_price: undefined,
+    products_desc: 'Spiritual Items',
 };

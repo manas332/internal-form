@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
+import { printDelhiveryLabel } from '@/lib/printLabel';
 
 interface Props {
     formData: CombinedFormData;
@@ -49,19 +50,10 @@ export default function ConfirmationStep({ formData, onReset }: Props) {
         if (!formData.waybill) return;
         setDownloadingLabel(true);
         try {
-            const res = await fetch(`/api/delhivery/label?waybill=${formData.waybill}&pdf_size=A4`);
-            if (!res.ok) throw new Error('Failed to get label link');
-            const data = await res.json();
-
-            if (data.packages_found > 0 && data.packages[0].pdf_download_link) {
-                // Since it returns an S3 link (often HTTP but needs to be opened), we can just open it in new tab
-                window.open(data.packages[0].pdf_download_link, '_blank');
-            } else {
-                alert('Label generation pending or failed on Delhivery side.');
-            }
+            await printDelhiveryLabel(formData.waybill);
         } catch (e) {
             console.error(e);
-            alert('Error fetching label.');
+            alert(e instanceof Error ? e.message : 'Error printing label.');
         } finally {
             setDownloadingLabel(false);
         }

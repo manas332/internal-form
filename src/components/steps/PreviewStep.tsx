@@ -115,11 +115,12 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
 
             if (shippingCharge > 0) {
                 finalInvoiceItems.push({
-                    name: 'Shipping Charges',
+                    name: 'Delivery Charges',
                     description: 'Shipping and handling',
                     quantity: 1,
                     price: shippingCharge,
                     tax_id: 'NO_TAX',
+                    tax_exemption_id: '3355221000000049046', // SHIPPING exemption (0%)
                     tax_amount: 0,
                     item_total: shippingCharge,
                 });
@@ -132,10 +133,12 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                     quantity: 1,
                     price: codCharge,
                     tax_id: 'NO_TAX',
+                    tax_exemption_id: '3355221000000049046', // SHIPPING exemption (0%)
                     tax_amount: 0,
                     item_total: codCharge,
                 });
             }
+
 
             const invoicePayload = {
                 customer_id: formData.customer_id,
@@ -174,7 +177,8 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             // Pull the exact total calculate from Zoho to ensure taxes match 100% on the shipping label
             const zohoCalculatedTotal = invoiceData.invoice.total || grandTotal;
 
-            const resolvedFinalPrice = formData.shipping_final_price !== undefined ? formData.shipping_final_price : zohoCalculatedTotal;
+            const resolvedFinalPrice = zohoCalculatedTotal;
+
 
             const shipmentData: ShipmentData = {
                 name: formData.customer_name,
@@ -190,7 +194,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 cod_amount: formData.payment_mode === 'COD' ? resolvedFinalPrice : 0,
                 weight: formData.weight,
                 shipping_mode: formData.shipping_mode,
-                products_desc: formData.shipping_item_desc || "Spritual Items",
+                products_desc: formData.products_desc || "Spiritual Items",
                 quantity: "1", // Delhivery expects this as a explicitly "1" string in B2C
             };
 
@@ -208,29 +212,19 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 shipmentData.shipment_height = formData.height;
             }
 
+            // Always hide seller info on the shipping label
             const finalShipmentPayload: any = {
                 ...shipmentData,
+                seller_name: " ",
+                seller_add: " ",
+                seller_inv: " ",
+                return_name: " ",
+                return_add: " ",
+                return_phone: " ",
+                return_city: " ",
+                return_state: " ",
+                return_country: " ",
             };
-
-            if (formData.shipping_seller_name || formData.shipping_seller_address || formData.shipping_seller_phone) {
-                finalShipmentPayload.return_name = formData.shipping_seller_name || " ";
-                finalShipmentPayload.return_pin = 302001;
-                finalShipmentPayload.return_city = "Jaipur";
-                finalShipmentPayload.return_phone = formData.shipping_seller_phone || " ";
-                finalShipmentPayload.return_state = "Haryana";
-                finalShipmentPayload.return_add = formData.shipping_seller_address || " ";
-                finalShipmentPayload.return_country = "India";
-            } else {
-                finalShipmentPayload.seller_name = " ";
-                finalShipmentPayload.seller_add = " ";
-                finalShipmentPayload.seller_inv = " ";
-                finalShipmentPayload.return_name = " ";
-                finalShipmentPayload.return_add = " ";
-                finalShipmentPayload.return_phone = " ";
-                finalShipmentPayload.return_city = " ";
-                finalShipmentPayload.return_state = " ";
-                finalShipmentPayload.return_country = " ";
-            }
 
             const shipmentRes = await fetch('/api/delhivery/shipment', {
                 method: 'POST',

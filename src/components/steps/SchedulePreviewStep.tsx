@@ -107,7 +107,8 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
             }
 
             // Create Delhivery Shipment
-            const resolvedFinalPrice = formData.shipping_final_price !== undefined ? formData.shipping_final_price : grandTotal;
+            const resolvedFinalPrice = grandTotal;
+
 
             const shipmentData: ShipmentData = {
                 name: formData.customer_name,
@@ -123,7 +124,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 cod_amount: formData.payment_mode === 'COD' ? resolvedFinalPrice : 0,
                 weight: formData.weight,
                 shipping_mode: formData.shipping_mode,
-                products_desc: formData.shipping_item_desc || "Spritual Items",
+                products_desc: formData.products_desc || "Spiritual Items",
                 quantity: "1",
             };
 
@@ -132,29 +133,19 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
             if (formData.width) shipmentData.shipment_width = formData.width;
             if (formData.height) shipmentData.shipment_height = formData.height;
 
+            // Always hide seller info on the shipping label
             const finalShipmentPayload: any = {
                 ...shipmentData,
+                seller_name: " ",
+                seller_add: " ",
+                seller_inv: " ",
+                return_name: " ",
+                return_add: " ",
+                return_phone: " ",
+                return_city: " ",
+                return_state: " ",
+                return_country: " ",
             };
-
-            if (formData.shipping_seller_name || formData.shipping_seller_address || formData.shipping_seller_phone) {
-                finalShipmentPayload.return_name = formData.shipping_seller_name || " ";
-                finalShipmentPayload.return_pin = 302001;
-                finalShipmentPayload.return_city = "Jaipur";
-                finalShipmentPayload.return_phone = formData.shipping_seller_phone || " ";
-                finalShipmentPayload.return_state = "Haryana";
-                finalShipmentPayload.return_add = formData.shipping_seller_address || " ";
-                finalShipmentPayload.return_country = "India";
-            } else {
-                finalShipmentPayload.seller_name = " ";
-                finalShipmentPayload.seller_add = " ";
-                finalShipmentPayload.seller_inv = " ";
-                finalShipmentPayload.return_name = " ";
-                finalShipmentPayload.return_add = " ";
-                finalShipmentPayload.return_phone = " ";
-                finalShipmentPayload.return_city = " ";
-                finalShipmentPayload.return_state = " ";
-                finalShipmentPayload.return_country = " ";
-            }
 
             const shipmentRes = await fetch('/api/delhivery/shipment', {
                 method: 'POST',

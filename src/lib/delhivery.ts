@@ -123,7 +123,7 @@ export async function generateShippingLabel(waybill: string, pdfSize: string = '
     const baseUrl = getBaseUrl();
     const url = new URL(`${baseUrl}/api/p/packing_slip`);
     url.searchParams.append('wbns', waybill);
-    url.searchParams.append('pdf', 'true');
+    url.searchParams.append('pdf', 'false');
     url.searchParams.append('pdf_size', pdfSize);
 
     const res = await fetch(url.toString(), {

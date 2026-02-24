@@ -81,7 +81,9 @@ export interface InvoiceItem {
   price: number;
   discount?: number;
   tax_id?: string;
+  tax_exemption_id?: string; // Zoho tax exemption ID (e.g. SHIPPING exemption)
   tax_amount?: number; // UI only
+
   item_total?: number;
   hsn_or_sac?: string;
   unit?: string;

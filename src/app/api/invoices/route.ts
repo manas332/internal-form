@@ -47,7 +47,14 @@ export async function POST(request: NextRequest) {
                 if (item.product_id) cleaned.product_id = item.product_id;
                 if (item.description) cleaned.description = item.description;
                 if (item.discount) cleaned.discount = Number(item.discount);
-                if (item.tax_id && item.tax_id !== 'NO_TAX') cleaned.tax_id = item.tax_id;
+                // Explicitly send IGST0 (0%) tax_id when NO_TAX — prevents Zoho from applying its default tax
+                if (item.tax_id && item.tax_id !== 'NO_TAX') {
+                    cleaned.tax_id = item.tax_id;
+                } else {
+                    cleaned.tax_id = '3355221000000032367'; // IGST0 = 0%
+                }
+                // Forward tax exemption if provided (e.g. SHIPPING exemption)
+                if (item.tax_exemption_id) cleaned.tax_exemption_id = item.tax_exemption_id;
                 if (item.hsn_or_sac) cleaned.hsn_or_sac = item.hsn_or_sac;
                 if (item.unit) cleaned.unit = item.unit;
 
@@ -60,6 +67,15 @@ export async function POST(request: NextRequest) {
             customer_id: body.customer_id,
             date: body.date,
             invoice_items: cleanItems,
+            // Suppress the Ship To block on the invoice PDF by sending blank shipping address.
+            // Field is 'street' (not 'address') per Zoho Billing API spec.
+            shipping_address: {
+                street: ' ',
+                city: ' ',
+                state: ' ',
+                zip: ' ',
+                country: ' ',
+            },
         };
 
         // Optional fields
