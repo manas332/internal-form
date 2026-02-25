@@ -5,6 +5,13 @@ import { CombinedFormData } from '@/types/wizard';
 import { ShipmentData } from '@/types/delhivery';
 import stateCodesData from '@/data/state-codes.json';
 
+interface ZohoTax {
+    tax_id: string;
+    tax_name: string;
+    tax_percentage: number;
+    tax_type: string;
+}
+
 interface Props {
     formData: CombinedFormData;
     updateForm: (data: Partial<CombinedFormData>) => void;
@@ -18,13 +25,59 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
     const [loadingPreview, setLoadingPreview] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [zohoTaxes, setZohoTaxes] = useState<ZohoTax[]>([]);
+
+    const isInterstate = formData.state !== 'Haryana';
+
+    useEffect(() => {
+        fetch('/api/zoho/taxes')
+            .then(r => r.ok ? r.json() : [])
+            .then(setZohoTaxes)
+            .catch(() => {/* non-blocking */ });
+    }, []);
+
+    /** Find the right 18% tax_id based on interstate/intrastate. */
+    const resolve18PctTaxId = (): string => {
+        const matched = zohoTaxes.find(t => {
+            const pctMatch = Math.abs(t.tax_percentage - 18) < 0.01;
+            if (!pctMatch) return false;
+            const name = t.tax_name.toUpperCase();
+            return isInterstate ? name.includes('IGST') : !name.includes('IGST');
+        });
+        return matched?.tax_id ?? 'NO_TAX'; // fallback if taxes not loaded yet
+    };
+
+    /** Build a shipping/COD line item with 18% GST inclusive pricing. */
+    const buildChargeItem = (name: string, finalPrice: number, description: string) => {
+        const taxId = resolve18PctTaxId();
+        const preTaxRate = taxId !== 'NO_TAX' ? finalPrice / 1.18 : finalPrice;
+        const taxAmount = taxId !== 'NO_TAX' ? finalPrice - preTaxRate : 0;
+        return {
+            name,
+            description,
+            quantity: 1,
+            price: preTaxRate,
+            final_price: finalPrice,
+            tax_id: taxId,
+            tax_amount: taxAmount,
+            item_total: preTaxRate,
+            zoho_item_id: '__system__', // tells invoice route to skip catalog creation
+        };
+    };
+
+    const deliveryItem = formData.include_shipping ? buildChargeItem('Delivery Charges', 100, 'Shipping and handling') : null;
+    const codItem = formData.include_cod ? buildChargeItem('COD Charges', 50, 'Cash on Delivery fee') : null;
 
     const subtotal = formData.invoice_items.reduce((acc, item) => acc + (item.item_total || 0), 0);
-    const totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
+    let totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
+
+    if (deliveryItem) totalTax += deliveryItem.tax_amount;
+    if (codItem) totalTax += codItem.tax_amount;
+
     const totalDiscount = Number(formData.discount) || 0;
     const totalAdjustment = Number(formData.adjustment) || 0;
-    const shippingCharge = formData.include_shipping ? 100 : 0;
-    const codCharge = formData.include_cod ? 50 : 0;
+    const shippingCharge = deliveryItem ? deliveryItem.price : 0;
+    const codCharge = codItem ? codItem.price : 0;
     const combinedShippingCharge = shippingCharge + codCharge;
     const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment + combinedShippingCharge;
 
@@ -113,30 +166,12 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             // 1. Create Zoho Invoice
             const finalInvoiceItems = [...formData.invoice_items];
 
-            if (shippingCharge > 0) {
-                finalInvoiceItems.push({
-                    name: 'Delivery Charges',
-                    description: 'Shipping and handling',
-                    quantity: 1,
-                    price: shippingCharge,
-                    tax_id: 'NO_TAX',
-                    tax_exemption_id: '3355221000000049046', // SHIPPING exemption (0%)
-                    tax_amount: 0,
-                    item_total: shippingCharge,
-                });
+            if (deliveryItem) {
+                finalInvoiceItems.push(deliveryItem);
             }
 
-            if (codCharge > 0) {
-                finalInvoiceItems.push({
-                    name: 'COD Charges',
-                    description: 'Cash on Delivery fee',
-                    quantity: 1,
-                    price: codCharge,
-                    tax_id: 'NO_TAX',
-                    tax_exemption_id: '3355221000000049046', // SHIPPING exemption (0%)
-                    tax_amount: 0,
-                    item_total: codCharge,
-                });
+            if (codItem) {
+                finalInvoiceItems.push(codItem);
             }
 
 
@@ -358,14 +393,14 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                             )}
                             {shippingCharge > 0 && (
                                 <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm pb-1 px-2">
-                                    <span className="font-medium">Shipping Charges</span>
-                                    <span>₹{shippingCharge.toFixed(2)}</span>
+                                    <span className="font-medium">Delivery Charges (incl. GST)</span>
+                                    <span>₹{(deliveryItem?.final_price || 0).toFixed(2)}</span>
                                 </div>
                             )}
                             {codCharge > 0 && (
                                 <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm pb-3 px-2">
-                                    <span className="font-medium">COD Charges</span>
-                                    <span>₹{codCharge.toFixed(2)}</span>
+                                    <span className="font-medium">COD Charges (incl. GST)</span>
+                                    <span>₹{(codItem?.final_price || 0).toFixed(2)}</span>
                                 </div>
                             )}
                             <div className="flex justify-between font-bold text-gray-900 dark:text-white pt-3 border-t border-gray-200 dark:border-[#2a2a38] border-dashed text-lg px-2 bg-gray-50 dark:bg-transparent rounded-b-lg">

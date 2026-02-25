@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const customerStepSchema = z.object({
+    customer_id: z.string().min(1, 'Please search for and select a customer, or create a new one first'),
     customer_name: z.string().min(1, 'Customer Name is required'),
     email: z.string().email('Invalid email address').or(z.literal('')), // Optional but must be valid if present
     country_code: z.string().min(1, 'Country Code is required'),
@@ -26,10 +27,24 @@ export const invoiceItemsStepSchema = z.object({
         tax_amount: z.number().optional(),
         item_total: z.number().optional(),
         product_id: z.string().optional(),
+        zoho_item_id: z.string().optional(),
         unit: z.string().optional(),
         carat_size: z.number().optional(),
         final_price: z.number().optional(),
-    })).min(1, 'Add at least one item to the invoice'),
+    }))
+        .min(1, 'Add at least one item to the invoice')
+        .superRefine((items, ctx) => {
+            items.forEach((item, i) => {
+                // HSN is mandatory only for new products (not in Zoho catalog yet)
+                if (!item.zoho_item_id && !item.hsn_or_sac) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: 'HSN/SAC is required for new products',
+                        path: [i, 'hsn_or_sac'],
+                    });
+                }
+            });
+        }),
 });
 
 export const shippingStepSchema = z.object({

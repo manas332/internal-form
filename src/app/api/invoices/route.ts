@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createInvoice } from '@/lib/zoho';
+import { createInvoice, createZohoItem } from '@/lib/zoho';
 
 export async function POST(request: NextRequest) {
     try {
@@ -27,8 +27,50 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Clean up invoice items — ensure numbers
-        const cleanItems = body.invoice_items.map(
+        // Auto-create any new items (those without a zoho_item_id) in Zoho's catalog.
+        // This MUST succeed for all items before the invoice is created — failure blocks the invoice.
+        const rawItems: Array<Record<string, unknown>> = body.invoice_items;
+        for (let i = 0; i < rawItems.length; i++) {
+            const item = rawItems[i];
+            if (item.zoho_item_id) continue; // already in Zoho catalog — skip
+
+            // Determine product_type based on HSN SAC code (6-digit SAC codes are services)
+            const hsn = String(item.hsn_or_sac || '');
+            const product_type = hsn.length <= 6 ? 'service' : 'goods';
+
+            try {
+                const { data } = await createZohoItem({
+                    name: String(item.name),
+                    description: item.description ? String(item.description) : undefined,
+                    rate: Number(item.price) || 0,
+                    hsn_or_sac: hsn,
+                    product_type,
+                    tax_id: item.tax_id ? String(item.tax_id) : undefined,
+                });
+                // Stamp the fresh item_id back so the invoice line links to it
+                if (data?.item?.item_id) {
+                    rawItems[i] = { ...item, zoho_item_id: data.item.item_id };
+                }
+            } catch (err) {
+                const message = err instanceof Error ? err.message : 'Unknown error';
+                console.error(`Failed to create Zoho item for row ${i + 1}:`, message);
+                return NextResponse.json(
+                    { error: `Could not save new product "${item.name}" to Zoho: ${message}` },
+                    { status: 400 }
+                );
+            }
+        }
+
+        // Determine if interstate based on place of supply (Haryana = 06 or HR)
+        const pos = String(body.place_of_supply || '').toUpperCase();
+        const isInterstate = pos !== 'HR' && pos !== 'HARYANA' && pos !== '06';
+
+        // Fallback 0% tax IDs
+        const IGST0 = '3355221000000032367';
+        const GST0 = '3355221000000032439';
+        const defaultTaxId = isInterstate ? IGST0 : GST0;
+
+        const cleanItems = rawItems.map(
             (item: Record<string, unknown>) => {
                 // Append carat size to the item name when provided
                 const caratSize = item.carat_size != null && item.carat_size !== ''
@@ -44,16 +86,23 @@ export async function POST(request: NextRequest) {
                     price: Number(item.price) || 0,
                 };
 
-                if (item.product_id) cleaned.product_id = item.product_id;
+                // Link to catalog product if ID is known (and not a system charge)
+                const catalogId = item.zoho_item_id || item.product_id;
+                if (catalogId && catalogId !== '__system__') {
+                    cleaned.product_id = catalogId;
+                }
+
                 if (item.description) cleaned.description = item.description;
                 if (item.discount) cleaned.discount = Number(item.discount);
-                // Explicitly send IGST0 (0%) tax_id when NO_TAX — prevents Zoho from applying its default tax
+
+                // Explicitly send correct tax_id. 
+                // Default to correct 0% ID only if no tax_id is provided or it's 'NO_TAX'.
                 if (item.tax_id && item.tax_id !== 'NO_TAX') {
                     cleaned.tax_id = item.tax_id;
                 } else {
-                    cleaned.tax_id = '3355221000000032367'; // IGST0 = 0%
+                    cleaned.tax_id = defaultTaxId;
                 }
-                // Forward tax exemption if provided (e.g. SHIPPING exemption)
+
                 if (item.tax_exemption_id) cleaned.tax_exemption_id = item.tax_exemption_id;
                 if (item.hsn_or_sac) cleaned.hsn_or_sac = item.hsn_or_sac;
                 if (item.unit) cleaned.unit = item.unit;

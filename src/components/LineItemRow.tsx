@@ -3,6 +3,96 @@
 import type { InvoiceItem } from '@/types/invoice';
 import type { ZohoItem, ZohoTax } from './steps/InvoiceItemsStep';
 
+interface HsnCategory {
+    code: string;
+    name: string;
+    description: string;
+}
+
+const HSN_CATEGORIES: HsnCategory[] = [
+    {
+        code: '14049070',
+        name: 'Rudrakshas',
+        description: 'All Mukhi Rudrakshas, Rudraksha Malas, and other plant-based beads (like Tulsi Malas).',
+    },
+    {
+        code: '05080010',
+        name: 'Gemstones and Raw Crystals',
+        description: 'Precious and semi-precious stones (Ruby, Sapphire, Coral, Pearls), Geodes, and raw crystal clusters.',
+    },
+    {
+        code: '71179090',
+        name: 'Bracelets, Malas and Decorative Items',
+        description: 'Crystal bracelets (Amethyst, Pyrite, etc.), imitation jewelry, 7 Chakra items, and decorative crystal items (rollers, plates).',
+    },
+    {
+        code: '83062990',
+        name: 'Vastu Metal',
+        description: 'Vastu items made of general base metals, iron, or mixed alloys (e.g., metal pyramids, basic statuettes).',
+    },
+    {
+        code: '74198090',
+        name: 'Vastu Copper/Brass',
+        description: 'Premium Vastu items specifically made of copper or brass (e.g., Copper Yantras, Brass Tortoises).',
+    },
+    {
+        code: '44209090',
+        name: 'Vastu Wooden',
+        description: 'Vastu items carved from wood (e.g., Wooden frames, Shriparni wood items).',
+    },
+    {
+        code: '39269090',
+        name: 'Miscellaneous Goods',
+        description: "Catch-all for physical items that don't fit above (e.g., resin items, plastic/acrylic stands, mixed-material novelties).",
+    },
+    {
+        code: '999591',
+        name: 'Poojas and Services',
+        description: 'Astrological consultations, Puja services, and other spiritual services (SAC code).',
+    },
+    {
+        code: '999799',
+        name: 'Miscellaneous Services',
+        description: 'Catch-all for any other non-physical service charges not covered elsewhere (SAC code).',
+    },
+];
+
+/** Tax rate (%) that applies to each HSN/SAC code. */
+const HSN_TAX_RATES: Record<string, number> = {
+    '14049070': 0,    // Rudrakshas
+    '05080010': 0.25, // Gemstones and Raw Crystals
+    '71179090': 3,    // Bracelets, Malas and Decorative Items
+    '83062990': 18,   // Vastu Metal
+    '74198090': 18,   // Vastu Copper/Brass
+    '44209090': 3,    // Vastu Wooden (miscellaneous)
+    '39269090': 3,    // Miscellaneous Goods
+    '999591': 0,    // Poojas and Services
+    '999799': 0,    // Miscellaneous Services
+};
+
+/**
+ * Given an HSN code and available taxes, return the right tax_id.
+ * Returns 'NO_TAX' for 0% categories, otherwise finds the matching
+ * IGST (interstate) or GST (intrastate) tax from Zoho.
+ */
+function resolveTaxIdForHsn(
+    code: string,
+    zohoTaxes: ZohoTax[],
+    isInterstate: boolean
+): string | undefined {
+    const rate = HSN_TAX_RATES[code];
+    if (rate === undefined) return undefined; // unknown code — don't override
+    if (rate === 0) return 'NO_TAX';
+
+    const matched = zohoTaxes.find(t => {
+        const pctMatch = Math.abs(t.tax_percentage - rate) < 0.01;
+        if (!pctMatch) return false;
+        const name = t.tax_name.toUpperCase();
+        return isInterstate ? name.includes('IGST') : !name.includes('IGST');
+    });
+    return matched?.tax_id;
+}
+
 interface LineItemRowProps {
     item: InvoiceItem;
     index: number;
@@ -51,6 +141,7 @@ export default function LineItemRow({
                             const matched = zohoItems.find(z => z.name === val);
                             if (matched) {
                                 // Auto-populate other fields
+                                updates.zoho_item_id = matched.item_id;
                                 if (matched.description) updates.description = matched.description;
                                 if (matched.rate) updates.final_price = matched.rate;
                                 if (matched.hsn_or_sac) updates.hsn_or_sac = matched.hsn_or_sac;
@@ -61,6 +152,9 @@ export default function LineItemRow({
                                 if (taxPref && taxPref.tax_id) {
                                     updates.tax_id = taxPref.tax_id;
                                 }
+                            } else {
+                                // Name edited away from a known item — clear the catalog reference
+                                updates.zoho_item_id = '';
                             }
                             onChange(index, updates);
                         }}
@@ -71,6 +165,12 @@ export default function LineItemRow({
                             <option key={z.item_id || i} value={z.name} />
                         ))}
                     </datalist>
+                    {/* Status badge */}
+                    {item.name && (
+                        item.zoho_item_id
+                            ? <span className="line-item-badge line-item-badge--zoho">✓ In Zoho</span>
+                            : <span className="line-item-badge line-item-badge--new">★ New product</span>
+                    )}
                 </div>
 
                 <div className="line-item-field line-item-desc">
@@ -85,15 +185,42 @@ export default function LineItemRow({
                 </div>
 
                 <div className="line-item-field line-item-hsn">
-                    <label>HSN/SAC</label>
-                    <input
-                        type="text"
+                    <label>HSN/SAC{!item.zoho_item_id && ' *'}</label>
+                    <select
                         className="form-input"
-                        placeholder="HSN code"
                         value={item.hsn_or_sac || ''}
-                        onChange={(e) => onChange(index, { hsn_or_sac: e.target.value })}
-                    />
+                        disabled={!!item.zoho_item_id}
+                        title={
+                            item.zoho_item_id
+                                ? 'HSN is pre-set from Zoho for existing products'
+                                : (HSN_CATEGORIES.find(c => c.code === item.hsn_or_sac)?.description ?? 'Select HSN/SAC category')
+                        }
+                        onChange={(e) => {
+                            const code = e.target.value;
+                            const updates: Partial<InvoiceItem> = { hsn_or_sac: code };
+
+                            // Auto-set tax only for NEW items — existing Zoho items keep their fetched tax
+                            if (!item.zoho_item_id && code) {
+                                const taxId = resolveTaxIdForHsn(code, zohoTaxes, isInterstate);
+                                if (taxId !== undefined) updates.tax_id = taxId;
+                            }
+
+                            onChange(index, updates);
+                        }}
+                    >
+                        <option value="">— Select HSN/SAC —</option>
+                        {HSN_CATEGORIES.map(cat => (
+                            <option key={cat.code} value={cat.code} title={cat.description}>
+                                {cat.name} ({cat.code})
+                            </option>
+                        ))}
+                        {/* Show unknown codes (auto-filled from Zoho) as a labelled fallback */}
+                        {item.hsn_or_sac && !HSN_CATEGORIES.find(c => c.code === item.hsn_or_sac) && (
+                            <option value={item.hsn_or_sac}>{item.hsn_or_sac}</option>
+                        )}
+                    </select>
                 </div>
+
 
                 <div className="line-item-field line-item-carat">
                     <label>Carat Size</label>

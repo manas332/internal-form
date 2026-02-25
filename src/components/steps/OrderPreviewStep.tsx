@@ -1,8 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import stateCodesData from '@/data/state-codes.json';
+
+interface ZohoTax {
+    tax_id: string;
+    tax_name: string;
+    tax_percentage: number;
+    tax_type: string;
+}
 
 interface Props {
     formData: CombinedFormData;
@@ -14,6 +21,45 @@ interface Props {
 export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev }: Props) {
     const [submitting, setSubmitting] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [zohoTaxes, setZohoTaxes] = useState<ZohoTax[]>([]);
+
+    const isInterstate = formData.state !== 'Haryana';
+
+    useEffect(() => {
+        fetch('/api/zoho/taxes')
+            .then(r => r.ok ? r.json() : [])
+            .then(setZohoTaxes)
+            .catch(() => {/* non-blocking */ });
+    }, []);
+
+    /** Find the right 18% tax_id based on interstate/intrastate. */
+    const resolve18PctTaxId = (): string => {
+        const matched = zohoTaxes.find(t => {
+            const pctMatch = Math.abs(t.tax_percentage - 18) < 0.01;
+            if (!pctMatch) return false;
+            const name = t.tax_name.toUpperCase();
+            return isInterstate ? name.includes('IGST') : !name.includes('IGST');
+        });
+        return matched?.tax_id ?? 'NO_TAX'; // fallback if taxes not loaded yet
+    };
+
+    /** Build a shipping/COD line item with 18% GST inclusive pricing. */
+    const buildChargeItem = (name: string, finalPrice: number, description: string) => {
+        const taxId = resolve18PctTaxId();
+        const preTaxRate = taxId !== 'NO_TAX' ? finalPrice / 1.18 : finalPrice;
+        const taxAmount = taxId !== 'NO_TAX' ? finalPrice - preTaxRate : 0;
+        return {
+            name,
+            description,
+            quantity: 1,
+            price: preTaxRate,
+            final_price: finalPrice,
+            tax_id: taxId,
+            tax_amount: taxAmount,
+            item_total: preTaxRate,
+            zoho_item_id: '__system__', // tells invoice route to skip catalog creation
+        };
+    };
 
     const subtotal = formData.invoice_items.reduce((acc, item) => acc + (item.item_total || 0), 0);
     const totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
@@ -27,28 +73,13 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
     const finalInvoiceItems = [...formData.invoice_items];
 
     if (shippingCharge > 0) {
-        finalInvoiceItems.push({
-            name: 'Shipping Charges',
-            description: 'Shipping and handling',
-            quantity: 1,
-            price: shippingCharge,
-            tax_id: 'NO_TAX',
-            tax_amount: 0,
-            item_total: shippingCharge,
-        });
+        finalInvoiceItems.push(buildChargeItem('Delivery Charges', 100, 'Delivery and handling'));
     }
 
     if (codCharge > 0) {
-        finalInvoiceItems.push({
-            name: 'COD Charges',
-            description: 'Cash on Delivery fee',
-            quantity: 1,
-            price: codCharge,
-            tax_id: 'NO_TAX',
-            tax_amount: 0,
-            item_total: codCharge,
-        });
+        finalInvoiceItems.push(buildChargeItem('COD Charges', 50, 'Cash on Delivery fee'));
     }
+
 
     const handleConfirm = async () => {
         setSubmitting(true);

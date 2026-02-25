@@ -1,0 +1,38 @@
+[
+  {
+    "tax_id": "3355221000000032439",
+    "tax_name": "GST0",
+    "tax_percentage": 0,
+    "tax_type": "tax_group",
+    "tax_specific_type": "",
+    "is_inactive": false,
+    "is_default_tax": false,
+    "is_editable": true,
+    "tax_specification": "intra",
+    "diff_rate_reason": "",
+    "start_date": "",
+    "end_date": "",
+    "last_modified_time": "2025-12-30T17:51:34+0530",
+    "status": "Active"
+  },
+  {
+    "tax_id": "3355221000000032367",
+    "tax_name": "IGST0",
+    "tax_percentage": 0,
+    "tax_type": "tax",
+    "tax_specific_type": "igst",
+    "tax_authority_id": "3355221000000032020",
+    "tax_authority_name": "INTD",
+    "output_tax_account_name": "Output IGST",
+    "tax_account_id": "3355221000000032339",
+    "is_inactive": false,
+    "is_default_tax": false,
+    "is_editable": false,
+    "tax_specification": "inter",
+    "diff_rate_reason": "",
+    "start_date": "",
+    "end_date": "",
+    "last_modified_time": "2025-12-30T17:51:34+0530",
+    "status": "Active"
+  }
+]

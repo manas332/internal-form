@@ -271,7 +271,7 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                                 onChange={(e) => updateForm({ include_shipping: e.target.checked })}
                                 className="form-checkbox h-4 w-4 text-accent rounded border-gray-300 dark:border-gray-600 focus:ring-accent"
                             />
-                            <span className="text-sm">Shipping Charges (₹100)</span>
+                            <span className="text-sm">Delivery Charges (₹100 incl. 18% GST)</span>
                         </label>
                         <span>{formData.include_shipping ? '₹100.00' : '₹0.00'}</span>
                     </div>

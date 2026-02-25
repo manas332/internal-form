@@ -183,6 +183,22 @@ export async function createCustomer(body: Record<string, unknown>) {
     return { status: res.status, data };
 }
 
+/**
+ * Update an existing customer (e.g. add billing address, phone).
+ */
+export async function updateCustomer(customerId: string, body: Record<string, unknown>) {
+    const headers = await zohoHeaders();
+
+    const res = await fetch(`${ZOHO_API_BASE}/customers/${customerId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+    return { status: res.status, data };
+}
+
 // ============================================================
 // ITEMS
 // ============================================================
@@ -212,6 +228,47 @@ export async function fetchItems() {
     const data = await res.json();
     return { status: res.status, data: data.items || [] };
 }
+
+/**
+ * Create a new item in Zoho Billing's Items catalog.
+ * Throws if Zoho returns a non-2xx status.
+ */
+export async function createZohoItem(body: {
+    name: string;
+    description?: string;
+    rate: number;
+    hsn_or_sac: string;
+    product_type?: 'goods' | 'service';
+    tax_id?: string;
+}) {
+    const headers = await zohoHeaders();
+
+    const payload: Record<string, unknown> = {
+        name: body.name,
+        rate: body.rate,
+        hsn_or_sac: body.hsn_or_sac,
+        product_type: body.product_type ?? 'goods',
+    };
+    if (body.description) payload.description = body.description;
+    if (body.tax_id && body.tax_id !== 'NO_TAX') payload.tax_id = body.tax_id;
+
+    const res = await fetch(`${ZOHO_API_BASE}/items`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || (data.code !== undefined && data.code !== 0)) {
+        throw new Error(
+            `Failed to create Zoho item "${body.name}": ${data.message || res.status}`
+        );
+    }
+
+    return { status: res.status, data };
+}
+
 
 // ============================================================
 // TAXES

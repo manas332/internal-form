@@ -75,6 +75,8 @@ export interface Address {
 export interface InvoiceItem {
   /** If selecting an existing Zoho product */
   product_id?: string;
+  /** Zoho catalog item_id — present for known items, absent for new products */
+  zoho_item_id?: string;
   name: string;
   description?: string;
   quantity: number;

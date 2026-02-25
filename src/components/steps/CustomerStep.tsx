@@ -16,6 +16,9 @@ interface Props {
 
 export default function CustomerStep({ formData, updateForm, onNext }: Props) {
     const [checkingPincode, setCheckingPincode] = useState(false);
+    // Track whether the currently selected customer had no address when fetched from Zoho
+    const [needsAddressUpdate, setNeedsAddressUpdate] = useState(false);
+    const [savingToZoho, setSavingToZoho] = useState(false);
 
     const checkPincodeServiceability = async (pin: string) => {
         if (!pin || pin.length !== 6) return;
@@ -71,20 +74,57 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
         await checkPincodeServiceability(pin);
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
+        // 1. Zod validation
         const result = customerStepSchema.safeParse(formData);
         if (!result.success) {
-            // Show first error message
             toast.error(result.error.issues[0].message);
             return;
         }
+
+        // 2. If the existing customer had no address, update it in Zoho BEFORE proceeding
+        if (needsAddressUpdate && formData.customer_id) {
+            setSavingToZoho(true);
+            try {
+                const res = await fetch(`/api/customers/${formData.customer_id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        billing_address: {
+                            address: formData.address,
+                            city: formData.city,
+                            state: formData.state,
+                            zip: formData.pincode,
+                            country: 'India',
+                        },
+                        phone: `${formData.country_code}${formData.phone}`,
+                    }),
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    toast.error(`Failed to save address to Zoho: ${data.error || 'Unknown error'}. Please fix and try again.`);
+                    return; // BLOCK — do not proceed if Zoho update failed
+                }
+
+                toast.success('Customer address saved to Zoho ✓');
+                setNeedsAddressUpdate(false);
+            } catch (err) {
+                console.error('Failed to update customer in Zoho:', err);
+                toast.error('Could not reach Zoho to save address. Please check your connection and try again.');
+                return; // BLOCK
+            } finally {
+                setSavingToZoho(false);
+            }
+        }
+
         onNext();
     };
 
     return (
         <div className="form-section animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h3 className="section-title">
-                <span className="section-icon">👤</span> Customer & Invoice Details
+                <span className="section-icon">👤</span> Customer &amp; Invoice Details
             </h3>
 
             <div className="mb-6">
@@ -100,7 +140,36 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                         let parsedCountryCode = '+91'; // default India
                         let parsedPhone = '';
 
-                        // Fetch full customer details to get billing_address
+                        // Reset address-update flag on each new selection
+                        setNeedsAddressUpdate(false);
+
+                        // --- Newly created customer: use prefilled data, skip re-fetch ---
+                        const prefilled = (customer as Customer & { _prefilled?: { address: string; pincode: string; city: string; state: string; phone: string } })._prefilled;
+
+                        if (prefilled) {
+                            // Directly apply data from the creation form
+                            updateForm({
+                                customer_id: customer.customer_id,
+                                customer_name: customer.display_name || '',
+                                email: customer.email || '',
+                                country_code: '+91',
+                                phone: prefilled.phone,
+                                address: prefilled.address,
+                                pincode: prefilled.pincode,
+                                city: prefilled.city,
+                                state: prefilled.state,
+                                gst_treatment: customer.gst_treatment || 'consumer',
+                                isPincodeServiceable: null,
+                            });
+                            // Trigger serviceability check if pincode is present
+                            if (prefilled.pincode.length === 6) {
+                                checkPincodeServiceability(prefilled.pincode);
+                            }
+                            setNeedsAddressUpdate(false);
+                            return; // Skip the Zoho re-fetch entirely
+                        }
+
+                        // --- Existing customer: fetch full details from Zoho ---
                         try {
                             const res = await fetch(`/api/customers/${customer.customer_id}`);
                             if (res.ok) {
@@ -109,7 +178,13 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                                     rawPhone = data.customer.mobile || data.customer.phone || rawPhone;
 
                                     const billing_address = data.customer.billing_address;
-                                    if (billing_address) {
+
+                                    // Check if address is missing or empty
+                                    const hasAddress = billing_address && (
+                                        billing_address.address || billing_address.zip || billing_address.city
+                                    );
+
+                                    if (hasAddress) {
                                         updateForm({
                                             address: billing_address.street2 ? `${billing_address.address}\n${billing_address.street2}` : billing_address.address || '',
                                             pincode: billing_address.zip || '',
@@ -120,6 +195,18 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                                         if (billing_address.zip && billing_address.zip.length === 6) {
                                             checkPincodeServiceability(billing_address.zip);
                                         }
+                                        setNeedsAddressUpdate(false);
+                                    } else {
+                                        // Customer exists in Zoho but has no billing address
+                                        setNeedsAddressUpdate(true);
+                                        // Clear any stale address from a previous selection
+                                        updateForm({
+                                            address: '',
+                                            pincode: '',
+                                            city: '',
+                                            state: 'Delhi',
+                                            isPincodeServiceable: null,
+                                        });
                                     }
                                 }
                             }
@@ -168,7 +255,10 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                             gst_treatment: customer.gst_treatment || 'consumer',
                         });
                     }}
-                    onClear={() => updateForm({ customer_id: '' })}
+                    onClear={() => {
+                        updateForm({ customer_id: '' });
+                        setNeedsAddressUpdate(false);
+                    }}
                     selectedCustomer={
                         formData.customer_id ? {
                             customer_id: formData.customer_id,
@@ -179,6 +269,32 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                     }
                 />
             </div>
+
+            {/* Yellow banner: existing customer with no address on file */}
+            {needsAddressUpdate && formData.customer_id && (
+                <div
+                    style={{
+                        background: 'rgba(234, 179, 8, 0.12)',
+                        border: '1px solid rgba(234, 179, 8, 0.4)',
+                        borderRadius: '8px',
+                        padding: '12px 16px',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px',
+                    }}
+                >
+                    <span style={{ fontSize: '18px', lineHeight: 1.3 }}>⚠️</span>
+                    <div>
+                        <p style={{ fontWeight: 600, color: '#ca8a04', fontSize: '14px', margin: 0 }}>
+                            No address on file in Zoho
+                        </p>
+                        <p style={{ color: '#a16207', fontSize: '13px', margin: '4px 0 0' }}>
+                            This customer exists in Zoho but has no billing address. Fill in the details below — they will be saved to Zoho before proceeding to the next step.
+                        </p>
+                    </div>
+                </div>
+            )}
 
             <div className="form-grid-2">
                 <div className="form-group">
@@ -261,7 +377,7 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                 </div>
 
                 <div className="form-group">
-                    <label>City & State</label>
+                    <label>City &amp; State</label>
                     <div className="flex gap-2">
                         <input
                             className="form-input flex-1"
@@ -309,8 +425,9 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                 <button
                     className="btn btn-submit"
                     onClick={handleNext}
+                    disabled={savingToZoho}
                 >
-                    Next: Add Items ➔
+                    {savingToZoho ? 'Saving to Zoho...' : 'Next: Add Items ➔'}
                 </button>
             </div>
         </div>
