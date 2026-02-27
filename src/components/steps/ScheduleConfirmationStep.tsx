@@ -18,11 +18,10 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
     const [pickupTime, setPickupTime] = useState('11:00:00');
     const [pickupError, setPickupError] = useState('');
 
-    const handleDownloadLabel = async () => {
-        if (!formData.waybill) return;
+    const handleDownloadLabel = async (wb: string) => {
         setDownloadingLabel(true);
         try {
-            await printDelhiveryLabel(formData.waybill);
+            await printDelhiveryLabel(wb);
         } catch (e) {
             console.error(e);
             alert(e instanceof Error ? e.message : 'Error printing label.');
@@ -35,6 +34,7 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
         setCreatingPickup(true);
         setPickupError('');
         try {
+            const packageCount = formData.waybills?.length || 1;
             const res = await fetch('/api/delhivery/pickup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -42,7 +42,7 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
                     pickup_date: pickupDate,
                     pickup_time: pickupTime,
                     pickup_location: formData.warehouse,
-                    expected_package_count: 1
+                    expected_package_count: packageCount
                 })
             });
 
@@ -58,6 +58,12 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
         }
     };
 
+    const displayWaybills = formData.waybills && formData.waybills.length > 0
+        ? formData.waybills
+        : formData.waybill
+            ? [formData.waybill]
+            : [];
+
     return (
         <div className="form-section animate-in fade-in slide-in-from-bottom-4 duration-500 text-center py-8">
 
@@ -67,29 +73,38 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
 
             <h2 className="text-2xl font-bold text-white mb-2">Shipment Scheduled!</h2>
             <p className="text-gray-400 mb-8 max-w-md mx-auto">
-                The shipment label is ready via Delhivery for order {formData.orderId}.
+                {displayWaybills.length > 1
+                    ? `${displayWaybills.length} shipment labels are ready for order ${formData.orderId}.`
+                    : `The shipment label is ready via Delhivery for order ${formData.orderId}.`
+                }
             </p>
 
-            <div className="flex justify-center items-stretch max-w-sm mx-auto mb-10">
-                {/* Shipment Card */}
-                <div className="w-full bg-[#16161f] p-5 rounded-xl border border-accent/30">
-                    <h4 className="text-accent text-sm uppercase tracking-wider mb-1">Delhivery Waybill</h4>
-                    <p className="text-xl font-bold text-white mb-4">{formData.waybill}</p>
-                    <button
-                        className="btn btn-primary w-full"
-                        onClick={handleDownloadLabel}
-                        disabled={downloadingLabel}
-                    >
-                        {downloadingLabel ? 'Fetching...' : '🏷️ Download Label (A4)'}
-                    </button>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-10 text-left">
+                {displayWaybills.map((wb, idx) => (
+                    <div key={wb} className="bg-[#16161f] p-5 rounded-xl border border-accent/30 flex flex-col justify-between">
+                        <div>
+                            <h4 className="text-accent text-xs uppercase tracking-wider mb-1">
+                                {displayWaybills.length > 1 ? `Package ${idx + 1}` : 'Delhivery Waybill'}
+                            </h4>
+                            <p className="text-lg font-mono font-bold text-white mb-4">{wb}</p>
+                        </div>
+                        <button
+                            className="btn btn-primary w-full text-sm py-2"
+                            onClick={() => handleDownloadLabel(wb)}
+                            disabled={downloadingLabel}
+                        >
+                            {downloadingLabel ? 'Fetching...' : '🏷️ Download Label'}
+                        </button>
+                    </div>
+                ))}
             </div>
 
             {/* Pickup Request Section */}
             <div className="max-w-md mx-auto bg-[#16161f] border border-[#2a2a38] rounded-xl p-5 mb-10 text-left">
                 <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
-                    <span>📦</span> Schedule Pickup
+                    <span>📦</span> Schedule Pickup ({displayWaybills.length} {displayWaybills.length === 1 ? 'Package' : 'Packages'})
                 </h4>
+
 
                 {pickupRequested ? (
                     <div className="bg-green-500/10 border border-green-500/30 text-green-400 p-3 rounded-lg text-sm flex items-center gap-2">

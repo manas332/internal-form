@@ -219,6 +219,8 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 items: { lineIndex: number; quantity: number }[];
             }[] = [];
 
+            const allWaybills: string[] = [];
+
             // Prepare all shipment payloads for backend
             // Prepare and send shipments one by one
             const delhiveryShipments = plannedShipments
@@ -300,6 +302,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 const generatedWaybill = result.data?.packages?.[0]?.waybill;
 
                 if (generatedWaybill) {
+                    allWaybills.push(generatedWaybill);
                     saveWaybillToHistory(generatedWaybill, formData.orderId ?? '', formData.customer_name ?? '');
                 }
 
@@ -358,13 +361,15 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     status: nextStatus,
                     selfShipped: anySelf,
                     shipmentsAppend: createdShipmentsForOrder,
-                    waybill: createdShipmentsForOrder.find((s) => s.waybill)?.waybill ?? null,
+                    waybill: allWaybills[0] ?? null,
+                    waybills: allWaybills,
                     shippingCost: createdShipmentsForOrder.reduce((sum, s) => sum + (s.shippingCost || 0), 0),
                 }),
             });
 
             updateForm({
-                waybill: createdShipmentsForOrder.find((s) => s.waybill)?.waybill,
+                waybill: allWaybills[0],
+                waybills: allWaybills,
                 plannedShipments,
             });
 
