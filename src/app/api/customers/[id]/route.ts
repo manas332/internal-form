@@ -39,7 +39,14 @@ export async function PUT(
         const payload: Record<string, unknown> = {};
 
         if (body.billing_address) {
-            payload.billing_address = body.billing_address;
+            const partialAddress: Record<string, unknown> = {
+                address: body.billing_address.address || '',
+                city: body.billing_address.city || '',
+                state: body.billing_address.state || '',
+                zip: body.billing_address.zip || '',
+                country: body.billing_address.country || '',
+            };
+            payload.billing_address = partialAddress;
         }
         if (body.phone) {
             payload.phone = body.phone;

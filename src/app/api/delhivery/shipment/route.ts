@@ -5,34 +5,45 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        if (!body.shipment || !body.pickup_location) {
+        // Accept either a single shipment or an array of shipments
+        const shipments = Array.isArray(body.shipments) ? body.shipments : [body.shipment];
+        const pickupLocations = Array.isArray(body.pickup_locations) ? body.pickup_locations : [body.pickup_location];
+
+        if (!shipments || shipments.length === 0 || !pickupLocations || pickupLocations.length === 0) {
             return NextResponse.json(
-                { error: 'shipment object and pickup_location string are required' },
+                { error: 'shipments array and pickup_locations array are required' },
                 { status: 400 }
             );
         }
 
-        // Override seller and return details to securely hide them on the label (using '.')
-        // while providing a valid return address (Noida) for RTO routing.
-        const processedShipment = {
-            ...body.shipment,
-            // Provide exact valid routing but explicitly obscure display fields
-            return_pin: 201301,
-            return_city: "Noida",
-            return_state: "Uttar Pradesh",
-            return_country: "India",
-            return_phone: body.shipment.return_phone && body.shipment.return_phone.trim() ? body.shipment.return_phone : "9999999999",
+        const results = [];
+        for (let i = 0; i < shipments.length; i++) {
+            const shipment = shipments[i];
+            const pickup_location = pickupLocations[i] || pickupLocations[0];
 
-            // Only hide these if they haven't been explicitly customized in the UI
-            return_name: body.shipment.return_name && body.shipment.return_name.trim() ? body.shipment.return_name : ".",
-            return_add: body.shipment.return_add && body.shipment.return_add.trim() ? body.shipment.return_add : ".",
-            seller_name: body.shipment.seller_name && body.shipment.seller_name.trim() ? body.shipment.seller_name : ".",
-            seller_add: body.shipment.seller_add && body.shipment.seller_add.trim() ? body.shipment.seller_add : ".",
-            seller_inv: body.shipment.seller_inv && body.shipment.seller_inv.trim() ? body.shipment.seller_inv : "."
-        };
+            const processedShipment = {
+                ...shipment,
+                return_pin: 201301,
+                return_city: "Noida",
+                return_state: "Uttar Pradesh",
+                return_country: "India",
+                return_phone: shipment.return_phone && shipment.return_phone.trim() ? shipment.return_phone : "9999999999",
+                return_name: shipment.return_name && shipment.return_name.trim() ? shipment.return_name : ".",
+                return_add: shipment.return_add && shipment.return_add.trim() ? shipment.return_add : ".",
+                seller_name: shipment.seller_name && shipment.seller_name.trim() ? shipment.seller_name : ".",
+                seller_add: shipment.seller_add && shipment.seller_add.trim() ? shipment.seller_add : ".",
+                seller_inv: shipment.seller_inv && shipment.seller_inv.trim() ? shipment.seller_inv : "."
+            };
 
-        const { status, data } = await createShipment(processedShipment, body.pickup_location);
-        return NextResponse.json(data, { status });
+            try {
+                const { status, data } = await createShipment(processedShipment, pickup_location);
+                results.push({ status, data });
+            } catch (error) {
+                results.push({ status: 500, error: error instanceof Error ? error.message : 'Failed to create shipment' });
+            }
+        }
+
+        return NextResponse.json({ results }, { status: 200 });
 
     } catch (error) {
         console.error('Shipment creation error:', error);

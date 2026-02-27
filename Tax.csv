@@ -1,0 +1,30 @@
+Tax Name,Tax Percentage,Tax Type,Account To Track Sales,Start Date,End Date,Tax Status,Tax Specific Type
+IGST0,0.000000,tax,Output IGST,,,Active,igst
+IGST5,5.000000,tax,Output IGST,,,Active,igst
+IGST12,12.000000,tax,Output IGST,,,Active,igst
+IGST40,40.000000,tax,Output IGST,,,Active,igst
+IGST18,18.000000,tax,Output IGST,,,Active,igst
+IGST28,28.000000,tax,Output IGST,,,Active,igst
+CGST0,0.000000,tax,Output CGST,,,Active,cgst
+SGST0,0.000000,tax,Output SGST,,,Active,sgst
+CGST2.5,2.500000,tax,Output CGST,,,Active,cgst
+SGST2.5,2.500000,tax,Output SGST,,,Active,sgst
+CGST6,6.000000,tax,Output CGST,,,Active,cgst
+SGST6,6.000000,tax,Output SGST,,,Active,sgst
+CGST9,9.000000,tax,Output CGST,,,Active,cgst
+SGST9,9.000000,tax,Output SGST,,,Active,sgst
+CGST20,20.000000,tax,Output CGST,,,Active,cgst
+SGST20,20.000000,tax,Output SGST,,,Active,sgst
+CGST14,14.000000,tax,Output CGST,,,Active,cgst
+SGST14,14.000000,tax,Output SGST,,,Active,sgst
+IGST,0.250000,tax,Output IGST,,,Active,igst
+0.25%,0.250000,tax,Output IGST,,,Active,igst
+IGST 0.25,0.250000,tax,Output IGST,,,Active,igst
+Gemstone,0.250000,tax,Output IGST,,,Active,igst
+3%,3.000000,tax,Output IGST,,,Active,igst
+CGST,1.500000,tax,Output CGST,,,Active,cgst
+SGST1.5,1.500000,tax,Output SGST,,,Active,sgst
+Total GST,3.000000,tax,Output CGST,,,Active,cgst
+CGST1.5,1.500000,tax,Output CGST,,,Active,cgst
+CGST025,0.125000,tax,Output CGST,,,Active,cgst
+SGST025,0.125000,tax,Output SGST,,,Active,sgst

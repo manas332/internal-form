@@ -82,8 +82,8 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
             return;
         }
 
-        // 2. If the existing customer had no address, update it in Zoho BEFORE proceeding
-        if (needsAddressUpdate && formData.customer_id) {
+        // Always update address in Zoho if customer_id exists
+        if (formData.customer_id) {
             setSavingToZoho(true);
             try {
                 const res = await fetch(`/api/customers/${formData.customer_id}`, {
@@ -91,11 +91,11 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         billing_address: {
-                            address: formData.address,
-                            city: formData.city,
-                            state: formData.state,
-                            zip: formData.pincode,
-                            country: 'India',
+                            address: formData.address || '',
+                            city: formData.city || '',
+                            state: formData.state || '',
+                            zip: formData.pincode || '',
+                            country: formData.country || 'India',
                         },
                         phone: `${formData.country_code}${formData.phone}`,
                     }),
@@ -179,25 +179,33 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
 
                                     const billing_address = data.customer.billing_address;
 
-                                    // Check if address is missing or empty
-                                    const hasAddress = billing_address && (
-                                        billing_address.address || billing_address.zip || billing_address.city
-                                    );
+                                    const addressLine = billing_address?.street2
+                                        ? `${billing_address.address}\n${billing_address.street2}`
+                                        : billing_address?.address || '';
+                                    const zip = billing_address?.zip || '';
+                                    const city = billing_address?.city || '';
+                                    const state = billing_address?.state || '';
 
-                                    if (hasAddress) {
+                                    const hasAnyAddress = !!(addressLine || zip || city || state);
+                                    const isIncompleteAddress =
+                                        !addressLine || !zip || !city || !state;
+
+                                    if (hasAnyAddress) {
+                                        // Pre-fill whatever Zoho already has, but if any part is missing
+                                        // we will still prompt to save the completed address back to Zoho.
                                         updateForm({
-                                            address: billing_address.street2 ? `${billing_address.address}\n${billing_address.street2}` : billing_address.address || '',
-                                            pincode: billing_address.zip || '',
-                                            city: billing_address.city || '',
-                                            state: billing_address.state || '',
+                                            address: addressLine,
+                                            pincode: zip,
+                                            city,
+                                            state,
                                         });
 
-                                        if (billing_address.zip && billing_address.zip.length === 6) {
-                                            checkPincodeServiceability(billing_address.zip);
+                                        if (zip && zip.length === 6) {
+                                            checkPincodeServiceability(zip);
                                         }
-                                        setNeedsAddressUpdate(false);
+                                        setNeedsAddressUpdate(isIncompleteAddress);
                                     } else {
-                                        // Customer exists in Zoho but has no billing address
+                                        // Customer exists in Zoho but has no billing address at all
                                         setNeedsAddressUpdate(true);
                                         // Clear any stale address from a previous selection
                                         updateForm({
@@ -270,7 +278,7 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                 />
             </div>
 
-            {/* Yellow banner: existing customer with no address on file */}
+            {/* Yellow banner: existing customer with no or incomplete address on file */}
             {needsAddressUpdate && formData.customer_id && (
                 <div
                     style={{
@@ -287,10 +295,10 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                     <span style={{ fontSize: '18px', lineHeight: 1.3 }}>⚠️</span>
                     <div>
                         <p style={{ fontWeight: 600, color: '#ca8a04', fontSize: '14px', margin: 0 }}>
-                            No address on file in Zoho
+                            Missing or incomplete address in Zoho
                         </p>
                         <p style={{ color: '#a16207', fontSize: '13px', margin: '4px 0 0' }}>
-                            This customer exists in Zoho but has no billing address. Fill in the details below — they will be saved to Zoho before proceeding to the next step.
+                            This customer exists in Zoho but has no billing address or only a partial one. Fill in the details below — they will be saved to Zoho before proceeding to the next step.
                         </p>
                     </div>
                 </div>

@@ -21,10 +21,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         return NextResponse.json({ success: true, order }, { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error fetching order:', error);
         return NextResponse.json(
-            { success: false, error: error.message },
+            { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }
         );
     }
@@ -36,6 +36,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         const { id } = await params;
         const data = await request.json();
 
+        // Support both simple "$set" updates and appending shipment records.
+        // Client can send:
+        // - shipmentsAppend: Shipment[]  -> appended to shipments via $push/$each
+        // - ...other fields             -> applied via $set
+        const { shipmentsAppend, ...rest } = data ?? {};
+
+        const update: Record<string, unknown> = { $set: rest };
+
+        if (Array.isArray(shipmentsAppend) && shipmentsAppend.length > 0) {
+            update.$push = {
+                shipments: { $each: shipmentsAppend },
+            };
+        }
+
         const order = await Order.findOneAndUpdate(
             {
                 $or: [
@@ -44,7 +58,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
                     { orderId: id }
                 ]
             },
-            { $set: data },
+            update,
             { new: true }
         );
 
@@ -53,10 +67,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         }
 
         return NextResponse.json({ success: true, order }, { status: 200 });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error updating order:', error);
         return NextResponse.json(
-            { success: false, error: error.message },
+            { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }
         );
     }

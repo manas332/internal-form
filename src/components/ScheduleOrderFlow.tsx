@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CombinedFormData, INITIAL_WIZARD_STATE } from '@/types/wizard';
+import type { InvoiceItem } from '@/types/invoice';
 import PendingOrdersStep from './steps/PendingOrdersStep';
 import ShippingStep from './steps/ShippingStep';
 import SchedulePreviewStep from './steps/SchedulePreviewStep';
@@ -30,7 +31,45 @@ export default function ScheduleOrderFlow() {
         setCurrentStep(ScheduleStep.SELECT_ORDER);
     };
 
-    const handleSelectOrder = (order: any) => {
+    type SelectedOrder = {
+        zohoInvoiceId: string;
+        orderId: string;
+        customerDetails: {
+            customer_name: string;
+            email: string;
+            phone: string;
+            country_code: string;
+            address: string;
+            city: string;
+            state: string;
+            country: string;
+            pincode: string;
+        };
+        invoiceItems: InvoiceItem[];
+        salespersonName: string;
+        status: string;
+    };
+
+    const handleSelectOrder = (order: SelectedOrder) => {
+        const normalizedItems: InvoiceItem[] = (order.invoiceItems || []).map((raw) => {
+            const item = raw as unknown as Record<string, unknown>;
+            return {
+                name: String(item.name ?? ''),
+                description: item.description ? String(item.description) : '',
+                quantity: Number(item.quantity ?? 1),
+                price: Number(item.price ?? item.rate ?? 0),
+                final_price: typeof item.final_price === 'number' ? item.final_price as number : undefined,
+                discount: typeof item.discount === 'number' ? item.discount as number : undefined,
+                tax_id: typeof item.tax_id === 'string' ? item.tax_id as string : 'NO_TAX',
+                tax_amount: typeof item.tax_amount === 'number' ? item.tax_amount as number : undefined,
+                item_total: typeof item.item_total === 'number' ? item.item_total as number : undefined,
+                hsn_or_sac: typeof item.hsn_or_sac === 'string' ? item.hsn_or_sac as string : undefined,
+                unit: typeof item.unit === 'string' ? item.unit as string : undefined,
+                carat_size: typeof item.carat_size === 'number' ? item.carat_size as number : undefined,
+                zoho_item_id: typeof item.zoho_item_id === 'string' ? item.zoho_item_id as string : undefined,
+            };
+        });
+
         updateForm({
             invoiceId: order.zohoInvoiceId,
             orderId: order.orderId,
@@ -43,7 +82,7 @@ export default function ScheduleOrderFlow() {
             state: order.customerDetails.state,
             country: order.customerDetails.country,
             pincode: order.customerDetails.pincode,
-            invoice_items: order.invoiceItems,
+            invoice_items: normalizedItems,
             salesperson_name: order.salespersonName,
             // Trigger pincode check naturally via updating the zip
             isPincodeServiceable: true // Assume true initially to unblock, wait user might need to edit. But user won't edit customer details in this flow.
@@ -56,7 +95,6 @@ export default function ScheduleOrderFlow() {
             case ScheduleStep.SELECT_ORDER:
                 return <PendingOrdersStep onSelectOrder={handleSelectOrder} />;
             case ScheduleStep.SHIPPING:
-                return <ShippingStep formData={formData} updateForm={updateForm} onNext={nextStep} onPrev={prevStep} />;
             case ScheduleStep.PREVIEW:
                 return <SchedulePreviewStep formData={formData} updateForm={updateForm} onNext={nextStep} onPrev={prevStep} />;
             case ScheduleStep.CONFIRMATION:

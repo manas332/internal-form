@@ -91,6 +91,10 @@ export interface InvoiceItem {
   unit?: string;
   carat_size?: number; // optional, 2 decimal places
   final_price?: number; // user-entered tax-inclusive price per unit
+
+  // UI-only helpers (never relied on by Zoho)
+  tax_auto_corrected?: boolean;
+  tax_correction_note?: string;
 }
 
 // --- Custom Field ---
@@ -174,6 +178,27 @@ export interface Customer {
   gst_no?: string;
   gst_treatment?: GSTTreatment;
   place_of_contact?: string;
+}
+
+// --- Zoho Types shared across UI/helpers ---
+export interface ZohoTax {
+  tax_id: string;
+  tax_name: string;
+  tax_percentage: number;
+  tax_type: string;
+}
+
+export interface ZohoItem {
+  item_id: string;
+  name: string;
+  description: string;
+  rate: number;
+  hsn_or_sac: string;
+  item_tax_preferences?: Array<{
+    tax_specification: string;
+    tax_id: string;
+    tax_percentage: number;
+  }>;
 }
 
 export interface CreateCustomerRequest {

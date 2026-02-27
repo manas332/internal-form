@@ -4,30 +4,10 @@ import React, { useEffect, useState } from 'react';
 
 import { CombinedFormData } from '@/types/wizard';
 import LineItemRow from '../LineItemRow'; // Reusing existing UI
-import { InvoiceItem } from '@/types/invoice';
+import { InvoiceItem, ZohoItem, ZohoTax } from '@/types/invoice';
 import { toast } from 'sonner';
 import { invoiceItemsStepSchema } from '@/lib/validation';
-
-// Added a global type for brevity; in a real app this would go to a types file
-export interface ZohoItem {
-    item_id: string;
-    name: string;
-    description: string;
-    rate: number;
-    hsn_or_sac: string;
-    item_tax_preferences?: Array<{
-        tax_specification: string;
-        tax_id: string;
-        tax_percentage: number;
-    }>;
-}
-
-export interface ZohoTax {
-    tax_id: string;
-    tax_name: string;
-    tax_percentage: number;
-    tax_type: string;
-}
+import { isInterstateOrder, normalizeItemTaxForContext, validateTaxesForOrder } from '@/lib/tax';
 
 interface Props {
     formData: CombinedFormData;
@@ -50,6 +30,8 @@ const emptyItem = (): InvoiceItem => ({
 export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev }: Props) {
     const [zohoItems, setZohoItems] = useState<ZohoItem[]>([]);
     const [zohoTaxes, setZohoTaxes] = useState<ZohoTax[]>([]);
+
+    const isInterstate = isInterstateOrder(formData.state);
 
     useEffect(() => {
         async function loadData() {
@@ -119,17 +101,25 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
     const handleItemChange = (index: number, updates: Partial<InvoiceItem>) => {
         const newItems = [...formData.invoice_items];
         const currentItem = newItems[index];
+        const normalized = normalizeItemTaxForContext({
+            item: currentItem,
+            updates,
+            taxes: zohoTaxes,
+            isInterstate,
+        });
+
+        const mergedUpdates: Partial<InvoiceItem> = { ...updates, ...normalized };
 
         // Determine if the update involves anything that affects the reverse calculation
         const needsRecalc =
-            'final_price' in updates ||
-            'tax_id' in updates ||
-            'quantity' in updates;
+            'final_price' in mergedUpdates ||
+            'tax_id' in mergedUpdates ||
+            'quantity' in mergedUpdates;
 
-        let finalUpdates: Partial<InvoiceItem> = updates;
+        let finalUpdates: Partial<InvoiceItem> = mergedUpdates;
 
         if (needsRecalc) {
-            finalUpdates = recalcFromFinalPrice(currentItem, updates, zohoTaxes);
+            finalUpdates = recalcFromFinalPrice(currentItem, mergedUpdates, zohoTaxes);
         }
 
         newItems[index] = { ...currentItem, ...finalUpdates };
@@ -160,6 +150,44 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData.invoice_items.length]);
 
+    // When the order flips between inter/intra state or taxes load, normalize taxes on all items.
+    useEffect(() => {
+        if (!zohoTaxes.length || !formData.invoice_items.length) return;
+
+        const updated = formData.invoice_items.map((item) => {
+            const normalization = normalizeItemTaxForContext({
+                item,
+                updates: {},
+                taxes: zohoTaxes,
+                isInterstate,
+            });
+
+            let next: InvoiceItem = { ...item, ...normalization };
+
+            // If tax changed and we have a final_price, recompute amounts
+            if (normalization.tax_id && normalization.tax_id !== item.tax_id && item.final_price) {
+                const recalc = recalcFromFinalPrice(item, { tax_id: normalization.tax_id }, zohoTaxes);
+                next = { ...next, ...recalc };
+            }
+
+            return next;
+        });
+
+        const changed = updated.some((item, idx) => {
+            const prev = formData.invoice_items[idx];
+            return (
+                prev.tax_id !== item.tax_id ||
+                prev.tax_auto_corrected !== item.tax_auto_corrected ||
+                prev.tax_correction_note !== item.tax_correction_note
+            );
+        });
+
+        if (changed) {
+            updateForm({ invoice_items: updated });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isInterstate, zohoTaxes]);
+
     const handleNext = () => {
         const result = invoiceItemsStepSchema.safeParse(formData);
         if (!result.success) {
@@ -184,6 +212,17 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
             });
             return;
         }
+
+        // Additional safety: verify that no line violates interstate/intrastate GST rules.
+        const taxIssues = validateTaxesForOrder(formData.invoice_items, zohoTaxes, isInterstate);
+        if (taxIssues.length) {
+            taxIssues.forEach((issue) => {
+                const itemNum = issue.index + 1;
+                toast.error(`Item ${itemNum}: ${issue.message}`);
+            });
+            return;
+        }
+
         onNext();
     };
 
@@ -201,7 +240,7 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                         item={item}
                         zohoItems={zohoItems}
                         zohoTaxes={zohoTaxes}
-                        isInterstate={formData.state !== 'Haryana'}
+                        isInterstate={isInterstate}
                         onChange={handleItemChange}
                         onRemove={() => removeItem(index)}
                         canRemove={formData.invoice_items.length > 1}

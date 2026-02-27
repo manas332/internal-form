@@ -1,7 +1,6 @@
 'use client';
 
-import type { InvoiceItem } from '@/types/invoice';
-import type { ZohoItem, ZohoTax } from './steps/InvoiceItemsStep';
+import type { InvoiceItem, ZohoItem, ZohoTax } from '@/types/invoice';
 
 interface HsnCategory {
     code: string;
@@ -56,42 +55,6 @@ const HSN_CATEGORIES: HsnCategory[] = [
         description: 'Catch-all for any other non-physical service charges not covered elsewhere (SAC code).',
     },
 ];
-
-/** Tax rate (%) that applies to each HSN/SAC code. */
-const HSN_TAX_RATES: Record<string, number> = {
-    '14049070': 0,    // Rudrakshas
-    '05080010': 0.25, // Gemstones and Raw Crystals
-    '71179090': 3,    // Bracelets, Malas and Decorative Items
-    '83062990': 18,   // Vastu Metal
-    '74198090': 18,   // Vastu Copper/Brass
-    '44209090': 3,    // Vastu Wooden (miscellaneous)
-    '39269090': 3,    // Miscellaneous Goods
-    '999591': 0,    // Poojas and Services
-    '999799': 0,    // Miscellaneous Services
-};
-
-/**
- * Given an HSN code and available taxes, return the right tax_id.
- * Returns 'NO_TAX' for 0% categories, otherwise finds the matching
- * IGST (interstate) or GST (intrastate) tax from Zoho.
- */
-function resolveTaxIdForHsn(
-    code: string,
-    zohoTaxes: ZohoTax[],
-    isInterstate: boolean
-): string | undefined {
-    const rate = HSN_TAX_RATES[code];
-    if (rate === undefined) return undefined; // unknown code — don't override
-    if (rate === 0) return 'NO_TAX';
-
-    const matched = zohoTaxes.find(t => {
-        const pctMatch = Math.abs(t.tax_percentage - rate) < 0.01;
-        if (!pctMatch) return false;
-        const name = t.tax_name.toUpperCase();
-        return isInterstate ? name.includes('IGST') : !name.includes('IGST');
-    });
-    return matched?.tax_id;
-}
 
 interface LineItemRowProps {
     item: InvoiceItem;
@@ -197,15 +160,7 @@ export default function LineItemRow({
                         }
                         onChange={(e) => {
                             const code = e.target.value;
-                            const updates: Partial<InvoiceItem> = { hsn_or_sac: code };
-
-                            // Auto-set tax only for NEW items — existing Zoho items keep their fetched tax
-                            if (!item.zoho_item_id && code) {
-                                const taxId = resolveTaxIdForHsn(code, zohoTaxes, isInterstate);
-                                if (taxId !== undefined) updates.tax_id = taxId;
-                            }
-
-                            onChange(index, updates);
+                            onChange(index, { hsn_or_sac: code });
                         }}
                     >
                         <option value="">— Select HSN/SAC —</option>
@@ -279,6 +234,18 @@ export default function LineItemRow({
                                 <option key={t.tax_id} value={t.tax_id}>{t.tax_name} ({t.tax_percentage}%)</option>
                             ))}
                     </select>
+                    {item.tax_auto_corrected && item.tax_correction_note && (
+                        <div
+                            className="mt-1 text-xs rounded-md px-2 py-1"
+                            style={{
+                                background: 'rgba(248, 113, 113, 0.08)',
+                                border: '1px solid rgba(248, 113, 113, 0.35)',
+                                color: '#fecaca',
+                            }}
+                        >
+                            {item.tax_correction_note}
+                        </div>
+                    )}
                 </div>
 
                 {/* User enters the final (tax-inclusive) price per unit */}

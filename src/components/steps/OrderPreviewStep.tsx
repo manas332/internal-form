@@ -3,13 +3,8 @@
 import { useState, useEffect } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import stateCodesData from '@/data/state-codes.json';
-
-interface ZohoTax {
-    tax_id: string;
-    tax_name: string;
-    tax_percentage: number;
-    tax_type: string;
-}
+import { ZohoTax } from '@/types/invoice';
+import { isInterstateOrder } from '@/lib/tax';
 
 interface Props {
     formData: CombinedFormData;
@@ -23,7 +18,7 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
     const [errorMsg, setErrorMsg] = useState('');
     const [zohoTaxes, setZohoTaxes] = useState<ZohoTax[]>([]);
 
-    const isInterstate = formData.state !== 'Haryana';
+    const isInterstate = isInterstateOrder(formData.state);
 
     useEffect(() => {
         fetch('/api/zoho/taxes')
@@ -134,6 +129,9 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                     country: formData.country,
                     pincode: formData.pincode,
                 },
+                // Persist the raw UI items, including optional descriptions,
+                // so the schedule-order wizard can see them even though we
+                // no longer send description to Zoho.
                 invoiceItems: formData.invoice_items,
                 salespersonName: formData.salesperson_name,
                 status: 'PENDING_SHIPPING'

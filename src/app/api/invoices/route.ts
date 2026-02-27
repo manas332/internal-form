@@ -92,7 +92,8 @@ export async function POST(request: NextRequest) {
                     cleaned.product_id = catalogId;
                 }
 
-                if (item.description) cleaned.description = item.description;
+                // NOTE: We intentionally do NOT send description to Zoho anymore,
+                // so that the optional internal description stays out of the invoice PDF.
                 if (item.discount) cleaned.discount = Number(item.discount);
 
                 // Explicitly send correct tax_id. 

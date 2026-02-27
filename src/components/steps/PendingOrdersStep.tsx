@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { InvoiceItem } from '@/types/invoice';
 
 interface Order {
     _id: string;
@@ -17,7 +18,7 @@ interface Order {
         country: string;
         pincode: string;
     };
-    invoiceItems: any[];
+    invoiceItems: InvoiceItem[];
     salespersonName: string;
     status: string;
     createdAt: string;

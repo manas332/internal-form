@@ -63,6 +63,26 @@ export interface CombinedFormData {
     labelUrl?: string; // S3 link for shipping label
     orderId?: string; // Unique reference num generated
 
+    // --- Schedule Order: planned shipment splits (UI only, not persisted) ---
+    plannedShipments?: Array<{
+        id: string;
+        vendor: string;
+        warehouse: string;
+        items: Array<{
+            lineIndex: number;
+            quantity: number;
+        }>;
+        isSelfShipment?: boolean;
+        shipping_mode: 'Surface' | 'Express';
+        payment_mode: 'Prepaid' | 'COD';
+        fragile: boolean;
+        weight: number;
+        length: number;
+        width: number;
+        height: number;
+        products_desc: string;
+    }>;
+
     // --- Optional Shipping Overrides (removed from UI; kept in type for backward compat) ---
     shipping_seller_name?: string;
     shipping_seller_phone?: string;

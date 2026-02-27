@@ -26,7 +26,7 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
     return (
         <div className="form-section animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h3 className="section-title">
-                <span className="section-icon">🚚</span> Delhivery Shipping Details
+                <span className="section-icon">🚚</span> Shipping Details
             </h3>
 
             <div className="form-grid-2">

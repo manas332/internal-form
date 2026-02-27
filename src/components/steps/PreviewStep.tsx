@@ -4,13 +4,8 @@ import { useState, useEffect } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import { ShipmentData } from '@/types/delhivery';
 import stateCodesData from '@/data/state-codes.json';
-
-interface ZohoTax {
-    tax_id: string;
-    tax_name: string;
-    tax_percentage: number;
-    tax_type: string;
-}
+import { ZohoTax } from '@/types/invoice';
+import { isInterstateOrder } from '@/lib/tax';
 
 interface Props {
     formData: CombinedFormData;
@@ -27,7 +22,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
     const [errorMsg, setErrorMsg] = useState('');
     const [zohoTaxes, setZohoTaxes] = useState<ZohoTax[]>([]);
 
-    const isInterstate = formData.state !== 'Haryana';
+    const isInterstate = isInterstateOrder(formData.state);
 
     useEffect(() => {
         fetch('/api/zoho/taxes')
@@ -248,7 +243,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             }
 
             // Always hide seller info on the shipping label
-            const finalShipmentPayload: any = {
+            const finalShipmentPayload: Record<string, unknown> = {
                 ...shipmentData,
                 seller_name: " ",
                 seller_add: " ",
@@ -436,7 +431,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                                 <p className="flex justify-between items-center"><span className="text-gray-500 font-medium">Gross Weight</span> <span className="font-medium text-gray-900 dark:text-white">{formData.weight} <span className="text-gray-400 text-xs">g</span></span></p>
                             </div>
 
-                            <div className="mt-6 p-5 bg-gradient-to-br from-indigo-50 to-white dark:from-[#1c1c28] dark:to-[#22222e] rounded-xl border border-indigo-100 dark:border-accent/30 shadow-sm relative overflow-hidden">
+                            <div className="mt-6 p-5 bg-linear-to-br from-indigo-50 to-white dark:from-[#1c1c28] dark:to-[#22222e] rounded-xl border border-indigo-100 dark:border-accent/30 shadow-sm relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
                                 <h5 className="text-xs uppercase text-accent mb-4 font-bold tracking-widest flex items-center gap-2">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
