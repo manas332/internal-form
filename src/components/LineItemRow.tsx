@@ -1,6 +1,7 @@
 'use client';
 
 import type { InvoiceItem, ZohoItem, ZohoTax } from '@/types/invoice';
+import { getCorrectTaxId } from '@/lib/tax';
 
 interface HsnCategory {
     code: string;
@@ -107,13 +108,10 @@ export default function LineItemRow({
                                 updates.zoho_item_id = matched.item_id;
                                 if (matched.description) updates.description = matched.description;
                                 if (matched.rate) updates.final_price = matched.rate;
-                                if (matched.hsn_or_sac) updates.hsn_or_sac = matched.hsn_or_sac;
-
-                                // Auto-apply tax preference (prefer intra/GST or inter/IGST based on state)
-                                const taxSpec = isInterstate ? 'inter' : 'intra';
-                                const taxPref = matched.item_tax_preferences?.find(t => t.tax_specification === taxSpec) || matched.item_tax_preferences?.[0];
-                                if (taxPref && taxPref.tax_id) {
-                                    updates.tax_id = taxPref.tax_id;
+                                if (matched.hsn_or_sac) {
+                                    updates.hsn_or_sac = matched.hsn_or_sac;
+                                    // Auto-apply correct tax from the HSN map
+                                    updates.tax_id = getCorrectTaxId(matched.hsn_or_sac, isInterstate);
                                 }
                             } else {
                                 // Name edited away from a known item — clear the catalog reference
@@ -219,20 +217,9 @@ export default function LineItemRow({
                     >
                         <option value="" disabled>Select tax…</option>
                         <option value="NO_TAX">No Tax (0%)</option>
-                        {zohoTaxes
-                            .filter(t => {
-                                // Filter dropdown to only show appropriate taxes for the state
-                                const name = t.tax_name.toUpperCase();
-                                if (isInterstate) {
-                                    return name.includes('IGST') || (!name.includes('GST') && t.tax_type === 'tax');
-                                } else {
-                                    // Intrastate: hide IGST, show GST/CGST/tax_groups
-                                    return !name.includes('IGST');
-                                }
-                            })
-                            .map(t => (
-                                <option key={t.tax_id} value={t.tax_id}>{t.tax_name} ({t.tax_percentage}%)</option>
-                            ))}
+                        {zohoTaxes.map(t => (
+                            <option key={t.tax_id} value={t.tax_id}>{t.tax_name} ({t.tax_percentage}%)</option>
+                        ))}
                     </select>
                     {item.tax_auto_corrected && item.tax_correction_note && (
                         <div

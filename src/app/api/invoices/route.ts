@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createInvoice, createZohoItem } from '@/lib/zoho';
+import { getCorrectTaxId } from '@/lib/tax';
 
 export async function POST(request: NextRequest) {
     try {
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
         const pos = String(body.place_of_supply || '').toUpperCase();
         const isInterstate = pos !== 'HR' && pos !== 'HARYANA' && pos !== '06';
 
-        // Fallback 0% tax IDs
+        // Fallback 0% tax IDs (for items with no HSN in the map)
         const IGST0 = '3355221000000032367';
         const GST0 = '3355221000000032439';
         const defaultTaxId = isInterstate ? IGST0 : GST0;
@@ -96,11 +97,19 @@ export async function POST(request: NextRequest) {
                 // so that the optional internal description stays out of the invoice PDF.
                 if (item.discount) cleaned.discount = Number(item.discount);
 
-                // Explicitly send correct tax_id. 
-                // Default to correct 0% ID only if no tax_id is provided or it's 'NO_TAX'.
-                if (item.tax_id && item.tax_id !== 'NO_TAX') {
+                // Server-side tax correction: if item has an HSN in the map,
+                // force the correct tax_id regardless of what client sent.
+                const hsn = item.hsn_or_sac ? String(item.hsn_or_sac) : '';
+                const mapTaxId = hsn ? getCorrectTaxId(hsn, isInterstate) : '';
+
+                if (mapTaxId && mapTaxId !== 'NO_TAX') {
+                    // HSN is in the map and has a non-zero rate → use map tax_id
+                    cleaned.tax_id = mapTaxId;
+                } else if (item.tax_id && item.tax_id !== 'NO_TAX') {
+                    // HSN not in map but client provided a specific tax → pass through
                     cleaned.tax_id = item.tax_id;
                 } else {
+                    // Fallback to correct 0% tax_id
                     cleaned.tax_id = defaultTaxId;
                 }
 

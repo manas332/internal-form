@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import stateCodesData from '@/data/state-codes.json';
-import { ZohoTax } from '@/types/invoice';
-import { isInterstateOrder } from '@/lib/tax';
+import { isInterstateOrder, get18PctTaxId } from '@/lib/tax';
 
 interface Props {
     formData: CombinedFormData;
@@ -16,31 +15,12 @@ interface Props {
 export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev }: Props) {
     const [submitting, setSubmitting] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
-    const [zohoTaxes, setZohoTaxes] = useState<ZohoTax[]>([]);
 
     const isInterstate = isInterstateOrder(formData.state);
 
-    useEffect(() => {
-        fetch('/api/zoho/taxes')
-            .then(r => r.ok ? r.json() : [])
-            .then(setZohoTaxes)
-            .catch(() => {/* non-blocking */ });
-    }, []);
-
-    /** Find the right 18% tax_id based on interstate/intrastate. */
-    const resolve18PctTaxId = (): string => {
-        const matched = zohoTaxes.find(t => {
-            const pctMatch = Math.abs(t.tax_percentage - 18) < 0.01;
-            if (!pctMatch) return false;
-            const name = t.tax_name.toUpperCase();
-            return isInterstate ? name.includes('IGST') : !name.includes('IGST');
-        });
-        return matched?.tax_id ?? 'NO_TAX'; // fallback if taxes not loaded yet
-    };
-
     /** Build a shipping/COD line item with 18% GST inclusive pricing. */
     const buildChargeItem = (name: string, finalPrice: number, description: string) => {
-        const taxId = resolve18PctTaxId();
+        const taxId = get18PctTaxId(isInterstate);
         const preTaxRate = taxId !== 'NO_TAX' ? finalPrice / 1.18 : finalPrice;
         const taxAmount = taxId !== 'NO_TAX' ? finalPrice - preTaxRate : 0;
         return {
