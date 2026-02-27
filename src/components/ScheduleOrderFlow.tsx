@@ -95,8 +95,10 @@ export default function ScheduleOrderFlow() {
             case ScheduleStep.SELECT_ORDER:
                 return <PendingOrdersStep onSelectOrder={handleSelectOrder} />;
             case ScheduleStep.SHIPPING:
+                return <ShippingStep formData={formData} updateForm={updateForm} onNext={nextStep} onPrev={prevStep} />;
             case ScheduleStep.PREVIEW:
                 return <SchedulePreviewStep formData={formData} updateForm={updateForm} onNext={nextStep} onPrev={prevStep} />;
+
             case ScheduleStep.CONFIRMATION:
                 return <ScheduleConfirmationStep formData={formData} onReset={resetFlow} />;
             default:

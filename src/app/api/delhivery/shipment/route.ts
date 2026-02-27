@@ -5,21 +5,38 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        // Accept either a single shipment or an array of shipments
-        const shipments = Array.isArray(body.shipments) ? body.shipments : [body.shipment];
-        const pickupLocations = Array.isArray(body.pickup_locations) ? body.pickup_locations : [body.pickup_location];
+        // Standardize input: support single shipment top-level or { shipment: ... } or { shipments: [...] }
+        let shipmentsArray: any[] = [];
+        let pickupLocations: string[] = [];
 
-        if (!shipments || shipments.length === 0 || !pickupLocations || pickupLocations.length === 0) {
+        if (Array.isArray(body.shipments)) {
+            shipmentsArray = body.shipments;
+            pickupLocations = Array.isArray(body.pickup_locations) ? body.pickup_locations : [body.pickup_location];
+        } else if (body.shipment) {
+            shipmentsArray = [body.shipment];
+            pickupLocations = [body.pickup_location];
+        } else if (body.name && body.order) {
+            // Top-level shipment object
+            shipmentsArray = [body];
+            pickupLocations = [body.pickup_location];
+        }
+
+        if (shipmentsArray.length === 0) {
             return NextResponse.json(
-                { error: 'shipments array and pickup_locations array are required' },
+                { error: 'No valid shipment data provided. Expected shipments[] or a shipment object.' },
                 { status: 400 }
             );
         }
 
         const results = [];
-        for (let i = 0; i < shipments.length; i++) {
-            const shipment = shipments[i];
-            const pickup_location = pickupLocations[i] || pickupLocations[0];
+        for (let i = 0; i < shipmentsArray.length; i++) {
+            const shipment = shipmentsArray[i];
+            const pickup_location = pickupLocations[i] || pickupLocations[0] || shipment.pickup_location;
+
+            if (!pickup_location) {
+                results.push({ status: 400, error: `Missing pickup_location for shipment ${i + 1}` });
+                continue;
+            }
 
             const processedShipment = {
                 ...shipment,
@@ -43,7 +60,7 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        return NextResponse.json({ results }, { status: 200 });
+        return NextResponse.json({ results, success: results.every(r => r.status === 200) }, { status: 200 });
 
     } catch (error) {
         console.error('Shipment creation error:', error);
@@ -53,3 +70,4 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+

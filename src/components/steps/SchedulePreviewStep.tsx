@@ -237,30 +237,37 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 });
                 const resolvedFinalPrice = shipmentAmount || grandTotal;
 
-                // Create a single payload object instead of an array
+                // Sanitize phone number (last 10 digits)
+                const sanitizedPhone = (formData.phone || '').replace(/\D/g, '').slice(-10);
+
+                // Map and clean payload for Delhivery
                 const payload = {
-                    ...sh,
                     name: formData.customer_name,
                     add: formData.phone ? `${formData.address}, Ph: ${formData.country_code} ${formData.phone}` : formData.address,
                     pin: parseInt(formData.pincode, 10),
                     city: formData.city,
                     state: formData.state,
                     country: formData.country,
-                    phone: `${formData.country_code}${formData.phone}`,
+                    phone: sanitizedPhone,
 
-                    // ❌ OLD: This causes Delhivery to treat split shipments as duplicates
-                    // order: formData.orderId, 
-
-                    // ✅ NEW: Append the index to guarantee a unique order ID for each package
+                    // ✅ Append the index to guarantee a unique order ID for each package
                     order: `${formData.orderId}-PKG${index + 1}`,
 
                     payment_mode: sh.payment_mode,
-                    total_amount: resolvedFinalPrice,
-                    cod_amount: sh.payment_mode === 'COD' ? resolvedFinalPrice : 0,
+                    total_amount: Number(resolvedFinalPrice.toFixed(2)),
+                    cod_amount: sh.payment_mode === 'COD' ? Number(resolvedFinalPrice.toFixed(2)) : 0,
                     products_desc: sh.products_desc || "Spiritual Items",
                     quantity: "1",
-                    pickup_location: sh.warehouse || (formData.warehouse as string)
+                    pickup_location: sh.warehouse || (formData.warehouse as string),
+
+                    // Specific mapping for Delhivery dimensions and flags
+                    shipment_length: sh.length || 0,
+                    shipment_width: sh.width || 0,
+                    shipment_height: sh.height || 0,
+                    fragile_shipment: sh.fragile ? "true" : "false",
+                    shipping_mode: sh.shipping_mode
                 };
+
 
                 // Send single shipment
                 const shipmentRes = await fetch('/api/delhivery/shipment', {
@@ -269,18 +276,22 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     body: JSON.stringify(payload),
                 });
 
-                const result = await shipmentRes.json();
+                const rawResult = await shipmentRes.json();
+
+                // The API now returns { results: [{ status, data }], success: boolean }
+                // Since we are sending one by one in this loop, we look at results[0]
+                const result = rawResult.results?.[0];
 
                 // Handle single result
                 if (!result || result.status !== 200 || !result.data || !result.data.success) {
                     let errorStr = 'Failed to create Delhivery shipment.';
-                    if (result.data?.rmk) {
+                    if (result?.data?.rmk) {
                         errorStr = result.data.rmk;
-                    } else if (typeof result.data?.error === 'string') {
+                    } else if (typeof result?.data?.error === 'string') {
                         errorStr = result.data.error;
-                    } else if (typeof result.data?.error === 'object') {
-                        errorStr = JSON.stringify(result.data.error);
-                    } else if (result.data?.packages?.[0]?.remarks) {
+                    } else if (typeof result?.error === 'string') {
+                        errorStr = result.error;
+                    } else if (result?.data?.packages?.[0]?.remarks) {
                         errorStr = result.data.packages[0].remarks;
                     }
                     throw new Error(`Shipment ${index + 1} Failed: ${errorStr}`);
@@ -300,6 +311,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     items: effectiveItems,
                 });
             }
+
 
             // Add self shipments
             plannedShipments.forEach((sh) => {

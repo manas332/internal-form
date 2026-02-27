@@ -60,7 +60,9 @@ export interface CombinedFormData {
     invoiceId?: string;
     invoiceUrl?: string; // S3 link or Zoho PDF link
     waybill?: string;
+    waybills?: string[];
     labelUrl?: string; // S3 link for shipping label
+
     orderId?: string; // Unique reference num generated
 
     // --- Schedule Order: planned shipment splits (UI only, not persisted) ---
