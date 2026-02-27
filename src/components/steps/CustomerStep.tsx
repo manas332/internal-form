@@ -92,7 +92,7 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                     body: JSON.stringify({
                         billing_address: {
                             attention: formData.customer_name || '',
-                            street: `${formData.address || ''}\nPhone: ${formData.country_code}${formData.phone}`,
+                            street: formData.address || '',
                             city: formData.city || '',
                             state: formData.state || '',
                             zip: formData.pincode || '',

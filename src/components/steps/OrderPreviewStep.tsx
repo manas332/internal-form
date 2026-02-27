@@ -65,8 +65,6 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
             const invoicePayload = {
                 customer_id: formData.customer_id,
                 date: formData.date,
-                // billing_address is NOT sent here — Zoho auto-pulls it from the
-                // customer record, which CustomerStep already updates before we get here.
                 reference_number: formData.reference_number || undefined,
                 gst_treatment: formData.gst_treatment,
                 salesperson_name: formData.salesperson_name || undefined,
@@ -77,6 +75,13 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                 adjustment: Number(formData.adjustment) || undefined,
                 adjustment_description: formData.adjustment_description || undefined,
                 notes: formData.notes,
+                // Send phone as a custom field on the invoice
+                custom_fields: [
+                    {
+                        label: 'Phone Number',
+                        value: `${formData.country_code}${formData.phone}`,
+                    },
+                ],
             };
 
             const invoiceRes = await fetch('/api/invoices', {

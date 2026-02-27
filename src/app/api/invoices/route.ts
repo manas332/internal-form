@@ -147,6 +147,7 @@ export async function POST(request: NextRequest) {
         if (body.salesperson_name)
             payload.salesperson_name = body.salesperson_name;
         if (body.notes) payload.notes = body.notes;
+        if (body.custom_fields) payload.custom_fields = body.custom_fields;
         if (body.shipping_charge)
             payload.shipping_charge = body.shipping_charge;
         if (body.adjustment !== undefined)
