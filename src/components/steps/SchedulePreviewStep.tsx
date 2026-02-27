@@ -211,6 +211,20 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 throw new Error(allocationErrors[0]);
             }
 
+            // Validate required shipping fields per Delhivery shipment
+            for (let i = 0; i < plannedShipments.length; i++) {
+                const sh = plannedShipments[i];
+                if (sh.isSelfShipment || sh.vendor === 'SELF') continue;
+                const effectiveItems = sh.items.filter((it) => it.quantity > 0);
+                if (effectiveItems.length === 0) continue;
+                if (!sh.weight || sh.weight <= 0) {
+                    throw new Error(`Shipment ${i + 1}: Weight must be greater than 0 grams`);
+                }
+                if (!sh.products_desc || sh.products_desc.trim().length === 0) {
+                    throw new Error(`Shipment ${i + 1}: Package contents description is required`);
+                }
+            }
+
             const createdShipmentsForOrder: {
                 vendor: string;
                 waybill?: string;
@@ -403,7 +417,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 </h4>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="text-xs text-gray-500 bg-gray-50 dark:bg-[#1c1c28] uppercase border-b border-gray-100 dark:border-[#2a2a38]">
+                        <thead className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#1c1c28] uppercase border-b border-gray-100 dark:border-[#2a2a38]">
                             <tr>
                                 <th className="px-2 py-2 rounded-l-lg font-semibold">Item</th>
                                 {anyDescriptions && <th className="px-2 py-2 font-semibold">Description</th>}
@@ -416,7 +430,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                 <tr key={idx} className="text-gray-700 dark:text-gray-300">
                                     <td className="px-2 py-2.5 font-medium">{it.name}</td>
                                     {anyDescriptions && (
-                                        <td className="px-2 py-2.5 text-xs text-gray-500">
+                                        <td className="px-2 py-2.5 text-xs text-gray-500 dark:text-gray-400">
                                             {(it.description || '').trim() ? it.description : <span className="italic text-gray-400">—</span>}
                                         </td>
                                     )}
@@ -454,7 +468,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                         <div key={sh.id} className="border border-gray-100 dark:border-[#2a2a38] rounded-xl p-4 bg-gray-50 dark:bg-[#1c1c28]">
                             <div className="flex items-center justify-between gap-3 mb-3">
                                 <div className="flex items-center gap-3">
-                                    <span className="text-xs uppercase tracking-wider text-gray-500 font-semibold">
+                                    <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-300 font-semibold">
                                         Shipment {idx + 1}
                                     </span>
                                     <span className={`text-xs px-2 py-0.5 rounded font-medium ${sh.isSelfShipment || sh.vendor === 'SELF' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
@@ -506,7 +520,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                                 onChange={() => setPlannedShipments((prev) => prev.map((s) => s.id === sh.id ? { ...s, shipping_mode: 'Surface' } : s))}
                                                 className="accent-accent"
                                             />
-                                            <span className="text-sm">Surface</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-200">Surface</span>
                                         </label>
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input
@@ -515,7 +529,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                                 onChange={() => setPlannedShipments((prev) => prev.map((s) => s.id === sh.id ? { ...s, shipping_mode: 'Express' } : s))}
                                                 className="accent-accent"
                                             />
-                                            <span className="text-sm">Express</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-200">Express</span>
                                         </label>
                                     </div>
                                 </div>
@@ -529,7 +543,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                                 onChange={() => setPlannedShipments((prev) => prev.map((s) => s.id === sh.id ? { ...s, payment_mode: 'Prepaid' } : s))}
                                                 className="accent-accent"
                                             />
-                                            <span className="text-sm">Prepaid</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-200">Prepaid</span>
                                         </label>
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input
@@ -538,7 +552,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                                 onChange={() => setPlannedShipments((prev) => prev.map((s) => s.id === sh.id ? { ...s, payment_mode: 'COD' } : s))}
                                                 className="accent-accent"
                                             />
-                                            <span className="text-sm">Cash on Delivery (COD)</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-200">Cash on Delivery (COD)</span>
                                         </label>
                                     </div>
                                 </div>
@@ -551,7 +565,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                             onChange={(e) => setPlannedShipments((prev) => prev.map((s) => s.id === sh.id ? { ...s, fragile: e.target.checked } : s))}
                                             className="w-4 h-4 accent-accent rounded"
                                         />
-                                        <span className="text-sm text-gray-300">Yes, handle with care</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">Yes, handle with care</span>
                                     </div>
                                 </div>
                                 <div className="form-group">
@@ -603,7 +617,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
 
                             <div className="mt-3 overflow-x-auto">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-gray-500 uppercase border-b border-gray-200 dark:border-[#2a2a38]">
+                                    <thead className="text-xs text-gray-500 dark:text-gray-400 uppercase border-b border-gray-200 dark:border-[#2a2a38]">
                                         <tr>
                                             <th className="px-2 py-2 font-semibold">Item</th>
                                             <th className="px-2 py-2 font-semibold text-center">Qty</th>
@@ -633,7 +647,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                                             }}
                                                         />
                                                     </td>
-                                                    <td className="px-2 py-2.5 text-center text-xs text-gray-500">
+                                                    <td className="px-2 py-2.5 text-center text-xs text-gray-500 dark:text-gray-400">
                                                         {remaining - thisQty}
                                                     </td>
                                                 </tr>
@@ -662,24 +676,24 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                             {plannedShipments.map((sh, idx) => (
                                 <div key={sh.id} className="mb-6 p-4 rounded-xl border border-gray-200 dark:border-[#2a2a38] bg-gray-50 dark:bg-[#1c1c28]">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <span className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Shipment {idx + 1}</span>
+                                        <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-300 font-semibold">Shipment {idx + 1}</span>
                                         <span className={`text-xs px-2 py-0.5 rounded font-medium ${sh.isSelfShipment || sh.vendor === 'SELF' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
                                             {(sh.isSelfShipment || sh.vendor === 'SELF') ? 'SELF SHIPPED' : sh.vendor}
                                         </span>
                                     </div>
                                     <div className="flex flex-wrap gap-4 mb-2">
-                                        <div><span className="text-gray-500 font-medium">Origin Warehouse:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.warehouse}</span></div>
-                                        <div><span className="text-gray-500 font-medium">Fulfillment Mode:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.shipping_mode}</span></div>
-                                        <div><span className="text-gray-500 font-medium">Payment:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.payment_mode}</span></div>
-                                        <div><span className="text-gray-500 font-medium">Gross Weight:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.weight}g</span></div>
+                                        <div><span className="text-gray-500 dark:text-gray-400 font-medium">Origin Warehouse:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.warehouse}</span></div>
+                                        <div><span className="text-gray-500 dark:text-gray-400 font-medium">Fulfillment Mode:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.shipping_mode}</span></div>
+                                        <div><span className="text-gray-500 dark:text-gray-400 font-medium">Payment:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.payment_mode}</span></div>
+                                        <div><span className="text-gray-500 dark:text-gray-400 font-medium">Gross Weight:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.weight}g</span></div>
                                     </div>
                                     <div className="flex flex-wrap gap-4 mb-2">
-                                        <div><span className="text-gray-500 font-medium">Dimensions:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.length}L x {sh.width}W x {sh.height}H</span></div>
-                                        <div><span className="text-gray-500 font-medium">Fragile:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.fragile ? 'Yes' : 'No'}</span></div>
-                                        <div><span className="text-gray-500 font-medium">Contents:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.products_desc}</span></div>
+                                        <div><span className="text-gray-500 dark:text-gray-400 font-medium">Dimensions:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.length}L x {sh.width}W x {sh.height}H</span></div>
+                                        <div><span className="text-gray-500 dark:text-gray-400 font-medium">Fragile:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.fragile ? 'Yes' : 'No'}</span></div>
+                                        <div><span className="text-gray-500 dark:text-gray-400 font-medium">Contents:</span> <span className="font-medium text-gray-900 dark:text-white">{sh.products_desc}</span></div>
                                     </div>
                                     <div className="flex flex-wrap gap-4 mb-2">
-                                        <div><span className="text-gray-500 font-medium">Destination:</span> <span className="font-semibold text-gray-900 dark:text-white uppercase tracking-wide text-xs">{formData.city}, {formData.state} {formData.pincode}</span></div>
+                                        <div><span className="text-gray-500 dark:text-gray-400 font-medium">Destination:</span> <span className="font-semibold text-gray-900 dark:text-white uppercase tracking-wide text-xs">{formData.city}, {formData.state} {formData.pincode}</span></div>
                                     </div>
                                     <div className="mt-4 p-4 bg-linear-to-br from-indigo-50 to-white dark:from-[#1c1c28] dark:to-[#22222e] rounded-xl border border-indigo-100 dark:border-accent/30 shadow-sm relative overflow-hidden">
                                         <h5 className="text-xs uppercase text-accent mb-4 font-bold tracking-widest flex items-center gap-2">

@@ -57,7 +57,14 @@ export async function POST(request: NextRequest) {
         if (body.gst_no) payload.gst_no = body.gst_no;
         if (body.gst_treatment) payload.gst_treatment = body.gst_treatment;
         if (body.place_of_contact) payload.place_of_contact = body.place_of_contact;
-        if (body.billing_address) payload.billing_address = body.billing_address;
+        if (body.billing_address) {
+            payload.billing_address = {
+                ...body.billing_address,
+                // Zoho uses 'street' as the primary address line for invoice rendering
+                street: body.billing_address.street || body.billing_address.address || '',
+                attention: body.billing_address.attention || body.display_name || '',
+            };
+        }
 
         // Pass phone/mobile to Zoho
         if (body.phone) {

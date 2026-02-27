@@ -53,7 +53,7 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
                                 onChange={() => updateForm({ shipping_mode: 'Surface' })}
                                 className="accent-accent"
                             />
-                            <span className="text-sm">Surface</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-200">Surface</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input
@@ -62,7 +62,7 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
                                 onChange={() => updateForm({ shipping_mode: 'Express' })}
                                 className="accent-accent"
                             />
-                            <span className="text-sm">Express</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-200">Express</span>
                         </label>
                     </div>
                 </div>
@@ -77,7 +77,7 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
                                 onChange={() => updateForm({ payment_mode: 'Prepaid' })}
                                 className="accent-accent"
                             />
-                            <span className="text-sm">Prepaid</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-200">Prepaid</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input
@@ -86,7 +86,7 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
                                 onChange={() => updateForm({ payment_mode: 'COD' })}
                                 className="accent-accent"
                             />
-                            <span className="text-sm">Cash on Delivery (COD)</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-200">Cash on Delivery (COD)</span>
                         </label>
                     </div>
                 </div>
@@ -100,7 +100,7 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
                             onChange={(e) => updateForm({ fragile: e.target.checked })}
                             className="w-4 h-4 accent-accent rounded"
                         />
-                        <span className="text-sm text-gray-300">Yes, handle with care</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">Yes, handle with care</span>
                     </div>
                 </div>
 

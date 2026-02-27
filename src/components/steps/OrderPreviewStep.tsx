@@ -85,7 +85,8 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
             const invoicePayload = {
                 customer_id: formData.customer_id,
                 date: formData.date,
-                due_date: formData.due_date || undefined,
+                // billing_address is NOT sent here — Zoho auto-pulls it from the
+                // customer record, which CustomerStep already updates before we get here.
                 reference_number: formData.reference_number || undefined,
                 gst_treatment: formData.gst_treatment,
                 salesperson_name: formData.salesperson_name || undefined,
@@ -96,7 +97,6 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                 adjustment: Number(formData.adjustment) || undefined,
                 adjustment_description: formData.adjustment_description || undefined,
                 notes: formData.notes,
-                terms: formData.terms,
             };
 
             const invoiceRes = await fetch('/api/invoices', {
@@ -187,15 +187,15 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
 
                     <div className="text-sm space-y-3 text-gray-600 dark:text-gray-300">
                         <div className="bg-gray-50 dark:bg-[#1c1c28] p-3.5 rounded-xl border border-gray-100 dark:border-transparent flex justify-between items-center">
-                            <span className="text-gray-500 font-medium">Customer</span>
+                            <span className="text-gray-500 dark:text-gray-400 font-medium">Customer</span>
                             <strong className="text-gray-900 dark:text-white font-semibold flex items-center gap-1.5">
                                 👤 {formData.customer_name}
                             </strong>
                         </div>
                         <div className="space-y-2 px-1 py-1">
-                            <p className="flex items-start justify-between"><span className="text-gray-500 font-medium">Address</span> <span className="text-right max-w-[200px] leading-tight">{formData.address}</span></p>
-                            <p className="flex justify-between"><span className="text-gray-500 font-medium">Location</span> <span className="text-right font-medium">{formData.city}, {formData.state} {formData.pincode}</span></p>
-                            <p className="flex justify-between"><span className="text-gray-500 font-medium">Phone</span> <span className="text-right">{formData.country_code} {formData.phone}</span></p>
+                            <p className="flex items-start justify-between"><span className="text-gray-500 dark:text-gray-400 font-medium">Address</span> <span className="text-right max-w-[200px] leading-tight">{formData.address}</span></p>
+                            <p className="flex justify-between"><span className="text-gray-500 dark:text-gray-400 font-medium">Location</span> <span className="text-right font-medium">{formData.city}, {formData.state} {formData.pincode}</span></p>
+                            <p className="flex justify-between"><span className="text-gray-500 dark:text-gray-400 font-medium">Phone</span> <span className="text-right">{formData.country_code} {formData.phone}</span></p>
                         </div>
                     </div>
 

@@ -40,7 +40,8 @@ export async function PUT(
 
         if (body.billing_address) {
             const partialAddress: Record<string, unknown> = {
-                address: body.billing_address.address || '',
+                attention: body.billing_address.attention || '',
+                street: body.billing_address.street || body.billing_address.address || '',
                 city: body.billing_address.city || '',
                 state: body.billing_address.state || '',
                 zip: body.billing_address.zip || '',

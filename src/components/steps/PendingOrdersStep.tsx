@@ -83,7 +83,7 @@ export default function PendingOrdersStep({ onSelectOrder }: Props) {
                 <div className="text-center py-12 bg-white dark:bg-[#16161f] rounded-xl border border-dashed border-gray-300 dark:border-[#2a2a38]">
                     <span className="text-4xl block mb-2">🎉</span>
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">All caught up!</h3>
-                    <p className="text-gray-500">No pending orders to schedule.</p>
+                    <p className="text-gray-500 dark:text-gray-400">No pending orders to schedule.</p>
                 </div>
             ) : (
                 <div className="grid gap-4">
@@ -103,7 +103,7 @@ export default function PendingOrdersStep({ onSelectOrder }: Props) {
                                     {order.salespersonName && <span>🧑‍💼 {order.salespersonName}</span>}
                                     <span>📅 {new Date(order.createdAt).toLocaleDateString()}</span>
                                 </div>
-                                <div className="mt-2 text-xs text-gray-500">
+                                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                     {order.customerDetails.city}, {order.customerDetails.state} {order.customerDetails.pincode}
                                 </div>
                             </div>

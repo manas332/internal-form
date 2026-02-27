@@ -4,15 +4,13 @@ import { useState } from 'react';
 import { CombinedFormData, INITIAL_WIZARD_STATE } from '@/types/wizard';
 import type { InvoiceItem } from '@/types/invoice';
 import PendingOrdersStep from './steps/PendingOrdersStep';
-import ShippingStep from './steps/ShippingStep';
 import SchedulePreviewStep from './steps/SchedulePreviewStep';
 import ScheduleConfirmationStep from './steps/ScheduleConfirmationStep';
 
 enum ScheduleStep {
     SELECT_ORDER = 1,
-    SHIPPING = 2,
-    PREVIEW = 3,
-    CONFIRMATION = 4,
+    REVIEW = 2,
+    CONFIRMATION = 3,
 }
 
 export default function ScheduleOrderFlow() {
@@ -23,7 +21,7 @@ export default function ScheduleOrderFlow() {
         setFormData((prev) => ({ ...prev, ...updates }));
     };
 
-    const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 4) as ScheduleStep);
+    const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 3) as ScheduleStep);
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1) as ScheduleStep);
 
     const resetFlow = () => {
@@ -94,11 +92,8 @@ export default function ScheduleOrderFlow() {
         switch (currentStep) {
             case ScheduleStep.SELECT_ORDER:
                 return <PendingOrdersStep onSelectOrder={handleSelectOrder} />;
-            case ScheduleStep.SHIPPING:
-                return <ShippingStep formData={formData} updateForm={updateForm} onNext={nextStep} onPrev={prevStep} />;
-            case ScheduleStep.PREVIEW:
+            case ScheduleStep.REVIEW:
                 return <SchedulePreviewStep formData={formData} updateForm={updateForm} onNext={nextStep} onPrev={prevStep} />;
-
             case ScheduleStep.CONFIRMATION:
                 return <ScheduleConfirmationStep formData={formData} onReset={resetFlow} />;
             default:
@@ -108,8 +103,7 @@ export default function ScheduleOrderFlow() {
 
     const steps = [
         { id: ScheduleStep.SELECT_ORDER, label: 'Select Order' },
-        { id: ScheduleStep.SHIPPING, label: 'Shipping' },
-        { id: ScheduleStep.PREVIEW, label: 'Review' },
+        { id: ScheduleStep.REVIEW, label: 'Review & Ship' },
         { id: ScheduleStep.CONFIRMATION, label: 'Complete' },
     ];
 

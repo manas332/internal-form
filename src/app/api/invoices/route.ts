@@ -129,10 +129,8 @@ export async function POST(request: NextRequest) {
         };
 
         // Optional fields
-        if (body.due_date) payload.due_date = body.due_date;
-        if (body.payment_terms) payload.payment_terms = Number(body.payment_terms);
-        if (body.payment_terms_label)
-            payload.payment_terms_label = body.payment_terms_label;
+        // NOTE: due_date, payment_terms, payment_terms_label, and terms are
+        // intentionally NOT sent — user uses payment QR instead.
         if (body.reference_number) payload.reference_number = body.reference_number;
         if (body.gst_treatment) payload.gst_treatment = body.gst_treatment;
         if (body.gst_no) payload.gst_no = body.gst_no;
@@ -140,7 +138,6 @@ export async function POST(request: NextRequest) {
         if (body.salesperson_name)
             payload.salesperson_name = body.salesperson_name;
         if (body.notes) payload.notes = body.notes;
-        if (body.terms) payload.terms = body.terms;
         if (body.shipping_charge)
             payload.shipping_charge = body.shipping_charge;
         if (body.adjustment !== undefined)

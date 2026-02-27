@@ -337,15 +337,15 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
 
                         <div className="text-sm space-y-3 text-gray-600 dark:text-gray-300">
                             <div className="bg-gray-50 dark:bg-[#1c1c28] p-3.5 rounded-xl border border-gray-100 dark:border-transparent flex justify-between items-center">
-                                <span className="text-gray-500 font-medium">Customer</span>
+                                <span className="text-gray-500 dark:text-gray-400 font-medium">Customer</span>
                                 <strong className="text-gray-900 dark:text-white font-semibold flex items-center gap-1.5">
                                     👤 {formData.customer_name}
                                 </strong>
                             </div>
                             <div className="space-y-2 px-1 py-1">
-                                <p className="flex items-start justify-between"><span className="text-gray-500 font-medium">Address</span> <span className="text-right max-w-[200px] leading-tight">{formData.address}</span></p>
-                                <p className="flex justify-between"><span className="text-gray-500 font-medium">Location</span> <span className="text-right font-medium">{formData.city}, {formData.state} {formData.pincode}</span></p>
-                                <p className="flex justify-between"><span className="text-gray-500 font-medium">Phone</span> <span className="text-right">{formData.country_code} {formData.phone}</span></p>
+                                <p className="flex items-start justify-between"><span className="text-gray-500 dark:text-gray-400 font-medium">Address</span> <span className="text-right max-w-[200px] leading-tight">{formData.address}</span></p>
+                                <p className="flex justify-between"><span className="text-gray-500 dark:text-gray-400 font-medium">Location</span> <span className="text-right font-medium">{formData.city}, {formData.state} {formData.pincode}</span></p>
+                                <p className="flex justify-between"><span className="text-gray-500 dark:text-gray-400 font-medium">Phone</span> <span className="text-right">{formData.country_code} {formData.phone}</span></p>
                             </div>
                         </div>
 
@@ -413,7 +413,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
 
                         <div className="text-sm space-y-4 text-gray-600 dark:text-gray-300">
                             <div className="flex justify-between items-center bg-gray-50 dark:bg-[#1c1c28] p-3.5 rounded-xl border border-gray-100 dark:border-transparent">
-                                <span className="text-gray-500 font-medium">Serviceability Status</span>
+                                <span className="text-gray-500 dark:text-gray-400 font-medium">Serviceability Status</span>
                                 {formData.isPincodeServiceable ?
                                     <span className="text-green-700 bg-green-100 dark:bg-green-500/20 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-green-200 dark:border-green-500/30 shadow-sm flex items-center gap-1.5">
                                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Serviceable
@@ -425,10 +425,10 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                             </div>
 
                             <div className="space-y-3 px-1 py-1">
-                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 font-medium">Origin Warehouse</span> <span className="text-gray-900 dark:text-white font-medium bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-xs">{formData.warehouse}</span></p>
-                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 font-medium">Fulfillment Mode</span> <span className="font-semibold text-gray-900 dark:text-white uppercase tracking-wide text-xs">{formData.shipping_mode}</span></p>
-                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 font-medium">Payment terms</span> <span className={`font-bold px-2 py-0.5 rounded-md text-xs ${formData.payment_mode === 'Prepaid' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>{formData.payment_mode}</span></p>
-                                <p className="flex justify-between items-center"><span className="text-gray-500 font-medium">Gross Weight</span> <span className="font-medium text-gray-900 dark:text-white">{formData.weight} <span className="text-gray-400 text-xs">g</span></span></p>
+                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 dark:text-gray-400 font-medium">Origin Warehouse</span> <span className="text-gray-900 dark:text-white font-medium bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-xs">{formData.warehouse}</span></p>
+                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 dark:text-gray-400 font-medium">Fulfillment Mode</span> <span className="font-semibold text-gray-900 dark:text-white uppercase tracking-wide text-xs">{formData.shipping_mode}</span></p>
+                                <p className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-[#2a2a38]/50"><span className="text-gray-500 dark:text-gray-400 font-medium">Payment terms</span> <span className={`font-bold px-2 py-0.5 rounded-md text-xs ${formData.payment_mode === 'Prepaid' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>{formData.payment_mode}</span></p>
+                                <p className="flex justify-between items-center"><span className="text-gray-500 dark:text-gray-400 font-medium">Gross Weight</span> <span className="font-medium text-gray-900 dark:text-white">{formData.weight} <span className="text-gray-400 text-xs">g</span></span></p>
                             </div>
 
                             <div className="mt-6 p-5 bg-linear-to-br from-indigo-50 to-white dark:from-[#1c1c28] dark:to-[#22222e] rounded-xl border border-indigo-100 dark:border-accent/30 shadow-sm relative overflow-hidden">
