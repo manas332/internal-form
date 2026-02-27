@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Order from '@/models/Order';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         await connectDB();
-        // Fetch all orders that still need scheduling (fully pending or partially shipped).
-        const orders = await Order.find({ status: { $in: ['PENDING_SHIPPING', 'PARTIALLY_SHIPPED'] } }).sort({ createdAt: -1 });
+        const showAll = request.nextUrl.searchParams.get('all') === 'true';
+        const filter = showAll ? {} : { status: { $in: ['PENDING_SHIPPING', 'PARTIALLY_SHIPPED'] } };
+        const orders = await Order.find(filter).sort({ createdAt: -1 });
         return NextResponse.json({ success: true, orders }, { status: 200 });
     } catch (error: unknown) {
         console.error('Error fetching orders:', error);

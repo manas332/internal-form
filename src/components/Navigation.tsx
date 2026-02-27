@@ -48,6 +48,12 @@ export default function Navigation() {
                     >
                         Grievances
                     </Link>
+                    <Link
+                        href="/admin"
+                        className={`nav-link ${pathname === '/admin' ? 'active' : ''}`}
+                    >
+                        Admin
+                    </Link>
                 </div>
             </div>
         </nav>

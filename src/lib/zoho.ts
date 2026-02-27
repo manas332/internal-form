@@ -96,6 +96,22 @@ export async function createInvoice(body: Record<string, unknown>) {
 }
 
 /**
+ * Delete an invoice via Zoho Billing API.
+ * Zoho only allows deleting Draft invoices. Sent/Paid invoices must be voided first.
+ */
+export async function deleteInvoice(invoiceId: string) {
+    const headers = await zohoHeaders();
+
+    const res = await fetch(`${ZOHO_API_BASE}/invoices/${invoiceId}`, {
+        method: 'DELETE',
+        headers,
+    });
+
+    const data = await res.json();
+    return { status: res.status, data };
+}
+
+/**
  * Fetch invoice PDF as an ArrayBuffer.
  */
 export async function getInvoicePdf(invoiceId: string): Promise<ArrayBuffer> {

@@ -27,7 +27,10 @@ export default function TrackingDashboard() {
     const [trackingData, setTrackingData] = useState<TrackingShipmentData | null>(null);
     const [errorMsg, setErrorMsg] = useState('');
 
-    // Load from localStorage and Database on mount
+    // Fetch Live Statuses for DB Orders
+    const [liveStatuses, setLiveStatuses] = useState<Record<string, { status: string, error?: boolean }>>({});
+
+    // 1. Initial Load: Fetch shipped orders containing waybills from DB
     useEffect(() => {
         // Load local orders
         try {
@@ -39,23 +42,121 @@ export default function TrackingDashboard() {
             console.error('Failed to load recent local orders', e);
         }
 
-        // Load DB orders
-        const fetchDbOrders = async () => {
-            try {
-                const res = await fetch('/api/waybills/recent');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.success) {
-                        setDbOrders(data.waybills);
-                    }
+        fetchDbOrders();
+    }, []);
+
+    const fetchDbOrders = async (queryParam = '') => {
+        try {
+            const res = await fetch(`/api/orders/tracked${queryParam}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success) {
+                    setDbOrders(data.waybills || []);
                 }
-            } catch (err) {
-                console.error('Failed to fetch recent DB waybills', err);
+            }
+        } catch (err) {
+            console.error('Failed to fetch tracked orders', err);
+        }
+    };
+
+    useEffect(() => {
+        if (dbOrders.length === 0) return;
+
+        const fetchStatuses = async () => {
+            const waybillsToFetch = dbOrders.map(o => o.waybill);
+
+            if (waybillsToFetch.length === 0) return;
+
+            try {
+                const waybillsStr = waybillsToFetch.join(',');
+                const res = await fetch(`/api/delhivery/track-bulk?waybills=${waybillsStr}`);
+
+                if (!res.ok) throw new Error('Bulk fetch failed');
+
+                const responseData = await res.json();
+
+                if (responseData.success && Array.isArray(responseData.results)) {
+                    setLiveStatuses(prev => {
+                        const newStatuses = { ...prev };
+
+                        responseData.results.forEach((item: any) => {
+                            if (item.error || item.status !== 200 || !item.data?.ShipmentData?.length) {
+                                if (item.waybill && item.waybill !== 'UNKNOWN') {
+                                    newStatuses[item.waybill] = { status: 'UNKNOWN', error: true };
+                                }
+                                return;
+                            }
+
+                            const shipmentLine = item.data.ShipmentData[0]?.Shipment;
+                            if (shipmentLine) {
+                                const wb = shipmentLine.AWB;
+                                const statusObj = shipmentLine.CurrentStatus || shipmentLine.Status;
+                                if (statusObj?.Status) {
+                                    newStatuses[wb] = { status: statusObj.Status };
+                                } else {
+                                    newStatuses[wb] = { status: 'UNKNOWN', error: true };
+                                }
+                            }
+                        });
+
+                        return newStatuses;
+                    });
+                } else {
+                    throw new Error('Invalid bulk response data');
+                }
+            } catch (e) {
+                console.error('Failed to fetch bulk statuses', e);
+                setLiveStatuses(prev => {
+                    const newStatuses = { ...prev };
+                    waybillsToFetch.forEach(wb => {
+                        if (!newStatuses[wb]) newStatuses[wb] = { status: 'ERROR', error: true };
+                    });
+                    return newStatuses;
+                });
             }
         };
 
-        fetchDbOrders();
-    }, []);
+        fetchStatuses();
+    }, [dbOrders]);
+
+    const [dateFrom, setDateFrom] = useState('');
+    const [pageCount, setPageCount] = useState(1);
+
+    const applyDateFilter = async () => {
+        if (!dateFrom) return;
+
+        try {
+            setLoading(true);
+            setLiveStatuses({}); // Clear old statuses
+
+            // Read from DB using the fromDate filter natively
+            await fetchDbOrders(`?fromDate=${dateFrom}`);
+
+            // Reset pagination
+            setPageCount(1);
+        } catch (err) {
+            console.error('Failed to filter by start date', err);
+            setErrorMsg('Failed to fetch orders by dates.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadMore = async () => {
+        try {
+            setLoading(true);
+            const currentTotal = dbOrders.length;
+            const fetchCount = currentTotal + 5; // Load 5 more
+
+            // Get from db with bumped limit
+            const queryParams = dateFrom ? `?fromDate=${dateFrom}&limit=${fetchCount}` : `?limit=${fetchCount}`;
+            await fetchDbOrders(queryParams);
+        } catch (err) {
+            console.error('Failed to load more', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchTracking = async (query: string) => {
         if (!query.trim()) return;
@@ -105,7 +206,7 @@ export default function TrackingDashboard() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400 bg-clip-text text-transparent mb-2">
                     Track Shipments
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400">Search by Waybill Number or Order ID</p>
+                <p className="text-gray-500 dark:text-gray-400">Search by Waybill Number or Order ID, or view recent orders</p>
             </div>
 
             {/* Search Bar */}
@@ -127,6 +228,28 @@ export default function TrackingDashboard() {
                     Search
                 </button>
             </div>
+
+            {/* Date Filters */}
+            {!trackingData && (
+                <div className="max-w-md mx-auto mb-10 p-4 bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] rounded-xl shadow-sm flex flex-wrap gap-4 items-end justify-between">
+                    <div className="flex-1 min-w-[200px]">
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Select Start Date</label>
+                        <input
+                            type="date"
+                            className="form-input w-full p-2 text-sm bg-gray-50 dark:bg-[#16161f] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2a2a38] rounded-lg focus:ring-accent focus:border-accent transition-colors"
+                            value={dateFrom}
+                            onChange={(e) => setDateFrom(e.target.value)}
+                        />
+                    </div>
+                    <button
+                        onClick={applyDateFilter}
+                        disabled={loading || !dateFrom}
+                        className="btn btn-secondary py-2 px-6 whitespace-nowrap bg-gray-100 hover:bg-gray-200 dark:bg-[#1c1c28] dark:hover:bg-[#2a2a38] text-gray-800 dark:text-gray-200"
+                    >
+                        {loading ? 'Fetching...' : 'Fetch Orders'}
+                    </button>
+                </div>
+            )}
 
             {errorMsg && (
                 <div className="form-error max-w-2xl mx-auto mb-8">
@@ -196,49 +319,73 @@ export default function TrackingDashboard() {
             {!trackingData && dbOrders.length > 0 && (
                 <div className="animate-in fade-in duration-500 mb-12">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Allocated Waybills</h3>
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Active Waybills</h3>
                         <span className="text-xs bg-accent/10 dark:bg-accent/20 text-accent px-3 py-1.5 rounded-full border border-accent/20 dark:border-accent/30 flex items-center gap-1.5 font-medium shadow-sm">
-                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(108,99,255,0.8)]"></span> Database
+                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(108,99,255,0.8)]"></span> Delhivery API
                         </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {dbOrders.map((order, idx) => (
-                            <div
-                                key={idx}
-                                className="bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] hover:border-accent dark:hover:border-accent/50 p-5 rounded-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-accent/5 hover:bg-gray-50 dark:hover:bg-[#16161f] group"
-                                onClick={() => {
-                                    setSearchQuery(order.waybill);
-                                    if (order.status === 'UNUSED') {
-                                        setErrorMsg('This pre-allocated waybill has not been dispatched yet.');
-                                        setTrackingData(null);
-                                    } else {
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+                        {dbOrders.map((order, idx) => {
+                            const isUnused = order.status === 'UNUSED';
+                            const liveStatus = liveStatuses[order.waybill]?.status;
+                            const isLiveLoading = !liveStatus && !liveStatuses[order.waybill]?.error;
+
+                            let displayStatus = order.status;
+                            let statusClasses = isUnused
+                                ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 border border-green-200 dark:border-green-500/30'
+                                : 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30';
+
+                            if (isLiveLoading) {
+                                displayStatus = 'LOADING...';
+                                statusClasses = 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 animate-pulse';
+                            } else if (liveStatus) {
+                                displayStatus = liveStatus.length > 15 ? liveStatus.substring(0, 15) + '...' : liveStatus;
+                                statusClasses = getStatusColor(liveStatus);
+                            }
+
+                            return (
+                                <div
+                                    key={idx}
+                                    className="bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] hover:border-accent dark:hover:border-accent/50 p-5 rounded-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-accent/5 hover:bg-gray-50 dark:hover:bg-[#16161f] group flex flex-col h-full"
+                                    onClick={() => {
+                                        setSearchQuery(order.waybill);
                                         fetchTracking(order.waybill);
-                                    }
-                                }}
-                            >
-                                <div className="flex justify-between items-start mb-3 gap-2">
-                                    <span className={`text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide ${order.status === 'UNUSED' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 border border-green-200 dark:border-green-500/30' : 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30'}`}>
-                                        {order.status}
-                                    </span>
-                                    <span className="text-gray-500 dark:text-gray-400 text-xs font-medium flex items-center gap-1">
-                                        📅 {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                                    </span>
-                                </div>
-                                <div className="mb-4">
-                                    <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Waybill Number</p>
-                                    <p className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-accent transition-colors">{order.waybill}</p>
-                                </div>
-                                <div className="pt-3 border-t border-gray-100 dark:border-[#2a2a38] flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs text-gray-400 mb-0.5">Assigned Order</p>
-                                        <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">{order.orderId ? order.orderId : '—'}</p>
+                                    }}
+                                >
+                                    <div className="flex justify-between items-start mb-3 gap-2">
+                                        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide flex-shrink-0 ${statusClasses}`} title={liveStatus || order.status}>
+                                            {displayStatus}
+                                        </span>
+                                        <span className="text-gray-500 dark:text-gray-400 text-xs font-medium flex items-center gap-1 text-right flex-shrink-0">
+                                            📅 {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </span>
                                     </div>
-                                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-[#1c1c28] flex items-center justify-center text-gray-400 group-hover:text-accent group-hover:bg-accent/10 transition-colors">
-                                        ➔
+                                    <div className="mb-4 flex-grow">
+                                        <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Waybill Number</p>
+                                        <p className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-accent transition-colors">{order.waybill}</p>
+                                    </div>
+                                    <div className="pt-3 border-t border-gray-100 dark:border-[#2a2a38] flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs text-gray-400 mb-0.5">Assigned Order</p>
+                                            <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">{order.orderId ? order.orderId : '—'}</p>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-[#1c1c28] flex items-center justify-center text-gray-400 group-hover:text-accent group-hover:bg-accent/10 transition-colors flex-shrink-0">
+                                            ➔
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
+                    </div>
+
+                    <div className="flex justify-center mt-6">
+                        <button
+                            onClick={loadMore}
+                            disabled={loading}
+                            className="btn bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-[#1c1c28] dark:hover:bg-[#2a2a38] dark:text-gray-300 px-8 py-3 rounded-full font-semibold transition-all border border-gray-200 dark:border-gray-700 flex items-center gap-2 shadow-sm"
+                        >
+                            {loading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span> : '⟳ Load 5 More Waybills'}
+                        </button>
                     </div>
                 </div>
             )}
