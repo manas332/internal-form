@@ -45,6 +45,7 @@ export default function ScheduleOrderFlow() {
         };
         invoiceItems: InvoiceItem[];
         salespersonName: string;
+        paymentMode?: 'Prepaid' | 'COD';
         status: string;
     };
 
@@ -82,6 +83,7 @@ export default function ScheduleOrderFlow() {
             pincode: order.customerDetails.pincode,
             invoice_items: normalizedItems,
             salesperson_name: order.salespersonName,
+            payment_mode: order.paymentMode === 'COD' ? 'COD' : 'Prepaid',
             // Trigger pincode check naturally via updating the zip
             isPincodeServiceable: true // Assume true initially to unblock, wait user might need to edit. But user won't edit customer details in this flow.
         });

@@ -327,6 +327,31 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                         </label>
                         <span>{formData.include_cod ? '₹50.00' : '₹0.00'}</span>
                     </div>
+
+                    <div className="total-row items-center border-b border-gray-100 dark:border-[#2a2a38] pb-2 mb-2">
+                        <span className="text-sm font-medium">Payment Mode</span>
+                        <div className="flex gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    checked={formData.payment_mode === 'Prepaid'}
+                                    onChange={() => updateForm({ payment_mode: 'Prepaid' })}
+                                    className="accent-accent"
+                                />
+                                <span className="text-sm">Prepaid</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    checked={formData.payment_mode === 'COD'}
+                                    onChange={() => updateForm({ payment_mode: 'COD' })}
+                                    className="accent-accent"
+                                />
+                                <span className="text-sm">COD</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div className="total-row total-grand">
                         <span>Invoice Total</span>
                         <span>₹{grandTotal.toFixed(2)}</span>

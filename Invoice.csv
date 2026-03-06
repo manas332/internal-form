@@ -1,0 +1,1226 @@
+Invoice ID,Invoice Number,IsLastRecChildInvID,Invoice Date,Due Date,Expected Payment Date,Invoice Status,Invoice From,Reference ID,Order Number,Customer Name,Customer ID,Template Name,Currency Code,Exchange Rate,Estimate Number,Invoice Level Tax,Invoice Level Tax %,Invoice Level Tax Type,Invoice Level Tax Exemption Reason,Invoice Level Tax Authority,Start Date,End Date,Item Name,Item Code,Line Item Type,Item Desc,Item ID,Quantity,Item Price,MRP,Discount(%),Discount Amount,SKU,Project ID,Project Name,Is Inclusive Tax,Tax ID,Item Tax,Item Tax %,Item Tax Amount,Item Tax Type,Coupon Name,Coupon Code,Item Type,Item Tax Exemption Reason,Reverse Charge Tax Name,Reverse Charge Tax Rate,Reverse Charge Tax Type,CGST Rate %,SGST Rate %,IGST Rate %,CESS Rate %,CGST(FCY),SGST(FCY),IGST(FCY),CESS(FCY),CGST,SGST,IGST,CESS,TDS Calculation Type,Item TDS Name,Item TDS Percentage,Item TDS Amount,Item TDS Section Code,Item TDS Section,Supply Type,Account,Account Code,HSN/SAC,Item Total,SubTotal,Total,Balance,Sales Person,GST Treatment,GST Identification Number (GSTIN),Payment Terms,Payment Terms Label,Last Payment Date,Payment ID,Notes,Terms & Conditions,WriteOff Date,WriteOff Exchange Rate,WriteOff Amount,Subscription Name,Subscription ID,Place of Supply,PayPal,2Checkout,Braintree,Authorize.Net,Forte,Payflow Pro,PaymentsPro,Stripe,Paytm,Square,Test Gateway,WePay,WorldPay,Razorpay,GoCardless,ICICI EazyPay,Partial Payments,Billing Attention,Billing Address,Billing Street2,Billing City,Billing State,Billing Country,Billing Code,Billing Phone,Billing Fax,Shipping Attention,Shipping Address,Shipping Street2,Shipping City,Shipping State,Shipping Country,Shipping Code,Shipping Fax,Shipping Phone Number,Created By,Supplier Org Name,Supplier GST Registration Number,Supplier Street Address,Supplier City,Supplier State,Supplier Country,Supplier ZipCode,Supplier Phone,Supplier E-Mail,TCS Tax Name,TCS Percentage,TCS Amount,Nature Of Collection,TDS Name,TDS Percentage,TDS Section Code,TDS Section,TDS Amount,Shipping Charge,Shipping Charge Tax ID,Shipping Charge Tax Amount,Shipping Charge Tax Name,Shipping Charge Tax %,Shipping Charge Tax Type,Shipping Charge Tax Exemption Code,Shipping Charge SAC Code,Adjustment,Adjustment Description,CF.Phone Number
+3.35522E+18,INV-000077,FALSE,04-02-2026,04-02-2026,,Closed,Zoho Billing,,,Poonam Singh,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Sunstone Bracelet,Sunstone Bracelet,Item,,3.35522E+18,1,1500,,0,45,,,,FALSE,3.35522E+18,3%,3,43.65,ItemAmount,,,goods,,,,,0,0,3,0,0,0,43.65,0,0,0,43.65,0,item_level,,,0,,,Taxable,Sales,,71179090,1455,1455,1500,0,,consumer,,0,Due on Receipt,04-02-2026,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,TS,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Divyam Kalra,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.35,Adjustment,
+3.35522E+18,INV-000078,FALSE,04-02-2026,04-02-2026,,Closed,Zoho Billing,,,Neeraj Kunwar,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Amethyst Stone,Amethyst Stone,Item,,3.35522E+18,1,1330,,0,3.33,,,,FALSE,3.35522E+18,Gemstone,0.25,3.32,ItemAmount,,,goods,,,,,0,0,0.25,0,0,0,3.32,0,0,0,3.32,0,item_level,,,0,,,Taxable,Sales,,5080010,1326.67,1326.67,1330,0,,consumer,,0,Due on Receipt,04-02-2026,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,UK,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Divyam Kalra,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.01,Adjustment,
+3.35522E+18,INV-000080,FALSE,04-02-2026,04-02-2026,,Closed,Zoho Billing,,,Nisha Choudhary,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Black Tourmaline Bracelet,Black Tourmaline Bracelet,Item,,3.35522E+18,2,240,,0,13.92,,,,FALSE,3.35522E+18,3%,3,13.98,ItemAmount,,,goods,,,,,0,0,3,0,0,0,13.98,0,0,0,13.98,0,item_level,,,0,,,Taxable,Sales,,71179090,466.08,1874.03,1930,0,,consumer,,0,Due on Receipt,04-02-2026,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Divyam Kalra,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.25,Adjustment,
+3.35522E+18,INV-000080,FALSE,04-02-2026,04-02-2026,,Closed,Zoho Billing,,,Nisha Choudhary,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Money Magnet Bracelet,Money Magnet Bracelet,Item,,3.35522E+18,3,350,,0,30.45,,,,FALSE,3.35522E+18,3%,3,30.59,ItemAmount,,,goods,,,,,0,0,3,0,0,0,30.59,0,0,0,30.59,0,item_level,,,0,,,Taxable,Sales,,71179090,1019.55,1874.03,1930,0,,consumer,,0,Due on Receipt,04-02-2026,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Divyam Kalra,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.25,Adjustment,
+3.35522E+18,INV-000080,FALSE,04-02-2026,04-02-2026,,Closed,Zoho Billing,,,Nisha Choudhary,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,7 Horses Frame,7 Horses Frame,Item,,3.35522E+18,1,400,,0,11.6,,,,FALSE,3.35522E+18,3%,3,11.65,ItemAmount,,,goods,,,,,0,0,3,0,0,0,11.65,0,0,0,11.65,0,item_level,,,0,,,Taxable,Sales,,71179090,388.4,1874.03,1930,0,,consumer,,0,Due on Receipt,04-02-2026,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Divyam Kalra,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.25,Adjustment,
+3.35522E+18,INV-000082,FALSE,04-02-2026,04-02-2026,,Closed,Zoho Billing,,,Dev Maharaj,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Amethyst + Rose Quartz,Amethyst + Rose Quartz,Item,,3.35522E+18,1,840,,0,25.2,,,,FALSE,3.35522E+18,3%,3,24.44,ItemAmount,,,goods,,,,,0,0,3,0,0,0,24.44,0,0,0,24.44,0,item_level,,,0,,,Taxable,Sales,,71179090,814.8,814.8,840,0,,consumer,,0,Due on Receipt,04-02-2026,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,CG,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,Roshan janaral aajad chouk sarangarh dist sarangarh bilaigarh chattisgarh,,bilaigarh,Chhattisgarh,India,496445,'+91-9340751044,,,Roshan janaral aajad chouk sarangarh dist sarangarh bilaigarh chattisgarh,,bilaigarh,Chhattisgarh,India,496445,,'+91-9340751044,Divyam Kalra,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.76,Adjustment,
+3.35522E+18,INV-000101,FALSE,05-02-2026,05-02-2026,,Overdue,Zoho Billing,,,BIKOTSAV Celebration of Bikaner,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Pukhraj,Pukhraj,Item,3 Ratti ,3.35522E+18,1,2320,,0,46.4,,,,FALSE,3.35522E+18,Gemstone,0.25,5.68,ItemAmount,,,goods,,,,,0,0,0.25,0,0,0,5.68,0,0,0,5.68,0,item_level,,,0,,,Taxable,Sales,,5080010,2273.6,2734.2,2750,2750,,business_gst,08CHGPK6695G1ZU,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.76,Adjustment,
+3.35522E+18,INV-000101,FALSE,05-02-2026,05-02-2026,,Overdue,Zoho Billing,,,BIKOTSAV Celebration of Bikaner,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,4 Mukhi Rudraksh,4 Mukhi Rudraksh,Item,,3.35522E+18,1,100,,0,2,,,,FALSE,3.35522E+18,IGST0,0,0,ItemAmount,,,goods,,,,,0,0,0,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Zero Rated,Sales,,14049070,98,2734.2,2750,2750,,business_gst,08CHGPK6695G1ZU,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.76,Adjustment,
+3.35522E+18,INV-000101,FALSE,05-02-2026,05-02-2026,,Overdue,Zoho Billing,,,BIKOTSAV Celebration of Bikaner,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,6 Mukhi Rudraksha,6 Mukhi Rudraksha,Item,,3.35522E+18,1,100,,0,2,,,,FALSE,3.35522E+18,3%,3,2.94,ItemAmount,,,goods,,,,,0,0,3,0,0,0,2.94,0,0,0,2.94,0,item_level,,,0,,,Taxable,Sales,,14049070,98,2734.2,2750,2750,,business_gst,08CHGPK6695G1ZU,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.76,Adjustment,
+3.35522E+18,INV-000101,FALSE,05-02-2026,05-02-2026,,Overdue,Zoho Billing,,,BIKOTSAV Celebration of Bikaner,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Sulemani Bracelet,Sulemani Bracelet,Item,,3.35522E+18,1,220,,0,4.4,,,,FALSE,3.35522E+18,3%,3,6.47,ItemAmount,,,goods,,,,,0,0,3,0,0,0,6.47,0,0,0,6.47,0,item_level,,,0,,,Taxable,Sales,,71179090,215.6,2734.2,2750,2750,,business_gst,08CHGPK6695G1ZU,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.76,Adjustment,
+3.35522E+18,INV-000101,FALSE,05-02-2026,05-02-2026,,Overdue,Zoho Billing,,,BIKOTSAV Celebration of Bikaner,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,COD,COD,Item,,3.35522E+18,1,50,,0,1,,,,FALSE,3.35522E+18,3%,3,1.47,ItemAmount,,,service,,,,,0,0,3,0,0,0,1.47,0,0,0,1.47,0,item_level,,,0,,,Taxable,Sales,,996819,49,2734.2,2750,2750,,business_gst,08CHGPK6695G1ZU,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.76,Adjustment,
+3.35522E+18,INV-000119,FALSE,09-02-2026,09-02-2026,,Draft,Zoho Billing,,,sri matth,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Margaz,Margaz,Item,"8 carat , oval ",3.35522E+18,1,640,,0,16,,,,FALSE,3.35522E+18,GST1.5,3,18.72,Tax Group,,,goods,,,,,1.5,1.5,0,0,9.36,9.36,0,0,9.36,9.36,0,0,item_level,,,0,,,Taxable,Sales,,5080010,624,624,640,640,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-2.72,Adjustment,
+3.35522E+18,INV-000120,FALSE,09-02-2026,09-02-2026,,Draft,Zoho Billing,,,Divya Ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Money Magnet Bracelet,Money Magnet Bracelet,Item,,3.35522E+18,1,260,,0,6.5,,,,FALSE,3.35522E+18,3%,3,7.61,ItemAmount,,,goods,,,,,0,0,3,0,0,0,7.61,0,0,0,7.61,0,item_level,,,0,,,Taxable,Sales,,71179090,253.5,351,360,360,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,OD,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-1.53,Adjustment,
+3.35522E+18,INV-000120,FALSE,09-02-2026,09-02-2026,,Draft,Zoho Billing,,,Divya Ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Shipping,Shipping,Item,,3.35522E+18,1,100,,0,2.5,,,,FALSE,3.35522E+18,3%,3,2.92,ItemAmount,,,service,,,,,0,0,3,0,0,0,2.92,0,0,0,2.92,0,item_level,,,0,,,Taxable,Shipping Charge,,996812,97.5,351,360,360,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,OD,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-1.53,Adjustment,
+3.35522E+18,INV-000121,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Tripuari Mishra,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Rudraksha Mala,Rudraksha Mala,Item,5mm,3.35522E+18,5,145,,0,24.65,,,,FALSE,3.35522E+18,3%,3,21.01,ItemAmount,,,goods,,,,,0,0,3,0,0,0,21.01,0,0,0,21.01,0,item_level,,,0,,,Taxable,Sales,,14049070,700.35,2149.35,2215,2215,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,BR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.17,Adjustment,
+3.35522E+18,INV-000121,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Tripuari Mishra,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,3 mukhi,3 mukhi,Item,,3.35522E+18,5,60,,0,10.2,,,,FALSE,3.35522E+18,3%,3,8.69,ItemAmount,,,goods,,,,,0,0,3,0,0,0,8.69,0,0,0,8.69,0,item_level,,,0,,,Taxable,Sales,,14049070,289.8,2149.35,2215,2215,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,BR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.17,Adjustment,
+3.35522E+18,INV-000121,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Tripuari Mishra,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,7 Mukhi Rudraksh,7 Mukhi Rudraksh,Item,25 mm,3.35522E+18,5,230,,0,39.1,,,,FALSE,3.35522E+18,3%,3,33.33,ItemAmount,,,goods,,,,,0,0,3,0,0,0,33.33,0,0,0,33.33,0,item_level,,,0,,,Taxable,Sales,,14049070,1110.9,2149.35,2215,2215,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,BR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.17,Adjustment,
+3.35522E+18,INV-000121,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Tripuari Mishra,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,COD,COD,Item,,3.35522E+18,1,50,,0,1.7,,,,FALSE,3.35522E+18,3%,3,1.45,ItemAmount,,,service,,,,,0,0,3,0,0,0,1.45,0,0,0,1.45,0,item_level,,,0,,,Taxable,Sales,,996819,48.3,2149.35,2215,2215,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,BR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.17,Adjustment,
+3.35522E+18,INV-000122,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Ms khush,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Rose Quartz Bracelet,Rose Quartz Bracelet,Item,,3.35522E+18,3,120,,0,37.8,,,,FALSE,3.35522E+18,GST1.5,3,9.66,Tax Group,,,goods,,,,,1.5,1.5,0,0,4.83,4.83,0,0,4.83,4.83,0,0,item_level,,,0,,,Taxable,Sales,,71179090,322.2,2156.95,2220,2220,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.03,Adjustment,
+3.35522E+18,INV-000122,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Ms khush,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Pyrite + Black Tourmaline Bracelet,Pyrite + Black Tourmaline Bracelet,Item,,3.35522E+18,2,240,,0,50.4,,,,FALSE,3.35522E+18,GST1.5,3,12.88,Tax Group,,,goods,,,,,1.5,1.5,0,0,6.44,6.44,0,0,6.44,6.44,0,0,item_level,,,0,,,Taxable,Sales,,71179090,429.6,2156.95,2220,2220,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.03,Adjustment,
+3.35522E+18,INV-000122,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Ms khush,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Money Magnet Bracelet,Money Magnet Bracelet,Item,,3.35522E+18,3,260,,0,81.9,,,,FALSE,3.35522E+18,GST1.5,3,20.94,Tax Group,,,goods,,,,,1.5,1.5,0,0,10.47,10.47,0,0,10.47,10.47,0,0,item_level,,,0,,,Taxable,Sales,,71179090,698.1,2156.95,2220,2220,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.03,Adjustment,
+3.35522E+18,INV-000122,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Ms khush,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,7 Horses Frame,7 Horses Frame,Item,,3.35522E+18,1,400,,0,42,,,,FALSE,3.35522E+18,GST1.5,3,10.74,Tax Group,,,goods,,,,,1.5,1.5,0,0,5.37,5.37,0,0,5.37,5.37,0,0,item_level,,,0,,,Taxable,Sales,,71179090,358,2156.95,2220,2220,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.03,Adjustment,
+3.35522E+18,INV-000122,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Ms khush,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,5 Mukhi Rudraksh,5 Mukhi Rudraksh,Item,,3.35522E+18,1,100,,0,10.5,,,,FALSE,3.35522E+18,GST0,0,0,Tax Group,,,goods,,,,,0,0,0,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Zero Rated,Sales,,14049070,89.5,2156.95,2220,2220,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.03,Adjustment,
+3.35522E+18,INV-000122,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Ms khush,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Green Aventurine Bracelet,Green Aventurine Bracelet,Item,,3.35522E+18,2,120,,0,25.2,,,,FALSE,3.35522E+18,GST1.5,3,6.44,Tax Group,,,goods,,,,,1.5,1.5,0,0,3.22,3.22,0,0,3.22,3.22,0,0,item_level,,,0,,,Taxable,Sales,,71179090,214.8,2156.95,2220,2220,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.03,Adjustment,
+3.35522E+18,INV-000122,FALSE,13-02-2026,13-02-2026,,Draft,Zoho Billing,,,Ms khush,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,COD,COD,Item,,3.35522E+18,1,50,,0,5.25,,,,FALSE,3.35522E+18,GST1.5,3,1.36,Tax Group,,,service,,,,,1.5,1.5,0,0,0.68,0.68,0,0,0.68,0.68,0,0,item_level,,,0,,,Taxable,Sales,,996819,44.75,2156.95,2220,2220,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,1.03,Adjustment,
+3.35522E+18,INV-000123,FALSE,14-02-2026,14-02-2026,,Draft,Zoho Billing,,,Mrinal Gaur,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Rose Quartz Bracelet,Rose Quartz Bracelet,Item,,3.35522E+18,1,120,,0,2.4,,,,FALSE,3.35522E+18,3%,3,3.53,ItemAmount,,,goods,,,,,0,0,3,0,0,0,3.53,0,0,0,3.53,0,item_level,,,0,,,Taxable,Sales,,71179090,117.6,999.6,1030,1030,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.41,Adjustment,
+3.35522E+18,INV-000123,FALSE,14-02-2026,14-02-2026,,Draft,Zoho Billing,,,Mrinal Gaur,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Amethyst + Rose Quartz,Amethyst + Rose Quartz,Item,,3.35522E+18,1,240,,0,4.8,,,,FALSE,3.35522E+18,3%,3,7.06,ItemAmount,,,goods,,,,,0,0,3,0,0,0,7.06,0,0,0,7.06,0,item_level,,,0,,,Taxable,Sales,,71179090,235.2,999.6,1030,1030,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.41,Adjustment,
+3.35522E+18,INV-000123,FALSE,14-02-2026,14-02-2026,,Draft,Zoho Billing,,,Mrinal Gaur,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Pyrite + Black Tourmaline Bracelet,Pyrite + Black Tourmaline Bracelet,Item,,3.35522E+18,1,240,,0,4.8,,,,FALSE,3.35522E+18,3%,3,7.06,ItemAmount,,,goods,,,,,0,0,3,0,0,0,7.06,0,0,0,7.06,0,item_level,,,0,,,Taxable,Sales,,71179090,235.2,999.6,1030,1030,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.41,Adjustment,
+3.35522E+18,INV-000123,FALSE,14-02-2026,14-02-2026,,Draft,Zoho Billing,,,Mrinal Gaur,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Money Magnet Bracelet,Money Magnet Bracelet,Item,,3.35522E+18,1,260,,0,5.2,,,,FALSE,3.35522E+18,3%,3,7.64,ItemAmount,,,goods,,,,,0,0,3,0,0,0,7.64,0,0,0,7.64,0,item_level,,,0,,,Taxable,Sales,,71179090,254.8,999.6,1030,1030,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.41,Adjustment,
+3.35522E+18,INV-000123,FALSE,14-02-2026,14-02-2026,,Draft,Zoho Billing,,,Mrinal Gaur,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,7 Chakra + Lava Bracelet,7 Chakra + Lava Bracelet,Item,,3.35522E+18,1,160,,0,3.2,,,,FALSE,3.35522E+18,3%,3,4.7,ItemAmount,,,goods,,,,,0,0,3,0,0,0,4.7,0,0,0,4.7,0,item_level,,,0,,,Taxable,Sales,,71179090,156.8,999.6,1030,1030,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.41,Adjustment,
+3.35522E+18,INV-000124,FALSE,18-02-2026,18-02-2026,,Draft,Zoho Billing,,,Sample Customer,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,2 Mukhi Rudraksh,2 Mukhi Rudraksh,Item,,3.35522E+18,2,1500,,0,0,,,,FALSE,3.35522E+18,IGST0,0,0,ItemAmount,,,service,,,,,0,0,0,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Zero Rated,Sales,,14049070,3000,3000,3060,3060,,consumer,,0,Due on Receipt,,,Thanks,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,JK,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,60,,,,,,,,0,,
+3.35522E+18,INV-000125,FALSE,18-02-2026,18-02-2026,,Draft,Zoho Billing,,,Sample Customer,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,2 Mukhi Rudraksh,2 Mukhi Rudraksh,Item,,3.35522E+18,2,1500,,0,0,,,,FALSE,3.35522E+18,IGST0,0,0,ItemAmount,,,service,,,,,0,0,0,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Zero Rated,Sales,,14049070,3000,3000,3060,3060,Utkarsh,consumer,,0,Due on Receipt,,,Thanks,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,JK,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,60,,,,,,,,0,,
+3.35522E+18,INV-000126,FALSE,18-02-2026,18-02-2026,,Draft,Zoho Billing,,,Abhimanu Kumar,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,aagga,,Item,,3.35522E+18,1,34,,0,0,,,,FALSE,3.35522E+18,3%,3,1.02,ItemAmount,,,service,,,,,0,0,3,0,0,0,1.02,0,0,0,1.02,0,item_level,,,0,,,Taxable,Sales,,,34,34,55.02,55.02,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,JH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,20,,,,,,,,0,,
+3.35522E+18,INV-000127,FALSE,18-02-2026,18-02-2026,,Draft,Zoho Billing,,,Vishal ,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Panna ,,Item,5 ct,3.35522E+18,1,4999.99,,0,0,,,,FALSE,3.35522E+18,3%,3,150,ItemAmount,,,service,,,,,0,0,3,0,0,0,150,0,0,0,150,0,item_level,,,0,,,Taxable,Sales,,11,4999.99,4999.99,5149.99,5149.99,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,BR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000140,FALSE,23-02-2026,23-02-2026,,Draft,Zoho Billing,,,Test Cust IGST RJ 7882,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Test item,,Item,,3.35522E+18,1,100,,0,0,,,,FALSE,3.35522E+18,IGST,0.25,0.25,ItemAmount,,,service,,,,,0,0,0.25,0,0,0,0.25,0,0,0,0.25,0,item_level,,,0,,,Taxable,Sales,,,100,100,100.25,100.25,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000141,FALSE,23-02-2026,23-02-2026,,Draft,Zoho Billing,,,Ajit More,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,4,,Item,,3.35522E+18,1,500,,0,0,,,,FALSE,3.35522E+18,3%,3,15,ItemAmount,,,service,,,,,0,0,3,0,0,0,15,0,0,0,15,0,item_level,,,0,,,Taxable,Sales,,14049070,500,500,515,515,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000142,FALSE,23-02-2026,23-02-2026,,Draft,Zoho Billing,,,Ajit More,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,4 mukhi,,Item,,3.35522E+18,1,60,,0,0,,,,FALSE,3.35522E+18,GST1.5,3,1.8,Tax Group,,,service,,,,,1.5,1.5,0,0,0.9,0.9,0,0,0.9,0.9,0,0,item_level,,,0,,,Taxable,Sales,,14049070,60,60,61.8,61.8,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000143,FALSE,23-02-2026,23-02-2026,,Draft,Zoho Billing,,,Ajit More,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,2 mukhi,,Item,,3.35522E+18,1,500,,0,0,,,,FALSE,3.35522E+18,GST1.5,3,15,Tax Group,,,service,,,,,1.5,1.5,0,0,7.5,7.5,0,0,7.5,7.5,0,0,item_level,,,0,,,Taxable,Sales,,14049070,500,500,515,515,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000144,FALSE,23-02-2026,23-02-2026,,Draft,Zoho Billing,,,Ajit More,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,3 mukh,,Item,,3.35522E+18,1,60,,0,0,,,,FALSE,3.35522E+18,GST18,18,10.8,Tax Group,,,service,,,,,9,9,0,0,5.4,5.4,0,0,5.4,5.4,0,0,item_level,,,0,,,Taxable,Sales,,,60,60,70.8,70.8,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000145,FALSE,23-02-2026,23-02-2026,,Draft,Zoho Billing,,,Biswajit Upadhyay,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,4 Mukhi Rudraksh,4 Mukhi Rudraksh,Item,,3.35522E+18,1,100,,0,0,,,,FALSE,3.35522E+18,GST12,12,12,Tax Group,,,service,,,,,6,6,0,0,6,6,0,0,6,6,0,0,item_level,,,0,,,Taxable,Sales,,14049070,100,100,112,112,Karamveer,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000146,FALSE,23-02-2026,23-02-2026,,Draft,Zoho Billing,,,Ajit More,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,7 Chakra Bracelet,7 Chakra Bracelet,Item,,3.35522E+18,1,240,,0,0,,,,FALSE,3.35522E+18,3%,3,7.2,ItemAmount,,,service,,,,,0,0,3,0,0,0,7.2,0,0,0,7.2,0,item_level,,,0,,,Taxable,Sales,,71179090,240,240,247.2,247.2,Utkarsh,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000147,FALSE,23-02-2026,23-02-2026,,Draft,Zoho Billing,,,Ajit More,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,4 Mukhi Rudraksh,4 Mukhi Rudraksh,Item,,3.35522E+18,1,100,,0,0,,,,FALSE,3.35522E+18,GST0,0,0,Tax Group,,,service,,,,,0,0,0,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Zero Rated,Sales,,14049070,100,100,100,100,Utkarsh,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000148,FALSE,24-02-2026,24-02-2026,,Draft,Zoho Billing,,,Grim Gyanesh,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Margaz,Margaz,Item,,3.35522E+18,1,233.009709,,0,0,,,,FALSE,3.35522E+18,GST1.5,3,7,Tax Group,,,service,,,,,1.5,1.5,0,0,3.5,3.5,0,0,3.5,3.5,0,0,item_level,,,0,,,Taxable,Sales,,71179090,233.01,233.01,240.01,240.01,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000149,FALSE,24-02-2026,24-02-2026,,Draft,Zoho Billing,,,Grim Gyanesh,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Coral 6.35 carat,,Item,,3.35522E+18,1,16126.21359,,0,0,,,,FALSE,3.35522E+18,3%,3,483.79,ItemAmount,,,service,,,,,0,0,3,0,0,0,483.79,0,0,0,483.79,0,item_level,,,0,,,Taxable,Sales,,5080010,16126.21,16126.21,16610,16610,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,MH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000150,FALSE,24-02-2026,24-02-2026,,Draft,Zoho Billing,,,Biswajit Upadhyay,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,3 mukhi,3 mukhi,Item,,3.35522E+18,1,58.252427,,0,0,,,,FALSE,3.35522E+18,GST1.5,3,1.74,Tax Group,,,service,,,,,1.5,1.5,0,0,0.87,0.87,0,0,0.87,0.87,0,0,item_level,,,0,,,Taxable,Sales,,,58.25,203.88,210,210,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000150,FALSE,24-02-2026,24-02-2026,,Draft,Zoho Billing,,,Biswajit Upadhyay,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Shipping,Shipping,Item,,3.35522E+18,1,97.087379,,0,0,,,,FALSE,3.35522E+18,GST1.5,3,2.92,Tax Group,,,service,,,,,1.5,1.5,0,0,1.46,1.46,0,0,1.46,1.46,0,0,item_level,,,0,,,Taxable,Shipping Charge,,996812,97.09,203.88,210,210,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000150,FALSE,24-02-2026,24-02-2026,,Draft,Zoho Billing,,,Biswajit Upadhyay,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,COD,COD,Item,,3.35522E+18,1,48.543689,,0,0,,,,FALSE,3.35522E+18,GST1.5,3,1.46,Tax Group,,,service,,,,,1.5,1.5,0,0,0.73,0.73,0,0,0.73,0.73,0,0,item_level,,,0,,,Taxable,Sales,,996819,48.54,203.88,210,210,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,HR,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000151,FALSE,24-02-2026,24-02-2026,,Void,Zoho Billing,,,Pratap Kondekar,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,White Sapphire,White Sapphire,Item,,3.35522E+18,4.1,21000,,0,215.25,,,,FALSE,3.35522E+18,0.25%,0.25,214.71,ItemAmount,,,goods,,,,,0,0,0.25,0,0,0,214.71,0,0,0,214.71,0,item_level,,,0,,,Taxable,Sales,,5080010,85884.75,85884.75,86100,86100,,consumer,,0,Due on Receipt,,,Thanks for your order.,"MANDATORY UNBOXING VIDEO & 48-HOUR CLAIM POLICY
+
+To protect the sanctity, authenticity, and safe delivery of our temple-blessed remedies, all customers must strictly follow the below policy for any claim related to missing, damaged, or transit-broken items.
+
+? MANDATORY VIDEO PROOF (Compulsory)
+
+A continuous, uncut, timestamped Unboxing Video is MANDATORY for any claim.
+The video must clearly show:
+
+• The Humara Pandit shipping label on the sealed parcel
+• The parcel being opened from start to finish
+• The entire unboxing process without any cuts or edits
+
+❗ Claims without this complete video will NOT be accepted under any circumstance.
+
+⏳ CLAIM REPORTING DEADLINE
+
+Any claim for:
+
+• Missing items
+• Transit-broken or damaged items
+
+Must be reported within 48 HOURS (2 calendar days) from delivery time.
+
+⚠️ STRICT POLICY NOTICE
+
+• Claims received after 48 hours will be automatically rejected
+• Claims without the mandatory unedited unboxing video will not be processed
+• No refund, replacement, or compensation will be entertained without complete video proof
+• By placing an order with Humara Pandit, the customer agrees to this policy automatically
+
+This policy exists to safeguard genuine customers and maintain fairness, authenticity, and trust.",,1,0,,,MH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Divyam Kalra,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.54,Adjustment,
+3.35522E+18,INV-000165,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,Amit chadha,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,yantra 0.00 carat,,Item,,3.35522E+18,27,21.186441,,0,0,,,,FALSE,3.35522E+18,IGST18,18,102.97,ItemAmount,,,service,,,,,0,0,18,0,0,0,102.97,0,0,0,102.97,0,item_level,,,0,,,Taxable,Sales,,,572.03,3445.82,3635,3635,Karamveer,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000165,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,Amit chadha,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Hakik Stone,Hakik Stone,Item,,3.35522E+18,100,14.563107,,0,0,,,,FALSE,3.35522E+18,3%,3,43.69,ItemAmount,,,service,,,,,0,0,3,0,0,0,43.69,0,0,0,43.69,0,item_level,,,0,,,Taxable,Sales,,71179090,1456.31,3445.82,3635,3635,Karamveer,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000165,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,Amit chadha,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Tiger Eye Bracelet,Tiger Eye Bracelet,Item,,3.35522E+18,2,126.213592,,0,0,,,,FALSE,3.35522E+18,3%,3,7.57,ItemAmount,,,service,,,,,0,0,3,0,0,0,7.57,0,0,0,7.57,0,item_level,,,0,,,Taxable,Sales,,71179090,252.43,3445.82,3635,3635,Karamveer,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000165,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,Amit chadha,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,clear quartz tumble,,Item,,3.35522E+18,10,116.504854,,0,0,,,,FALSE,3.35522E+18,3%,3,34.95,ItemAmount,,,service,,,,,0,0,3,0,0,0,34.95,0,0,0,34.95,0,item_level,,,0,,,Taxable,Sales,,,1165.05,3445.82,3635,3635,Karamveer,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000166,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,Girish Chander Jain,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Custom Bracelet,Custom Bracelet,Item,,3.35522E+18,1,368.932039,,0,0,,,,FALSE,3.35522E+18,3%,3,11.07,ItemAmount,,,service,,,,,0,0,3,0,0,0,11.07,0,0,0,11.07,0,item_level,,,0,,,Taxable,Sales,,71179090,368.93,518.93,530,530,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000166,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,Girish Chander Jain,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Shipping Charges,,Item,Shipping and handling,3.35522E+18,1,100,,0,0,,,,FALSE,3.35522E+18,IGST0,0,0,ItemAmount,,,service,,,,,0,0,0,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Zero Rated,Sales,,,100,518.93,530,530,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000166,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,Girish Chander Jain,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,COD Charges,,Item,Cash on Delivery fee,3.35522E+18,1,50,,0,0,,,,FALSE,3.35522E+18,IGST0,0,0,ItemAmount,,,service,,,,,0,0,0,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Zero Rated,Sales,,,50,518.93,530,530,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,DL,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000167,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,vipin yadav ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,1 mukhi,,Item,kaju dana,3.35522E+18,1,1795.501247,,0,0,,,,FALSE,3.35522E+18,IGST,0.25,4.49,ItemAmount,,,service,,,,,0,0,0.25,0,0,0,4.49,0,0,0,4.49,0,item_level,,,0,,,Taxable,Sales,,,1795.5,2833.91,2840.99,2840.99,Aviral,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,last time,
+3.35522E+18,INV-000167,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,vipin yadav ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Money Magnet Bracelet,Money Magnet Bracelet,Item,,3.35522E+18,4,259.351621,,0,0,,,,FALSE,3.35522E+18,IGST,0.25,2.59,ItemAmount,,,service,,,,,0,0,0.25,0,0,0,2.59,0,0,0,2.59,0,item_level,,,0,,,Taxable,Sales,,71179090,1037.41,2833.91,2840.99,2840.99,Aviral,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,last time,
+3.35522E+18,INV-000167,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,vipin yadav ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,4 Mukhi Rudraksh,4 Mukhi Rudraksh,Item,,3.35522E+18,1,0.997506,,0,0,,,,FALSE,3.35522E+18,IGST,0.25,0,ItemAmount,,,service,,,,,0,0,0.25,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Taxable,Sales,,14049070,1,2833.91,2840.99,2840.99,Aviral,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,last time,
+3.35522E+18,INV-000173,FALSE,25-02-2026,25-02-2026,,Draft,Zoho Billing,,,vipin yadav ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,vastu,vastu,Item,,3.35522E+18,1,5084.745763,,0,0,,,,FALSE,3.35522E+18,IGST18,18,915.26,ItemAmount,,,goods,,,,,0,0,18,0,0,0,915.26,0,0,0,915.26,0,item_level,,,0,,,Taxable,Sales,,74198090,5084.75,5084.75,6000.01,6000.01,Aviral,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Alwar,Rajasthan,India,301401,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000174,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,vipin yadav ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,mother of pearls,mother of pearls,Item,,3.35522E+18,1,600,,0,0,,,,FALSE,3.35522E+18,IGST0,0,0,ItemAmount,,,goods,,,,,0,0,0,0,0,0,0,0,0,0,0,0,item_level,,,0,,,Zero Rated,Sales,,71179090,600,939.81,950,950,Aviral,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Alwar,Rajasthan,India,301401,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000174,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,vipin yadav ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,7 Horses Frame,7 Horses Frame,Item,,3.35522E+18,1,339.805825,,0,0,,,,FALSE,3.35522E+18,3%,3,10.19,ItemAmount,,,goods,,,,,0,0,3,0,0,0,10.19,0,0,0,10.19,0,item_level,,,0,,,Taxable,Sales,,71179090,339.81,939.81,950,950,Aviral,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Alwar,Rajasthan,India,301401,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000175,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,chitraaksh,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Selenite Plate,Selenite Plate,Item,,3.35522E+18,1,262.135922,,0,0,,,,FALSE,3.35522E+18,3%,3,7.86,ItemAmount,,,goods,,,,,0,0,3,0,0,0,7.86,0,0,0,7.86,0,item_level,,,0,,,Taxable,Sales,,71179090,262.14,262.14,270,270,Aviral,business_gst,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,WB,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Kolkata,West Bengal,India,700015,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000177,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,Astrologer Reena ,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,7 Horses Frame,7 Horses Frame,Item,7 horse frame,3.35522E+18,1,388.349515,,0,0,,,,FALSE,3.35522E+18,3%,3,11.65,ItemAmount,,,goods,,,,,0,0,3,0,0,0,11.65,0,0,0,11.65,0,item_level,,,0,,,Taxable,Sales,,71179090,388.35,769.71,850,850,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Shahjahanpur,Uttar Pradesh,India,242001,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000177,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,Astrologer Reena ,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Dhan lakshmi pyramid,Dhan lakshmi pyramid,Item,Dhan lakshmi pyramid,3.35522E+18,1,296.610169,,0,0,,,,FALSE,3.35522E+18,IGST18,18,53.39,ItemAmount,,,goods,,,,,0,0,18,0,0,0,53.39,0,0,0,53.39,0,item_level,,,0,,,Taxable,Sales,,83062990,296.61,769.71,850,850,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Shahjahanpur,Uttar Pradesh,India,242001,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000177,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,Astrologer Reena ,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Delivery Charges,,Item,Delivery and handling,3.35522E+18,1,84.745763,,0,0,,,,FALSE,3.35522E+18,IGST18,18,15.25,ItemAmount,,,service,,,,,0,0,18,0,0,0,15.25,0,0,0,15.25,0,item_level,,,0,,,Taxable,Sales,,,84.75,769.71,850,850,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Shahjahanpur,Uttar Pradesh,India,242001,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000178,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,Grim Gyanesh,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Money Magnet Bracelet,Money Magnet Bracelet,Item,Orgonite Money Magnet Cone,3.35522E+18,2,417.475728,,0,46.75,,,,FALSE,3.35522E+18,3%,3,23.65,ItemAmount,,,goods,,,,,0,0,3,0,0,0,23.65,0,0,0,23.65,0,item_level,,,0,,,Taxable,Sales,,71179090,788.2,1146.5,1198.9,1198.9,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,MH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Thane,Maharashtra,India,421204,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000178,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,Grim Gyanesh,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Amethyst Bracelet,Amethyst Bracelet,Item,Amethyst Bracelet,3.35522E+18,1,252.427184,,0,14.13,,,,FALSE,3.35522E+18,3%,3,7.15,ItemAmount,,,goods,,,,,0,0,3,0,0,0,7.15,0,0,0,7.15,0,item_level,,,0,,,Taxable,Sales,,71179090,238.3,1146.5,1198.9,1198.9,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,MH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Thane,Maharashtra,India,421204,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000178,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,Grim Gyanesh,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Delivery Charges,,Item,Delivery and handling,3.35522E+18,1,84.745763,,0,4.75,,,,FALSE,3.35522E+18,IGST18,18,14.4,ItemAmount,,,service,,,,,0,0,18,0,0,0,14.4,0,0,0,14.4,0,item_level,,,0,,,Taxable,Sales,,,80,1146.5,1198.9,1198.9,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,MH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Thane,Maharashtra,India,421204,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000178,FALSE,26-02-2026,26-02-2026,,Draft,Zoho Billing,,,Grim Gyanesh,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,COD Charges,,Item,Cash on Delivery fee,3.35522E+18,1,42.372881,,0,2.37,,,,FALSE,3.35522E+18,IGST18,18,7.2,ItemAmount,,,service,,,,,0,0,18,0,0,0,7.2,0,0,0,7.2,0,item_level,,,0,,,Taxable,Sales,,,40,1146.5,1198.9,1198.9,Raj,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,MH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Thane,Maharashtra,India,421204,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000184,FALSE,27-02-2026,27-02-2026,,Draft,Zoho Billing,,,Nandan Vyas,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Pyrite Anklet,Pyrite Anklet,Item,,3.35522E+18,2,233.009709,,0,0,,,,FALSE,3.35522E+18,3%,3,13.98,ItemAmount,,,goods,,,,,0,0,3,0,0,0,13.98,0,0,0,13.98,0,item_level,,,0,,,Taxable,Sales,,71179090,466.02,543.69,560,560,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,MH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Mumbai,Maharashtra,India,400055,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000184,FALSE,27-02-2026,27-02-2026,,Draft,Zoho Billing,,,Nandan Vyas,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Shipping,Shipping,Item,,3.35522E+18,1,77.669903,,0,0,,,,FALSE,3.35522E+18,3%,3,2.33,ItemAmount,,,service,,,,,0,0,3,0,0,0,2.33,0,0,0,2.33,0,item_level,,,0,,,Taxable,Shipping Charge,,996812,77.67,543.69,560,560,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,MH,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Mumbai,Maharashtra,India,400055,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000187,FALSE,27-02-2026,27-02-2026,,Draft,Zoho Billing,,,Ajit More,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,7 Chakra Bracelet,7 Chakra Bracelet,Item,,3.35522E+18,1,970.873786,,0,0,,,,FALSE,3.35522E+18,3%,3,29.13,ItemAmount,,,goods,,,,,0,0,3,0,0,0,29.13,0,0,0,29.13,0,item_level,,,0,,,Taxable,Sales,,71179090,970.87,1055.62,1100.01,1100.01,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,PB,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Chandigarh,Punjab,India,160012,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000187,FALSE,27-02-2026,27-02-2026,,Draft,Zoho Billing,,,Ajit More,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Delivery Charges,,Item,,3.35522E+18,1,84.745763,,0,0,,,,FALSE,3.35522E+18,IGST18,18,15.26,ItemAmount,,,service,,,,,0,0,18,0,0,0,15.26,0,0,0,15.26,0,item_level,,,0,,,Taxable,Sales,,,84.75,1055.62,1100.01,1100.01,,consumer,,0,Due on Receipt,,,Thanks for your business.,Terms and conditions apply.,,1,0,,,PB,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,Chandigarh,Punjab,India,160012,,,,,,,,,,,,Manas Bhatia,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0,,
+3.35522E+18,INV-000194,FALSE,02-02-2026,31-03-2026,,Closed,Zoho Billing,,,Nitin Acharya,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Money Magnet Bracelet,Money Magnet Bracelet,Item,,3.35522E+18,1,260,,0,7.8,,,,FALSE,3.35522E+18,3%,3,7.57,ItemAmount,,,goods,,,,,0,0,3,0,0,0,7.57,0,0,0,7.57,0,item_level,,,0,,,Taxable,Sales,,71179090,252.2,349.2,360,0,Utkarsh,consumer,,-3,Due end of next month,02-02-2026,,Thanks for your order.,"RETURN & CLAIM POLICY
+To protect the authenticity of our products, all claims for missing or damaged items strictly require the following:
+
+1.) Mandatory Unboxing Video: You must provide a continuous, uncut, and timestamped video showing the sealed Humara Pandit shipping label and the entire opening process.
+2.) 48-Hour Deadline: Claims must be reported within 48 hours of delivery.
+3.) Policy Enforcement: Claims submitted after 48 hours or lacking the complete, unedited video will be automatically rejected. Placing an order constitutes agreement to these terms.",,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.32,last time,
+3.35522E+18,INV-000194,FALSE,02-02-2026,31-03-2026,,Closed,Zoho Billing,,,Nitin Acharya,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Shipping charges,Shipping charges,Item,,3.35522E+18,1,100,,0,3,,,,FALSE,3.35522E+18,3%,3,2.91,ItemAmount,,,service,,,,,0,0,3,0,0,0,2.91,0,0,0,2.91,0,item_level,,,0,,,Taxable,Sales,,996819,97,349.2,360,0,Utkarsh,consumer,,-3,Due end of next month,02-02-2026,,Thanks for your order.,"RETURN & CLAIM POLICY
+To protect the authenticity of our products, all claims for missing or damaged items strictly require the following:
+
+1.) Mandatory Unboxing Video: You must provide a continuous, uncut, and timestamped video showing the sealed Humara Pandit shipping label and the entire opening process.
+2.) 48-Hour Deadline: Claims must be reported within 48 hours of delivery.
+3.) Policy Enforcement: Claims submitted after 48 hours or lacking the complete, unedited video will be automatically rejected. Placing an order constitutes agreement to these terms.",,1,0,,,RJ,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.32,last time,
+3.35522E+18,INV-000195,FALSE,02-02-2026,02-02-2026,,Closed,Zoho Billing,,,Divya Ji,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,margaz,margaz,Item,,3.35522E+18,1,640,,0,19.2,,,,FALSE,3.35522E+18,3%,3,18.62,ItemAmount,,,goods,,,,,0,0,3,0,0,0,18.62,0,0,0,18.62,0,item_level,,,0,,,Taxable,Sales,,710310,620.8,620.8,640,0,Aviral,consumer,,0,Due on Receipt,02-02-2026,,Thanks for your order.,"RETURN & CLAIM POLICY
+To protect the authenticity of our products, all claims for missing or damaged items strictly require the following:
+
+1.) Mandatory Unboxing Video: You must provide a continuous, uncut, and timestamped video showing the sealed Humara Pandit shipping label and the entire opening process.
+2.) 48-Hour Deadline: Claims must be reported within 48 hours of delivery.
+3.) Policy Enforcement: Claims submitted after 48 hours or lacking the complete, unedited video will be automatically rejected. Placing an order constitutes agreement to these terms.",,1,0,,,UP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,0.58,last time,
+3.35522E+18,INV-000196,FALSE,02-02-2026,02-02-2026,,Closed,Zoho Billing,,,Deepanshu Sharma,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,OPAL,OPAL,Item,,3.35522E+18,1,680,,0,40.8,,,,FALSE,3.35522E+18,3%,3,19.18,ItemAmount,,,goods,,,,,0,0,3,0,0,0,19.18,0,0,0,19.18,0,item_level,,,0,,,Taxable,Sales,,710310,639.2,883.6,910,0,Aviral,consumer,,0,Due on Receipt,02-02-2026,,Thanks for your order.,"RETURN & CLAIM POLICY
+To protect the authenticity of our products, all claims for missing or damaged items strictly require the following:
+
+1.) Mandatory Unboxing Video: You must provide a continuous, uncut, and timestamped video showing the sealed Humara Pandit shipping label and the entire opening process.
+2.) 48-Hour Deadline: Claims must be reported within 48 hours of delivery.
+3.) Policy Enforcement: Claims submitted after 48 hours or lacking the complete, unedited video will be automatically rejected. Placing an order constitutes agreement to these terms.",,1,0,,,HP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.11,last time,
+3.35522E+18,INV-000196,FALSE,02-02-2026,02-02-2026,,Closed,Zoho Billing,,,Deepanshu Sharma,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Rudraksha Bracelet,Rudraksha Bracelet,Item,,3.35522E+18,1,160,,0,9.6,,,,FALSE,3.35522E+18,3%,3,4.51,ItemAmount,,,goods,,,,,0,0,3,0,0,0,4.51,0,0,0,4.51,0,item_level,,,0,,,Taxable,Sales,,71179090,150.4,883.6,910,0,Aviral,consumer,,0,Due on Receipt,02-02-2026,,Thanks for your order.,"RETURN & CLAIM POLICY
+To protect the authenticity of our products, all claims for missing or damaged items strictly require the following:
+
+1.) Mandatory Unboxing Video: You must provide a continuous, uncut, and timestamped video showing the sealed Humara Pandit shipping label and the entire opening process.
+2.) 48-Hour Deadline: Claims must be reported within 48 hours of delivery.
+3.) Policy Enforcement: Claims submitted after 48 hours or lacking the complete, unedited video will be automatically rejected. Placing an order constitutes agreement to these terms.",,1,0,,,HP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.11,last time,
+3.35522E+18,INV-000196,FALSE,02-02-2026,02-02-2026,,Closed,Zoho Billing,,,Deepanshu Sharma,3.35522E+18,Spreadsheet Template,INR,1,,,,,,,,,Shipping,Shipping,Item,,3.35522E+18,1,100,,0,6,,,,FALSE,3.35522E+18,3%,3,2.82,ItemAmount,,,service,,,,,0,0,3,0,0,0,2.82,0,0,0,2.82,0,item_level,,,0,,,Taxable,Shipping Charge,,996812,94,883.6,910,0,Aviral,consumer,,0,Due on Receipt,02-02-2026,,Thanks for your order.,"RETURN & CLAIM POLICY
+To protect the authenticity of our products, all claims for missing or damaged items strictly require the following:
+
+1.) Mandatory Unboxing Video: You must provide a continuous, uncut, and timestamped video showing the sealed Humara Pandit shipping label and the entire opening process.
+2.) 48-Hour Deadline: Claims must be reported within 48 hours of delivery.
+3.) Policy Enforcement: Claims submitted after 48 hours or lacking the complete, unedited video will be automatically rejected. Placing an order constitutes agreement to these terms.",,1,0,,,HP,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,,,,,,,,,,,,,,Vishal Thakur,D A Dharm Sathi Private Limited,06AALCD7494B1ZI,,,Haryana,India,,,namaste@humarapandit.com,,,,,,0,,,0,0,,,,,,,,-0.11,last time,

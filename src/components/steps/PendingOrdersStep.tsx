@@ -20,6 +20,7 @@ interface Order {
     };
     invoiceItems: InvoiceItem[];
     salespersonName: string;
+    paymentMode?: 'Prepaid' | 'COD';
     status: string;
     createdAt: string;
 }
@@ -97,6 +98,9 @@ export default function PendingOrdersStep({ onSelectOrder }: Props) {
                                 <div className="flex items-center gap-3 mb-1">
                                     <span className="font-bold text-lg text-gray-900 dark:text-white">{order.orderId}</span>
                                     <span className="text-xs bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400 px-2 py-0.5 rounded font-medium">PENDING</span>
+                                    <span className={`text-xs px-2 py-0.5 rounded font-medium text-gray-900 dark:text-white ${order.paymentMode === 'COD' ? 'bg-red-100 dark:bg-red-500/20' : 'bg-green-100 dark:bg-green-500/20'}`}>
+                                        {order.paymentMode === 'COD' ? 'COD' : 'Prepaid'}
+                                    </span>
                                 </div>
                                 <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-4">
                                     <span>👤 {order.customerDetails.customer_name}</span>

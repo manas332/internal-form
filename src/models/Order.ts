@@ -43,6 +43,11 @@ const OrderSchema = new mongoose.Schema(
             type: String,
             default: '',
         },
+        paymentMode: {
+            type: String,
+            enum: ['Prepaid', 'COD'],
+            default: 'Prepaid',
+        },
         // Legacy single-shipment fields kept for backwards compatibility.
         shippingCost: {
             type: Number,

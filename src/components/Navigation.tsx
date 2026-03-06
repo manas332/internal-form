@@ -43,6 +43,12 @@ export default function Navigation() {
                         Track Orders
                     </Link>
                     <Link
+                        href="/track-revenue"
+                        className={`nav-link ${pathname === '/track-revenue' ? 'active' : ''}`}
+                    >
+                        Track Revenue
+                    </Link>
+                    <Link
                         href="/grievance"
                         className={`nav-link ${pathname === '/grievance' ? 'active' : ''}`}
                     >
