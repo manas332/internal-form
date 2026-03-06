@@ -17,7 +17,7 @@ export async function submitGrievance(data: { salespersonName: string, orderId: 
 
         const response = await resend.emails.send({
             from: fromEmail,
-            to: 'divyam@humarapandit.com',
+            to: 'namaste@humarapandit.com',
             subject: `Grievance Report - Order ID: ${orderId}`,
             html: `
                 <h2>New Grievance Report</h2>
