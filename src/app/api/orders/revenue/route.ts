@@ -1,12 +1,30 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Order from '@/models/Order';
 import { SALESPERSONS } from '@/types/invoice';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         await connectDB();
-        const orders = await Order.find({}).sort({ createdAt: -1 }).lean();
+
+        const searchParams = request.nextUrl.searchParams;
+        const startDateParam = searchParams.get('startDate');
+        const endDateParam = searchParams.get('endDate');
+
+        let query: Record<string, any> = {};
+        if (startDateParam || endDateParam) {
+            query.createdAt = {};
+            if (startDateParam) {
+                query.createdAt.$gte = new Date(startDateParam);
+            }
+            if (endDateParam) {
+                const endDate = new Date(endDateParam);
+                endDate.setHours(23, 59, 59, 999);
+                query.createdAt.$lte = endDate;
+            }
+        }
+
+        const orders = await Order.find(query).sort({ createdAt: -1 }).lean();
 
         // Build a map for each salesperson
         const revenueMap: Record<string, { totalRevenue: number; orders: typeof orders }> = {};

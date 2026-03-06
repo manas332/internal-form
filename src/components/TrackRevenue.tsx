@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
+type DateFilterType = 'custom' | 'weekly' | 'monthly' | 'all';
 
 interface InvoiceItem {
     item_id?: string;
@@ -89,15 +91,46 @@ export default function TrackRevenue() {
     const [error, setError] = useState('');
     const [expandedPerson, setExpandedPerson] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchRevenue();
-    }, []);
+    const [dateFilter, setDateFilter] = useState<DateFilterType>('all');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
 
-    async function fetchRevenue() {
+    const fetchRevenue = useCallback(async () => {
         try {
             setLoading(true);
             setError('');
-            const res = await fetch('/api/orders/revenue');
+
+            let url = '/api/orders/revenue';
+            const params = new URLSearchParams();
+
+            const today = new Date();
+            today.setHours(23, 59, 59, 999);
+
+            if (dateFilter === 'weekly') {
+                const past = new Date(today);
+                // Start of the current week (Sunday)
+                past.setDate(today.getDate() - today.getDay());
+                past.setHours(0, 0, 0, 0);
+                params.append('startDate', past.toISOString());
+                params.append('endDate', today.toISOString());
+            } else if (dateFilter === 'monthly') {
+                // Start of the current month
+                const past = new Date(today.getFullYear(), today.getMonth(), 1);
+                past.setHours(0, 0, 0, 0);
+                params.append('startDate', past.toISOString());
+                params.append('endDate', today.toISOString());
+            } else if (dateFilter === 'custom') {
+                if (startDate) params.append('startDate', new Date(startDate).toISOString());
+                if (endDate) params.append('endDate', new Date(endDate).toISOString());
+            }
+
+            const queryString = params.toString();
+            if (queryString) {
+                url += `?${queryString}`;
+            }
+
+            const res = await fetch(url);
             const json = await res.json();
             if (json.success) {
                 setData(json.data);
@@ -109,7 +142,11 @@ export default function TrackRevenue() {
         } finally {
             setLoading(false);
         }
-    }
+    }, [dateFilter, startDate, endDate]);
+
+    useEffect(() => {
+        fetchRevenue();
+    }, [fetchRevenue]);
 
     const maxRevenue = data.length > 0 ? data[0].totalRevenue : 1;
     const totalAllRevenue = data.reduce((s, d) => s + d.totalRevenue, 0);
@@ -124,6 +161,19 @@ export default function TrackRevenue() {
         return order.invoiceItems.reduce((s, i) => s + (i.item_total || 0), 0);
     }
 
+    function toggleOrderExpand(orderId: string, e: React.MouseEvent) {
+        e.stopPropagation();
+        setExpandedOrders(prev => {
+            const next = new Set(prev);
+            if (next.has(orderId)) {
+                next.delete(orderId);
+            } else {
+                next.add(orderId);
+            }
+            return next;
+        });
+    }
+
     return (
         <div className="max-w-4xl mx-auto w-full">
             {/* Header */}
@@ -134,6 +184,45 @@ export default function TrackRevenue() {
                 <p className="text-gray-500 dark:text-gray-400 text-sm">
                     Revenue breakdown by salesperson — sorted highest to lowest
                 </p>
+            </div>
+
+            {/* Filters */}
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+                <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
+                    {['all', 'weekly', 'monthly', 'custom'].map((f) => (
+                        <button
+                            key={f}
+                            onClick={() => setDateFilter(f as DateFilterType)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${dateFilter === f
+                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                                }`}
+                        >
+                            {f === 'all' && 'All Time'}
+                            {f === 'weekly' && 'This Week'}
+                            {f === 'monthly' && 'This Month'}
+                            {f === 'custom' && 'Custom Range'}
+                        </button>
+                    ))}
+                </div>
+
+                {dateFilter === 'custom' && (
+                    <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-0 flex-1"
+                        />
+                        <span className="text-gray-400 text-sm">to</span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-0 flex-1"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Summary Cards */}
@@ -219,10 +308,16 @@ export default function TrackRevenue() {
                                 )}
                                 {sp.orders.map((order) => (
                                     <div key={order._id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5">
-                                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4 pb-4 border-b border-dashed border-gray-200 dark:border-gray-700">
+                                        <div
+                                            className={`flex flex-col md:flex-row md:items-start justify-between gap-4 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-2 -m-2 ${expandedOrders.has(order._id) ? 'mb-4 pb-4 border-b border-dashed border-gray-200 dark:border-gray-700' : ''}`}
+                                            onClick={(e) => toggleOrderExpand(order._id, e)}
+                                        >
                                             <div className="flex flex-col gap-1">
-                                                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Order</span>
-                                                <span className="font-mono text-base font-semibold text-gray-900 dark:text-white">{order.orderId}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-gray-400 text-xs transition-transform ${expandedOrders.has(order._id) ? 'rotate-90 text-indigo-500' : ''}`}>▶</span>
+                                                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Order</span>
+                                                </div>
+                                                <span className="font-mono text-base font-semibold text-gray-900 dark:text-white ml-5">{order.orderId}</span>
                                             </div>
                                             <div className="flex flex-row flex-wrap items-center gap-3">
                                                 {order.customerDetails?.customer_name && (
@@ -233,18 +328,18 @@ export default function TrackRevenue() {
                                                 <span className="text-sm text-gray-500">📅 {formatDate(order.createdAt)}</span>
                                                 {order.paymentMode && (
                                                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide ${order.paymentMode === 'COD'
-                                                            ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                                                            : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                                        ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                                                        : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                                                         }`}>
                                                         {order.paymentMode}
                                                     </span>
                                                 )}
                                                 {order.status && (
                                                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide ${order.status === 'SHIPPED' || order.status === 'SELF_SHIPPED'
-                                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                                                            : order.status === 'PARTIALLY_SHIPPED'
-                                                                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                                                                : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                                                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                        : order.status === 'PARTIALLY_SHIPPED'
+                                                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                                            : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
                                                         }`}>
                                                         {getStatusLabel(order.status)}
                                                     </span>
@@ -252,41 +347,47 @@ export default function TrackRevenue() {
                                             </div>
                                         </div>
 
-                                        {/* Line Items Table */}
-                                        {order.invoiceItems && order.invoiceItems.length > 0 && (
-                                            <div className="overflow-x-auto mb-4 border border-gray-100 dark:border-gray-700/50 rounded-lg">
-                                                <table className="w-full text-sm text-left">
-                                                    <thead className="bg-gray-50 dark:bg-gray-800/80 text-gray-600 dark:text-gray-400 text-xs uppercase font-semibold">
-                                                        <tr>
-                                                            <th className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">Item</th>
-                                                            <th className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">Qty</th>
-                                                            <th className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">Rate</th>
-                                                            <th className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 text-right">Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
-                                                        {order.invoiceItems.map((item, iIdx) => (
-                                                            <tr key={iIdx} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
-                                                                <td className="px-4 py-3">
-                                                                    <div className="font-medium text-gray-900 dark:text-gray-200">{item.name || '—'}</div>
-                                                                    {item.description && (
-                                                                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{item.description}</div>
-                                                                    )}
-                                                                </td>
-                                                                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.quantity ?? '—'}</td>
-                                                                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.rate != null ? formatCurrency(item.rate) : '—'}</td>
-                                                                <td className="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">{item.item_total != null ? formatCurrency(item.item_total) : '—'}</td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
+                                        {/* Order Contents (Collapsible) */}
+                                        {expandedOrders.has(order._id) && (
+                                            <div className="animate-fadeIn mt-2 pl-2 border-l-2 border-indigo-100 dark:border-indigo-900/30">
+
+                                                {/* Line Items Table */}
+                                                {order.invoiceItems && order.invoiceItems.length > 0 && (
+                                                    <div className="overflow-x-auto mb-4 border border-gray-100 dark:border-gray-700/50 rounded-lg">
+                                                        <table className="w-full text-sm text-left">
+                                                            <thead className="bg-gray-50 dark:bg-gray-800/80 text-gray-600 dark:text-gray-400 text-xs uppercase font-semibold">
+                                                                <tr>
+                                                                    <th className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">Item</th>
+                                                                    <th className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">Qty</th>
+                                                                    <th className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">Rate</th>
+                                                                    <th className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 text-right">Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
+                                                                {order.invoiceItems.map((item, iIdx) => (
+                                                                    <tr key={iIdx} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
+                                                                        <td className="px-4 py-3">
+                                                                            <div className="font-medium text-gray-900 dark:text-gray-200">{item.name || '—'}</div>
+                                                                            {item.description && (
+                                                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{item.description}</div>
+                                                                            )}
+                                                                        </td>
+                                                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.quantity ?? '—'}</td>
+                                                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.rate != null ? formatCurrency(item.rate) : '—'}</td>
+                                                                        <td className="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">{item.item_total != null ? formatCurrency(item.item_total) : '—'}</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                )}
+
+                                                <div className="flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/30 mt-4 text-sm md:text-base">
+                                                    <span className="font-semibold text-indigo-900 dark:text-indigo-200">Order Total</span>
+                                                    <span className="font-bold text-indigo-700 dark:text-indigo-300">{formatCurrency(getOrderTotal(order))}</span>
+                                                </div>
                                             </div>
                                         )}
-
-                                        <div className="flex justify-between items-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/30">
-                                            <span className="font-semibold text-indigo-900 dark:text-indigo-200">Order Total</span>
-                                            <span className="text-lg font-bold text-indigo-700 dark:text-indigo-300">{formatCurrency(getOrderTotal(order))}</span>
-                                        </div>
                                     </div>
                                 ))}
                             </div>

@@ -421,27 +421,33 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                             <tr>
                                 <th className="px-2 py-2 rounded-l-lg font-semibold">Item</th>
                                 {anyDescriptions && <th className="px-2 py-2 font-semibold">Description</th>}
+                                <th className="px-2 py-2 font-semibold text-center">Price</th>
                                 <th className="px-2 py-2 font-semibold text-center">Qty</th>
                                 <th className="px-2 py-2 rounded-r-lg font-semibold text-center">Allocated</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-[#2a2a38]">
-                            {formData.invoice_items.map((it, idx) => (
-                                <tr key={idx} className="text-gray-700 dark:text-gray-300">
-                                    <td className="px-2 py-2.5 font-medium">{it.name}</td>
-                                    {anyDescriptions && (
-                                        <td className="px-2 py-2.5 text-xs text-gray-500 dark:text-gray-400">
-                                            {(it.description || '').trim() ? it.description : <span className="italic text-gray-400">—</span>}
+                            {formData.invoice_items.map((it, idx) => {
+                                // Fallback calculation: (item_total + tax_amount) / quantity
+                                const perUnitTotal = it.final_price ?? (((it.item_total || 0) + (it.tax_amount || 0)) / (it.quantity || 1));
+                                return (
+                                    <tr key={idx} className="text-gray-700 dark:text-gray-300">
+                                        <td className="px-2 py-2.5 font-medium">{it.name}</td>
+                                        {anyDescriptions && (
+                                            <td className="px-2 py-2.5 text-xs text-gray-500 dark:text-gray-400">
+                                                {(it.description || '').trim() ? it.description : <span className="italic text-gray-400">—</span>}
+                                            </td>
+                                        )}
+                                        <td className="px-2 py-2.5 text-center">₹{perUnitTotal.toFixed(2)}</td>
+                                        <td className="px-2 py-2.5 text-center">{it.quantity}</td>
+                                        <td className="px-2 py-2.5 text-center">
+                                            <span className={getAllocatedQtyForLine(idx) === it.quantity ? 'text-green-500' : 'text-orange-400'}>
+                                                {getAllocatedQtyForLine(idx)}/{it.quantity}
+                                            </span>
                                         </td>
-                                    )}
-                                    <td className="px-2 py-2.5 text-center">{it.quantity}</td>
-                                    <td className="px-2 py-2.5 text-center">
-                                        <span className={getAllocatedQtyForLine(idx) === it.quantity ? 'text-green-500' : 'text-orange-400'}>
-                                            {getAllocatedQtyForLine(idx)}/{it.quantity}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -620,6 +626,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                     <thead className="text-xs text-gray-500 dark:text-gray-400 uppercase border-b border-gray-200 dark:border-[#2a2a38]">
                                         <tr>
                                             <th className="px-2 py-2 font-semibold">Item</th>
+                                            <th className="px-2 py-2 font-semibold text-center">Price</th>
                                             <th className="px-2 py-2 font-semibold text-center">Qty</th>
                                             <th className="px-2 py-2 font-semibold text-center">This shipment</th>
                                             <th className="px-2 py-2 font-semibold text-center">Remaining</th>
@@ -630,9 +637,12 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                             const thisQty = sh.items.find((x) => x.lineIndex === lineIndex)?.quantity || 0;
                                             const allocatedAcrossAll = getAllocatedQtyForLine(lineIndex);
                                             const remaining = Math.max(0, it.quantity - allocatedAcrossAll + thisQty);
+                                            // Fallback calculation: (item_total + tax_amount) / quantity
+                                            const perUnitTotal = it.final_price ?? (((it.item_total || 0) + (it.tax_amount || 0)) / (it.quantity || 1));
                                             return (
                                                 <tr key={lineIndex} className="text-gray-700 dark:text-gray-300">
                                                     <td className="px-2 py-2.5 font-medium">{it.name}</td>
+                                                    <td className="px-2 py-2.5 text-center">₹{perUnitTotal.toFixed(2)}</td>
                                                     <td className="px-2 py-2.5 text-center">{it.quantity}</td>
                                                     <td className="px-2 py-2.5 text-center">
                                                         <input

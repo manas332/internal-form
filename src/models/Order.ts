@@ -35,6 +35,8 @@ const OrderSchema = new mongoose.Schema(
                 item_total: Number,
                 tax_id: String,
                 tax_percentage: Number,
+                tax_amount: Number,
+                final_price: Number,
                 hsn_or_sac: String,
                 carat_size: String,
             }
