@@ -7,7 +7,7 @@ frontend:
         - bun install
     build:
       commands:
-        - env | grep -e ZOHO_ -e DELHIVERY_ -e MONGODB_ -e FREEASTRO_ -e AZURE_ -e ADMIN_ -e HP_ >> .env.production
+        - env | grep -e ZOHO_ -e DELHIVERY_ -e MONGODB_ -e FREEASTRO_ -e AZURE_ -e ADMIN_ -e HP_ -e RESEND_ >> .env.production
         - bun run build
   artifacts:
     baseDirectory: .next
@@ -30,3 +30,4 @@ frontend:
       AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
       ADMIN_API_KEY: ${ADMIN_API_KEY}
       HP_API_KEY: ${HP_API_KEY}
+      RESEND_API_KEY: ${RESEND_API_KEY}
