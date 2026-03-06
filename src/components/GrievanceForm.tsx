@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { submitGrievance } from '@/app/actions/grievanceActions';
 
 export default function GrievanceForm() {
     const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         salespersonName: '',
-        awb: '',
+        orderId: '',
         grievanceType: '',
         explainIssue: ''
     });
@@ -20,7 +21,7 @@ export default function GrievanceForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.salespersonName || !formData.awb || !formData.grievanceType || !formData.explainIssue) {
+        if (!formData.salespersonName || !formData.orderId || !formData.grievanceType || !formData.explainIssue) {
             toast.error('Please fill in all fields');
             return;
         }
@@ -28,19 +29,21 @@ export default function GrievanceForm() {
         setSubmitting(true);
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const result = await submitGrievance(formData);
+            if (!result.success) {
+                throw new Error(result.error);
+            }
             toast.success('Grievance submitted successfully');
 
             // Reset form
             setFormData({
                 salespersonName: '',
-                awb: '',
+                orderId: '',
                 grievanceType: '',
                 explainIssue: ''
             });
-        } catch (error) {
-            toast.error('Failed to submit grievance');
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to submit grievance');
         } finally {
             setSubmitting(false);
         }
@@ -57,27 +60,31 @@ export default function GrievanceForm() {
                 <div className="form-grid-2 mb-4">
                     <div className="form-group">
                         <label htmlFor="salespersonName">Salesperson Name *</label>
-                        <input
-                            type="text"
+                        <select
                             id="salespersonName"
                             name="salespersonName"
                             className="form-input"
-                            placeholder="Enter salesperson name"
                             value={formData.salespersonName}
                             onChange={handleChange}
                             required
-                        />
+                        >
+                            <option value="" disabled>Select a salesperson</option>
+                            <option value="aviral">aviral</option>
+                            <option value="utkarsh">utkarsh</option>
+                            <option value="raj">raj</option>
+                            <option value="karamveer">karamveer</option>
+                        </select>
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="awb">AWB *</label>
+                        <label htmlFor="orderId">Order ID *</label>
                         <input
                             type="text"
-                            id="awb"
-                            name="awb"
+                            id="orderId"
+                            name="orderId"
                             className="form-input"
-                            placeholder="Enter AWB number"
-                            value={formData.awb}
+                            placeholder="Eg: INV-000101"
+                            value={formData.orderId}
                             onChange={handleChange}
                             required
                         />
