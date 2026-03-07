@@ -329,7 +329,7 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                     </div>
 
                     <div className="total-row items-center border-b border-gray-100 dark:border-[#2a2a38] pb-2 mb-2">
-                        <span className="text-sm font-medium">Payment Mode</span>
+                        <span className="text-sm font-medium">Payment Mode *</span>
                         <div className="flex gap-4">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input

@@ -199,7 +199,7 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 country: formData.country,
                 phone: `${formData.country_code}${formData.phone}`,
                 order: createdInvoiceNumber, // Use Zoho Invoice Number as Order ID
-                payment_mode: formData.payment_mode,
+                payment_mode: formData.payment_mode as 'Prepaid' | 'COD',
                 total_amount: resolvedFinalPrice,
                 cod_amount: formData.payment_mode === 'COD' ? resolvedFinalPrice : 0,
                 weight: formData.weight,

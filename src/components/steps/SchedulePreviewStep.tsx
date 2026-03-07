@@ -28,10 +28,10 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 shipping_mode: sh.shipping_mode || formData.shipping_mode || 'Surface',
                 payment_mode: sh.payment_mode || formData.payment_mode || 'Prepaid',
                 fragile: sh.fragile ?? formData.fragile ?? false,
-                weight: sh.weight ?? formData.weight ?? 0,
-                length: sh.length ?? formData.length ?? 0,
-                width: sh.width ?? formData.width ?? 0,
-                height: sh.height ?? formData.height ?? 0,
+                weight: sh.weight ?? formData.weight ?? 200,
+                length: sh.length ?? formData.length ?? 10,
+                width: sh.width ?? formData.width ?? 10,
+                height: sh.height ?? formData.height ?? 10,
                 products_desc: sh.products_desc ?? formData.products_desc ?? '',
             }))
             : [
@@ -44,10 +44,10 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     shipping_mode: formData.shipping_mode || 'Surface',
                     payment_mode: formData.payment_mode || 'Prepaid',
                     fragile: formData.fragile || false,
-                    weight: formData.weight || 0,
-                    length: formData.length || 0,
-                    width: formData.width || 0,
-                    height: formData.height || 0,
+                    weight: formData.weight || 200,
+                    length: formData.length || 10,
+                    width: formData.width || 10,
+                    height: formData.height || 10,
                     products_desc: formData.products_desc || '',
                 },
             ]
@@ -104,10 +104,10 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     shipping_mode: formData.shipping_mode || 'Surface',
                     payment_mode: formData.payment_mode || 'Prepaid',
                     fragile: formData.fragile || false,
-                    weight: formData.weight || 0,
-                    length: formData.length || 0,
-                    width: formData.width || 0,
-                    height: formData.height || 0,
+                    weight: formData.weight || 200,
+                    length: formData.length || 10,
+                    width: formData.width || 10,
+                    height: formData.height || 10,
                     products_desc: formData.products_desc || '',
                 },
             ];
@@ -540,7 +540,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Payment Mode</label>
+                                    <label>Payment Mode *</label>
                                     <div className="flex gap-4 mt-1">
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input

@@ -68,7 +68,7 @@ export default function ShippingStep({ formData, updateForm, onNext, onPrev }: P
                 </div>
 
                 <div className="form-group">
-                    <label>Payment Mode</label>
+                    <label>Payment Mode *</label>
                     <div className="flex gap-4 mt-1">
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input

@@ -47,11 +47,28 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
             });
 
             const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || 'Failed to request pickup');
+
+            // Delhivery often returns 200 OK but with error arrays like { pr: ["error detail"] }
+            const isErrorResponse = !res.ok || data.error || (data.pr && Array.isArray(data.pr));
+
+            if (isErrorResponse) {
+                console.error('[ScheduleConfirmationStep: Pickup API Error]', data);
+                let errMsg = 'Failed to request pickup';
+
+                if (data.error && typeof data.error === 'string') {
+                    errMsg = data.error;
+                } else if (data.pr && Array.isArray(data.pr) && data.pr.length > 0) {
+                    errMsg = `Delhivery Error: ${data.pr.join(', ')}`;
+                } else if (data.error?.message) {
+                    errMsg = data.error.message;
+                }
+
+                throw new Error(errMsg);
+            }
 
             setPickupRequested(true);
         } catch (e) {
-            console.error(e);
+            console.error('[ScheduleConfirmationStep: Pickup Request Exception]', e);
             setPickupError(e instanceof Error ? e.message : 'Error requesting pickup');
         } finally {
             setCreatingPickup(false);

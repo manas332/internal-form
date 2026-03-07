@@ -416,7 +416,7 @@ export default function CustomerStep({ formData, updateForm, onNext }: Props) {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Salesperson</label>
+                    <label>Salesperson *</label>
                     <select
                         className="form-input"
                         value={formData.salesperson_name}

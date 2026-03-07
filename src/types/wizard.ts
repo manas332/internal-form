@@ -48,7 +48,7 @@ export interface CombinedFormData {
     // --- Step 3: Shipping ---
     warehouse: Warehouse | string;
     shipping_mode: 'Surface' | 'Express';
-    payment_mode: 'Prepaid' | 'COD';
+    payment_mode: 'Prepaid' | 'COD' | '';
     weight: number; // in grams
     length?: number; // cm
     width?: number; // cm
@@ -122,7 +122,7 @@ export const INITIAL_WIZARD_STATE: CombinedFormData = {
     include_cod: false,
     warehouse: 'ganpati jaipur',
     shipping_mode: 'Express',
-    payment_mode: 'Prepaid',
+    payment_mode: '',
     weight: 200,
     length: undefined,
     width: undefined,

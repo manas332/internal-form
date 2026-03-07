@@ -11,6 +11,7 @@ export const customerStepSchema = z.object({
     state: z.string().min(1, 'State is required'),
     pincode: z.string().regex(/^\d{6}$/, 'Pincode must be exactly 6 digits'),
     date: z.string().min(1, 'Invoice Date is required'),
+    salesperson_name: z.string().min(1, 'Salesperson is required'),
     isPincodeServiceable: z.boolean().nullable().refine((val) => val === true, {
         message: 'Please verify that the Pincode is serviceable'
     }),
@@ -45,10 +46,12 @@ export const invoiceItemsStepSchema = z.object({
                 }
             });
         }),
+    payment_mode: z.string().refine(val => val === 'Prepaid' || val === 'COD', { message: 'Payment Mode is required' }),
 });
 
 export const shippingStepSchema = z.object({
     warehouse: z.string().min(1, 'Pickup Location (Warehouse) is required'),
+    payment_mode: z.string().refine(val => val === 'Prepaid' || val === 'COD', { message: 'Payment Mode is required' }),
     products_desc: z.string().min(1, 'Package Contents Description is required'),
     weight: z.number().min(1, 'Weight must be strictly greater than 0 grams'),
     length: z.number().optional().refine(val => !val || val > 0, 'Length must be > 0 if provided'),
