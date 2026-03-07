@@ -44,6 +44,7 @@ export interface CombinedFormData {
     // --- Added for Shipping/COD Charges ---
     include_shipping: boolean;
     include_cod: boolean;
+    isSelfShipped: boolean;
 
     // --- Step 3: Shipping ---
     warehouse: Warehouse | string;
@@ -120,6 +121,7 @@ export const INITIAL_WIZARD_STATE: CombinedFormData = {
     terms: 'Terms and conditions apply.',
     include_shipping: true,
     include_cod: false,
+    isSelfShipped: false,
     warehouse: 'ganpati jaipur',
     shipping_mode: 'Express',
     payment_mode: '',

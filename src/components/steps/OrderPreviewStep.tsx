@@ -120,7 +120,8 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                 invoiceItems: formData.invoice_items,
                 salespersonName: formData.salesperson_name,
                 paymentMode: formData.payment_mode || 'Prepaid',
-                status: 'PENDING_SHIPPING'
+                status: formData.isSelfShipped ? 'SELF_SHIPPED' : 'PENDING_SHIPPING',
+                selfShipped: !!formData.isSelfShipped
             };
 
             const orderRes = await fetch('/api/orders', {
@@ -227,6 +228,25 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                             <span className="text-accent">₹{grandTotal.toFixed(2)}</span>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div className="mt-6 flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30 rounded-xl">
+                <div className="flex items-center h-5">
+                    <input
+                        id="self-shipped"
+                        type="checkbox"
+                        className="w-5 h-5 text-accent bg-white border-gray-300 rounded-sm focus:ring-accent dark:focus:ring-accent dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
+                        checked={!!formData.isSelfShipped}
+                        onChange={(e) => updateForm({ isSelfShipped: e.target.checked })}
+                        disabled={submitting}
+                    />
+                </div>
+                <div className="ml-3 text-sm flex-1">
+                    <label htmlFor="self-shipped" className="font-semibold text-gray-900 dark:text-gray-100 cursor-pointer">
+                        Self shipped order / Pooja
+                    </label>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">If checked, this order will not be passed to the Schedule Order list. It will be counted as usual in revenue and the invoice will be created.</p>
                 </div>
             </div>
 
