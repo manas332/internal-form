@@ -55,11 +55,17 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
 
     const subtotal = formData.invoice_items.reduce((acc, item) => acc + (item.item_total || 0), 0);
     const totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
-    const totalDiscount = Number(formData.discount) || 0;
-    const totalAdjustment = Number(formData.adjustment) || 0;
     const shippingCharge = formData.include_shipping ? 100 : 0;
     const codCharge = formData.include_cod ? 50 : 0;
-    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment + shippingCharge + codCharge;
+
+    const finalItemsPrice = subtotal + totalTax;
+    const discountInput = Number(formData.discount) || 0;
+    const discountFormat = formData.discount_format_type || 'fixed';
+    const appliedDiscountAmount = discountFormat === 'percentage'
+        ? (finalItemsPrice * discountInput) / 100
+        : discountInput;
+
+    const grandTotal = finalItemsPrice - appliedDiscountAmount + shippingCharge + codCharge;
 
     const anyDescriptions = useMemo(
         () => formData.invoice_items.some((it) => (it.description || '').trim().length > 0),
@@ -477,7 +483,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                     <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-300 font-semibold">
                                         Shipment {idx + 1}
                                     </span>
-                                    <span className={`text-xs px-2 py-0.5 rounded font-medium ${sh.isSelfShipment || sh.vendor === 'SELF' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
+                                    <span className={sh.isSelfShipment || sh.vendor === 'SELF' ? 'badge badge-emerald' : 'badge badge-indigo'}>
                                         {(sh.isSelfShipment || sh.vendor === 'SELF') ? 'SELF SHIPPED' : 'DELHIVERY'}
                                     </span>
                                 </div>
@@ -687,7 +693,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                 <div key={sh.id} className="mb-6 p-4 rounded-xl border border-gray-200 dark:border-[#2a2a38] bg-gray-50 dark:bg-[#1c1c28]">
                                     <div className="flex items-center gap-4 mb-2">
                                         <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-300 font-semibold">Shipment {idx + 1}</span>
-                                        <span className={`text-xs px-2 py-0.5 rounded font-medium ${sh.isSelfShipment || sh.vendor === 'SELF' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
+                                        <span className={sh.isSelfShipment || sh.vendor === 'SELF' ? 'badge badge-emerald' : 'badge badge-indigo'}>
                                             {(sh.isSelfShipment || sh.vendor === 'SELF') ? 'SELF SHIPPED' : sh.vendor}
                                         </span>
                                     </div>

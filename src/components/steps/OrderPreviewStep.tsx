@@ -38,12 +38,18 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
 
     const subtotal = formData.invoice_items.reduce((acc, item) => acc + (item.item_total || 0), 0);
     const totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
-    const totalDiscount = Number(formData.discount) || 0;
-    const totalAdjustment = Number(formData.adjustment) || 0;
     const shippingCharge = formData.include_shipping ? 100 : 0;
     const codCharge = formData.include_cod ? 50 : 0;
     const combinedShippingCharge = shippingCharge + codCharge;
-    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment + combinedShippingCharge;
+
+    const finalItemsPrice = subtotal + totalTax;
+    const discountInput = Number(formData.discount) || 0;
+    const discountFormat = formData.discount_format_type || 'fixed';
+    const appliedDiscountAmount = discountFormat === 'percentage'
+        ? (finalItemsPrice * discountInput) / 100
+        : discountInput;
+
+    const grandTotal = finalItemsPrice - appliedDiscountAmount + combinedShippingCharge;
 
     const finalInvoiceItems = [...formData.invoice_items];
 
@@ -70,10 +76,9 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                 salesperson_name: formData.salesperson_name || undefined,
                 place_of_supply: stateCodesData.find(s => s.name === formData.state)?.code || formData.state,
                 invoice_items: finalInvoiceItems,
-                discount: Number(formData.discount) || undefined,
-                discount_type: formData.discount_type,
-                adjustment: Number(formData.adjustment) || undefined,
-                adjustment_description: formData.adjustment_description || undefined,
+                discount: appliedDiscountAmount > 0 ? appliedDiscountAmount : undefined,
+                discount_type: 'entity_level',
+                is_discount_before_tax: false,
                 notes: formData.notes,
                 // Send phone as a custom field on the invoice
                 custom_fields: [
@@ -223,6 +228,18 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                                 <span>₹{totalTax.toFixed(2)}</span>
                             </div>
                         )}
+                        {appliedDiscountAmount > 0 && (
+                            <div className="flex justify-between text-gray-700 dark:text-gray-300 text-sm pb-1 px-2 font-medium">
+                                <span>Final Price (incl. tax)</span>
+                                <span>₹{finalItemsPrice.toFixed(2)}</span>
+                            </div>
+                        )}
+                        {appliedDiscountAmount > 0 && (
+                            <div className="flex justify-between text-green-600 dark:text-green-500 text-sm pb-3 px-2 font-medium">
+                                <span>Discount {formData.discount_format_type === 'percentage' ? `(${formData.discount}%)` : ''}</span>
+                                <span>-₹{appliedDiscountAmount.toFixed(2)}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between font-bold text-gray-900 dark:text-white pt-3 border-t border-gray-200 dark:border-[#2a2a38] border-dashed text-lg px-2 bg-gray-50 dark:bg-transparent rounded-b-lg">
                             <span>Grand Total</span>
                             <span className="text-accent">₹{grandTotal.toFixed(2)}</span>
@@ -231,7 +248,7 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                 </div>
             </div>
 
-            <div className="mt-6 flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30 rounded-xl">
+            <div className="mt-6 flex items-center p-4 bg-gray-50 dark:bg-[#1c1c28] border border-gray-200 dark:border-[#2a2a38] rounded-xl hover:border-gray-300 dark:hover:border-gray-700 transition-colors">
                 <div className="flex items-center h-5">
                     <input
                         id="self-shipped"

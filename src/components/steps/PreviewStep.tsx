@@ -46,15 +46,23 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
     const subtotal = formData.invoice_items.reduce((acc, item) => acc + (item.item_total || 0), 0);
     let totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
 
+    const itemsSubtotal = subtotal;
+    const itemsTax = totalTax;
+    const finalItemsPrice = itemsSubtotal + itemsTax;
+
+    const discountInput = Number(formData.discount) || 0;
+    const discountFormat = formData.discount_format_type || 'fixed';
+    const appliedDiscountAmount = discountFormat === 'percentage'
+        ? (finalItemsPrice * discountInput) / 100
+        : discountInput;
+
     if (deliveryItem) totalTax += deliveryItem.tax_amount;
     if (codItem) totalTax += codItem.tax_amount;
 
-    const totalDiscount = Number(formData.discount) || 0;
-    const totalAdjustment = Number(formData.adjustment) || 0;
     const shippingCharge = deliveryItem ? deliveryItem.price : 0;
     const codCharge = codItem ? codItem.price : 0;
     const combinedShippingCharge = shippingCharge + codCharge;
-    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment + combinedShippingCharge;
+    const grandTotal = finalItemsPrice - appliedDiscountAmount + (deliveryItem?.final_price || 0) + (codItem?.final_price || 0);
 
     useEffect(() => {
         async function fetchPreviewData() {
@@ -160,10 +168,9 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 gst_no: undefined, // removed as per user sync
                 place_of_supply: stateCodesData.find(s => s.name === formData.state)?.code || formData.state,
                 invoice_items: finalInvoiceItems,
-                discount: Number(formData.discount) || undefined,
-                discount_type: formData.discount_type,
-                adjustment: Number(formData.adjustment) || undefined,
-                adjustment_description: formData.adjustment_description || undefined,
+                discount: appliedDiscountAmount > 0 ? appliedDiscountAmount : undefined,
+                discount_type: 'entity_level',
+                is_discount_before_tax: false,
                 notes: formData.notes,
                 terms: formData.terms,
             };
@@ -366,6 +373,12 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                                     <span>₹{totalTax.toFixed(2)}</span>
                                 </div>
                             )}
+                            {appliedDiscountAmount > 0 && (
+                                <div className="flex justify-between text-gray-700 dark:text-gray-300 text-sm pb-1 px-2 font-medium">
+                                    <span>Final Price (incl. tax)</span>
+                                    <span>₹{finalItemsPrice.toFixed(2)}</span>
+                                </div>
+                            )}
                             {shippingCharge > 0 && (
                                 <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm pb-1 px-2">
                                     <span className="font-medium">Delivery Charges (incl. GST)</span>
@@ -376,6 +389,12 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                                 <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm pb-3 px-2">
                                     <span className="font-medium">COD Charges (incl. GST)</span>
                                     <span>₹{(codItem?.final_price || 0).toFixed(2)}</span>
+                                </div>
+                            )}
+                            {appliedDiscountAmount > 0 && (
+                                <div className="flex justify-between text-green-600 dark:text-green-500 text-sm pb-3 px-2 font-medium">
+                                    <span>Discount {formData.discount_format_type === 'percentage' ? `(${formData.discount}%)` : ''}</span>
+                                    <span>-₹{appliedDiscountAmount.toFixed(2)}</span>
                                 </div>
                             )}
                             <div className="flex justify-between font-bold text-gray-900 dark:text-white pt-3 border-t border-gray-200 dark:border-[#2a2a38] border-dashed text-lg px-2 bg-gray-50 dark:bg-transparent rounded-b-lg">
@@ -395,10 +414,10 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                             <div className="flex justify-between items-center bg-gray-50 dark:bg-[#1c1c28] p-3.5 rounded-xl border border-gray-100 dark:border-transparent">
                                 <span className="text-gray-500 dark:text-gray-400 font-medium">Serviceability Status</span>
                                 {formData.isPincodeServiceable ?
-                                    <span className="text-green-700 bg-green-100 dark:bg-green-500/20 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-green-200 dark:border-green-500/30 shadow-sm flex items-center gap-1.5">
+                                    <span className="badge badge-emerald !px-3 !py-1 flex items-center gap-1.5 shadow-sm">
                                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Serviceable
                                     </span> :
-                                    <span className="text-red-700 bg-red-100 dark:bg-red-500/20 dark:text-red-400 px-3 py-1 rounded-full text-xs font-bold tracking-wider border border-red-200 dark:border-red-500/30 flex items-center gap-1.5">
+                                    <span className="badge badge-rose !px-3 !py-1 flex items-center gap-1.5 shadow-sm">
                                         ✗ Verify Pincode
                                     </span>
                                 }

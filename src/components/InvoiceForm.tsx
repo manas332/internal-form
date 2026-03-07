@@ -44,8 +44,6 @@ export default function InvoiceForm() {
     const [notes, setNotes] = useState('');
     const [terms, setTerms] = useState('');
     const [shippingCharge, setShippingCharge] = useState('');
-    const [adjustment, setAdjustment] = useState('');
-    const [adjustmentDescription, setAdjustmentDescription] = useState('');
 
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -77,8 +75,7 @@ export default function InvoiceForm() {
         0
     );
     const shippingAmount = Number(shippingCharge) || 0;
-    const adjustmentAmount = Number(adjustment) || 0;
-    const grandTotal = subtotal + shippingAmount + adjustmentAmount;
+    const grandTotal = subtotal + shippingAmount;
 
     // --- Item handlers ---
     const handleItemChange = (
@@ -148,11 +145,6 @@ export default function InvoiceForm() {
             if (notes) payload.notes = notes;
             if (terms) payload.terms = terms;
             if (shippingCharge) payload.shipping_charge = shippingCharge;
-            if (adjustment) {
-                payload.adjustment = Number(adjustment);
-                if (adjustmentDescription)
-                    payload.adjustment_description = adjustmentDescription;
-            }
 
             const res = await fetch('/api/invoices', {
                 method: 'POST',
@@ -196,8 +188,6 @@ export default function InvoiceForm() {
         setNotes('');
         setTerms('');
         setShippingCharge('');
-        setAdjustment('');
-        setAdjustmentDescription('');
         setError('');
         setSuccessData(null);
     };
@@ -386,27 +376,6 @@ export default function InvoiceForm() {
                                     onChange={(e) => setShippingCharge(e.target.value)}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Adjustment (₹)</label>
-                                <input
-                                    type="number"
-                                    className="form-input"
-                                    step="0.01"
-                                    placeholder="0.00"
-                                    value={adjustment}
-                                    onChange={(e) => setAdjustment(e.target.value)}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Adjustment Description</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    placeholder="e.g. Rounding off"
-                                    value={adjustmentDescription}
-                                    onChange={(e) => setAdjustmentDescription(e.target.value)}
-                                />
-                            </div>
                         </div>
                         <div className="totals-right">
                             <div className="total-row">
@@ -421,17 +390,6 @@ export default function InvoiceForm() {
                                     <span>
                                         ₹
                                         {shippingAmount.toLocaleString('en-IN', {
-                                            minimumFractionDigits: 2,
-                                        })}
-                                    </span>
-                                </div>
-                            )}
-                            {adjustmentAmount !== 0 && (
-                                <div className="total-row">
-                                    <span>Adjustment</span>
-                                    <span>
-                                        ₹
-                                        {adjustmentAmount.toLocaleString('en-IN', {
                                             minimumFractionDigits: 2,
                                         })}
                                     </span>

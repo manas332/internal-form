@@ -36,8 +36,7 @@ export interface CombinedFormData {
     invoice_items: InvoiceItem[];
     discount: string;
     discount_type: 'entity_level' | 'item_level';
-    adjustment: string;
-    adjustment_description: string;
+    discount_format_type: 'percentage' | 'fixed';
     notes: string;
     terms: string;
 
@@ -115,8 +114,7 @@ export const INITIAL_WIZARD_STATE: CombinedFormData = {
     invoice_items: [],
     discount: '',
     discount_type: 'entity_level',
-    adjustment: '',
-    adjustment_description: '',
+    discount_format_type: 'fixed',
     notes: 'Thanks for your business.',
     terms: 'Terms and conditions apply.',
     include_shipping: true,

@@ -136,11 +136,17 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
 
     const subtotal = formData.invoice_items.reduce((acc, item) => acc + (item.item_total || 0), 0);
     const totalTax = formData.invoice_items.reduce((acc, item) => acc + (item.tax_amount || 0), 0);
-    const totalDiscount = Number(formData.discount) || 0;
-    const totalAdjustment = Number(formData.adjustment) || 0;
     const shippingCharge = formData.include_shipping ? 100 : 0;
     const codCharge = formData.include_cod ? 50 : 0;
-    const grandTotal = subtotal + totalTax - totalDiscount + totalAdjustment + shippingCharge + codCharge;
+
+    const finalItemsPrice = subtotal + totalTax;
+    const discountInput = Number(formData.discount) || 0;
+    const discountFormat = formData.discount_format_type || 'fixed';
+    const appliedDiscountAmount = discountFormat === 'percentage'
+        ? (finalItemsPrice * discountInput) / 100
+        : discountInput;
+
+    const grandTotal = finalItemsPrice - appliedDiscountAmount + shippingCharge + codCharge;
 
     // Add initial item if empty
     useEffect(() => {
@@ -269,37 +275,50 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                         <span>Subtotal (pre-tax)</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="total-row items-center">
-                        <span>Discount (Overall)</span>
-                        <input
-                            type="number"
-                            className="form-input w-32 text-right py-1"
-                            value={formData.discount}
-                            onChange={(e) => updateForm({ discount: e.target.value })}
-                            placeholder="0.00"
-                        />
-                    </div>
                     {totalTax > 0 && (
                         <div className="total-row">
                             <span>Total Tax</span>
                             <span>₹{totalTax.toFixed(2)}</span>
                         </div>
                     )}
-                    <div className="total-row items-center">
-                        <span className="flex-1">Adjustment</span>
-                        <input
-                            className="form-input w-24 text-xs mr-2 py-1"
-                            placeholder="Reason"
-                            value={formData.adjustment_description}
-                            onChange={(e) => updateForm({ adjustment_description: e.target.value })}
-                        />
-                        <input
-                            type="number"
-                            className="form-input w-24 text-right py-1"
-                            value={formData.adjustment}
-                            onChange={(e) => updateForm({ adjustment: e.target.value })}
-                            placeholder="0.00"
-                        />
+                    <div className="total-row font-medium text-gray-700 dark:text-gray-300">
+                        <span>Final Price (incl. tax)</span>
+                        <span>₹{finalItemsPrice.toFixed(2)}</span>
+                    </div>
+                    <div className="total-row items-start mt-2 border-t border-gray-100 dark:border-[#2a2a38] pt-3 pb-2">
+                        <div className="flex flex-col gap-2">
+                            <span className="text-gray-700 dark:text-gray-300">Discount</span>
+                            <div className="flex gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => updateForm({ discount_format_type: 'percentage' })}
+                                    className={`btn-toggle ${formData.discount_format_type === 'percentage' ? 'active' : ''}`}
+                                >%</button>
+                                <button
+                                    type="button"
+                                    onClick={() => updateForm({ discount_format_type: 'fixed' })}
+                                    className={`btn-toggle ${formData.discount_format_type === 'fixed' || !formData.discount_format_type ? 'active' : ''}`}
+                                >₹</button>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    className="form-input w-32 text-right py-1 pr-8"
+                                    value={formData.discount}
+                                    onChange={(e) => updateForm({ discount: e.target.value })}
+                                    placeholder="0.00"
+                                    step="0.01"
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">
+                                    {(formData.discount_format_type === 'percentage') ? '%' : '₹'}
+                                </span>
+                            </div>
+                            {formData.discount_format_type === 'percentage' && appliedDiscountAmount > 0 && (
+                                <span className="text-xs text-green-600 dark:text-green-500 font-medium">-₹{appliedDiscountAmount.toFixed(2)}</span>
+                            )}
+                        </div>
                     </div>
 
                     <div className="total-row items-center mt-2">
