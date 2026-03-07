@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { TrackingShipmentData } from '@/types/delhivery';
 
 type DateFilterType = 'custom' | 'weekly' | 'monthly' | 'all';
 
@@ -32,6 +33,10 @@ interface OrderData {
     paymentMode?: string;
     status?: string;
     createdAt?: string;
+    waybill?: string;
+    shipments?: {
+        waybill?: string;
+    }[];
 }
 
 interface SalespersonRevenue {
@@ -95,6 +100,11 @@ export default function TrackRevenue() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
+
+    const [expandedTracking, setExpandedTracking] = useState<Set<string>>(new Set());
+    const [trackingDataMap, setTrackingDataMap] = useState<Record<string, TrackingShipmentData[]>>({});
+    const [trackingLoading, setTrackingLoading] = useState<Record<string, boolean>>({});
+    const [trackingError, setTrackingError] = useState<Record<string, string>>({});
 
     const fetchRevenue = useCallback(async () => {
         try {
@@ -169,6 +179,69 @@ export default function TrackRevenue() {
                 next.delete(orderId);
             } else {
                 next.add(orderId);
+            }
+            return next;
+        });
+    }
+
+    const fetchTrackingForOrder = async (order: OrderData) => {
+        const orderSysId = order._id;
+        setTrackingLoading(prev => ({ ...prev, [orderSysId]: true }));
+        setTrackingError(prev => ({ ...prev, [orderSysId]: '' }));
+        try {
+            const waybills = new Set<string>();
+            if (order.waybill) waybills.add(order.waybill);
+            if (order.shipments && order.shipments.length > 0) {
+                order.shipments.forEach(s => {
+                    if (s.waybill) waybills.add(s.waybill);
+                });
+            }
+
+            let endpoint = '';
+            if (waybills.size > 0) {
+                endpoint = `/api/delhivery/track?waybill=${Array.from(waybills).join(',')}`;
+            } else {
+                const baseId = order.orderId.trim();
+                const refIdsQuery = `${baseId},${baseId}-pkg-1,${baseId}-pkg-2,${baseId}-pkg-3`;
+                endpoint = `/api/delhivery/track?ref_ids=${refIdsQuery}`;
+            }
+
+            const res = await fetch(endpoint);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to fetch tracking data');
+
+            // Delhivery often returns 200 OK but with an Error message in the body
+            if (data.Error) {
+                if (typeof data.Error === 'string' && (data.Error.includes('No such waybill') || data.Error.includes('Not Found') || data.Error.includes('Order Id found'))) {
+                    throw new Error('Shipment created, but not yet scanned by Delhivery.');
+                }
+                throw new Error(`Delhivery returned: ${data.Error}`);
+            }
+
+            if (data.ShipmentData && data.ShipmentData.length > 0) {
+                setTrackingDataMap(prev => ({ ...prev, [orderSysId]: data.ShipmentData }));
+            } else {
+                throw new Error('No tracking info found for this order');
+            }
+        } catch (err) {
+            setTrackingError(prev => ({ ...prev, [orderSysId]: err instanceof Error ? err.message : 'Unknown error' }));
+        } finally {
+            setTrackingLoading(prev => ({ ...prev, [orderSysId]: false }));
+        }
+    };
+
+    function toggleTrackingExpand(order: OrderData, e: React.MouseEvent) {
+        e.stopPropagation();
+        const orderSysId = order._id;
+        setExpandedTracking(prev => {
+            const next = new Set(prev);
+            if (next.has(orderSysId)) {
+                next.delete(orderSysId);
+            } else {
+                next.add(orderSysId);
+                if (!trackingDataMap[orderSysId] && !trackingLoading[orderSysId]) {
+                    fetchTrackingForOrder(order);
+                }
             }
             return next;
         });
@@ -344,8 +417,79 @@ export default function TrackRevenue() {
                                                         {getStatusLabel(order.status)}
                                                     </span>
                                                 )}
+
+                                                {/* Track Button */}
+                                                {(() => {
+                                                    const isClickable = order.status === 'SHIPPED' || order.status === 'PARTIALLY_SHIPPED';
+                                                    return (
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                if (isClickable) toggleTrackingExpand(order, e);
+                                                            }}
+                                                            disabled={!isClickable}
+                                                            className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide border flex items-center gap-1 transition-all ${isClickable ? 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800/50 dark:hover:bg-indigo-900/50 cursor-pointer' : 'bg-gray-50 text-gray-400 border-gray-200 dark:bg-gray-800/50 dark:text-gray-500 dark:border-gray-700/50 cursor-not-allowed'}`}
+                                                            title={!isClickable ? 'Tracking not available for un-shipped or self-shipped orders' : 'Track Order'}
+                                                        >
+                                                            📍 Track{expandedTracking.has(order._id) ? 'ing...' : ''}
+                                                        </button>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
+
+                                        {/* Tracking Contents (Collapsible) */}
+                                        {expandedTracking.has(order._id) && (
+                                            <div className="animate-fadeIn mt-2 mb-4 p-4 border border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-xl relative">
+                                                {trackingLoading[order._id] && <div className="text-sm text-indigo-600 dark:text-indigo-400 flex items-center gap-2"><span className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></span> Fetching tracking details...</div>}
+                                                {trackingError[order._id] && <div className="text-sm text-red-500 dark:text-red-400">⚠️ {trackingError[order._id]}</div>}
+
+                                                {!trackingLoading[order._id] && trackingDataMap[order._id] && trackingDataMap[order._id]!.length > 0 && (() => {
+                                                    const shipments = trackingDataMap[order._id]!;
+                                                    return (
+                                                        <div className="flex flex-col gap-6">
+                                                            {shipments.map((trackingData, tIdx) => (
+                                                                <div key={tIdx} className={tIdx > 0 ? "pt-4 border-t border-indigo-200 dark:border-indigo-800/50" : ""}>
+                                                                    <div className="flex justify-between items-center border-b border-indigo-100 dark:border-indigo-900/50 pb-3 mb-4">
+                                                                        <div>
+                                                                            <h4 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                                                                {trackingData.Shipment.AWB}
+                                                                                {shipments.length > 1 && <span className="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 px-2 py-0.5 rounded-full font-medium shadow-sm">Box {tIdx + 1} of {shipments.length}</span>}
+                                                                            </h4>
+                                                                            <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">Expected Delivery: <span className="font-medium text-gray-700 dark:text-gray-300">{trackingData.Shipment.ExpectedDeliveryDate ? new Date(trackingData.Shipment.ExpectedDeliveryDate).toLocaleDateString() : '—'}</span></p>
+                                                                        </div>
+                                                                        <div className="px-2.5 py-1 bg-white dark:bg-[#16161f] border border-indigo-100 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-400 rounded-md text-xs font-bold tracking-wider shadow-sm">
+                                                                            {(trackingData.Shipment.CurrentStatus || trackingData.Shipment.Status)?.Status || 'UNKNOWN'}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px before:h-full before:w-0.5 before:bg-indigo-200 dark:before:bg-indigo-900/50">
+                                                                        {trackingData.Shipment.Scans?.map((scanItem: any, idx: number) => {
+                                                                            const scan = 'ScanDetail' in scanItem ? scanItem.ScanDetail : scanItem;
+                                                                            return (
+                                                                                <div key={idx} className="relative flex items-start gap-4">
+                                                                                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/80 border-2 border-white dark:border-gray-800 flex items-center justify-center z-10 shrink-0 mt-0.5">
+                                                                                        <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                                                                    </div>
+                                                                                    <div className="bg-white dark:bg-[#16161f] border border-gray-100 dark:border-[#2a2a38] p-3 rounded-lg w-full shadow-sm">
+                                                                                        <div className="flex flex-col sm:flex-row justify-between mb-1 gap-1">
+                                                                                            <span className="text-sm font-bold text-gray-900 dark:text-white">{scan.ScanType || scan.Scan || '-'}</span>
+                                                                                            <span className="text-xs font-medium text-gray-500">{scan.ScanDateTime ? new Date(scan.ScanDateTime).toLocaleString() : '—'}</span>
+                                                                                        </div>
+                                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">{scan.Instructions || '-'}</p>
+                                                                                        {scan.ScannedLocation && <p className="text-[11px] font-medium text-indigo-500 mt-2 flex items-center gap-1">📍 {scan.ScannedLocation}</p>}
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
+                                        )}
 
                                         {/* Order Contents (Collapsible) */}
                                         {expandedOrders.has(order._id) && (
