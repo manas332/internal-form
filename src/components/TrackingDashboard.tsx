@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { TrackingShipmentData } from '@/types/delhivery';
 import Link from 'next/link';
+import { DELHIIVERY_WAREHOUSES } from '@/config/warehouses';
 
 interface StoredOrder {
     waybill: string;
@@ -17,6 +18,10 @@ interface DBWaybill {
     status: string;
     orderId?: string | null;
     createdAt: string;
+    isSelfShipped?: boolean;
+    selfShipmentStatus?: string;
+    selfShipmentNotes?: string;
+    invoiceItems?: any[];
 }
 
 export default function TrackingDashboard() {
@@ -26,6 +31,12 @@ export default function TrackingDashboard() {
     const [loading, setLoading] = useState(false);
     const [trackingData, setTrackingData] = useState<TrackingShipmentData | null>(null);
     const [errorMsg, setErrorMsg] = useState('');
+
+    const [warehouseFilter, setWarehouseFilter] = useState('all');
+    const [selectedSelfShippedOrder, setSelectedSelfShippedOrder] = useState<DBWaybill | null>(null);
+    const [updateSelfShipLoading, setUpdateSelfShipLoading] = useState(false);
+    const [selfShipStatusInput, setSelfShipStatusInput] = useState('');
+    const [selfShipNotesInput, setSelfShipNotesInput] = useState('');
 
     // Fetch Live Statuses for DB Orders
     const [liveStatuses, setLiveStatuses] = useState<Record<string, { status: string, error?: boolean }>>({});
@@ -47,7 +58,8 @@ export default function TrackingDashboard() {
 
     const fetchDbOrders = async (queryParam = '') => {
         try {
-            const res = await fetch(`/api/orders/tracked${queryParam}`);
+            const separator = queryParam.includes('?') ? '&' : '?';
+            const res = await fetch(`/api/orders/tracked${queryParam}${separator}warehouse=${warehouseFilter}`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.success) {
@@ -63,7 +75,7 @@ export default function TrackingDashboard() {
         if (dbOrders.length === 0) return;
 
         const fetchStatuses = async () => {
-            const waybillsToFetch = dbOrders.map(o => o.waybill);
+            const waybillsToFetch = dbOrders.filter(o => !o.isSelfShipped && o.waybill).map(o => o.waybill);
 
             if (waybillsToFetch.length === 0) return;
 
@@ -123,14 +135,13 @@ export default function TrackingDashboard() {
     const [pageCount, setPageCount] = useState(1);
 
     const applyDateFilter = async () => {
-        if (!dateFrom) return;
-
         try {
             setLoading(true);
             setLiveStatuses({}); // Clear old statuses
 
-            // Read from DB using the fromDate filter natively
-            await fetchDbOrders(`?fromDate=${dateFrom}`);
+            // Read from DB using the fromDate filter natively if present
+            const queryParams = dateFrom ? `?fromDate=${dateFrom}` : ``;
+            await fetchDbOrders(queryParams);
 
             // Reset pagination
             setPageCount(1);
@@ -164,6 +175,16 @@ export default function TrackingDashboard() {
         setErrorMsg('');
         setTrackingData(null);
 
+        const localMatch = dbOrders.find(o => o.waybill === query.trim() || o.orderId === query.trim());
+        if (localMatch && localMatch.isSelfShipped) {
+            setLoading(false);
+            setSelectedSelfShippedOrder(localMatch);
+            setSelfShipStatusInput(localMatch.selfShipmentStatus || 'Order Created');
+            setSelfShipNotesInput(localMatch.selfShipmentNotes || '');
+            return;
+        }
+        setSelectedSelfShippedOrder(null);
+
         // Auto-detect if it's waybill (usually purely numeric and long) or ref_id (alphanumeric like INV-X)
         const isWaybill = /^\d{12,15}$/.test(query.trim());
         const paramStr = isWaybill ? `waybill=${query.trim()}` : `ref_ids=${query.trim()}`;
@@ -188,6 +209,71 @@ export default function TrackingDashboard() {
     };
 
     const handleSearchClick = () => fetchTracking(searchQuery);
+
+    const saveSelfShipment = async () => {
+        if (!selectedSelfShippedOrder) return;
+        setUpdateSelfShipLoading(true);
+        setErrorMsg('');
+        try {
+            const res = await fetch(`/api/orders/${selectedSelfShippedOrder.orderId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    selfShipmentStatus: selfShipStatusInput,
+                    selfShipmentNotes: selfShipNotesInput
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to update order');
+
+            // update local state
+            setSelectedSelfShippedOrder({
+                ...selectedSelfShippedOrder,
+                selfShipmentStatus: selfShipStatusInput,
+                selfShipmentNotes: selfShipNotesInput
+            });
+            // Update in dbOrders list
+            setDbOrders(prev => prev.map(o => o.orderId === selectedSelfShippedOrder.orderId ? {
+                ...o, selfShipmentStatus: selfShipStatusInput, selfShipmentNotes: selfShipNotesInput
+            } : o));
+
+        } catch (err) {
+            setErrorMsg(err instanceof Error ? err.message : 'Unknown error');
+        } finally {
+            setUpdateSelfShipLoading(false);
+        }
+    };
+
+    const renderInvoiceItems = (items: any[]) => {
+        if (!items || items.length === 0) return null;
+        return (
+            <div className="mt-8">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Items</h3>
+                <div className="bg-white dark:bg-[#16161f] border border-gray-200 dark:border-[#2a2a38] rounded-xl overflow-hidden shadow-sm">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-gray-50 dark:bg-[#1c1c28] text-gray-600 dark:text-gray-400 text-xs uppercase font-semibold">
+                            <tr>
+                                <th className="px-4 py-3 border-b border-gray-200 dark:border-[#2a2a38]">Item</th>
+                                <th className="px-4 py-3 border-b border-gray-200 dark:border-[#2a2a38]">Qty</th>
+                                <th className="px-4 py-3 border-b border-gray-200 dark:border-[#2a2a38]">Rate</th>
+                                <th className="px-4 py-3 border-b border-gray-200 dark:border-[#2a2a38] text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-[#2a2a38]">
+                            {items.map((item, idx) => (
+                                <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-[#1c1c28]/50">
+                                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">{item.name || item.item_id || '—'}</td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.quantity ?? '—'}</td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">₹{item.rate ?? 0}</td>
+                                    <td className="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">₹{item.item_total ?? 0}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
+    };
 
     const getStatusColor = (statusType: string) => {
         switch (statusType?.toUpperCase()) {
@@ -230,9 +316,9 @@ export default function TrackingDashboard() {
             </div>
 
             {/* Date Filters */}
-            {!trackingData && (
-                <div className="max-w-md mx-auto mb-10 p-4 bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] rounded-xl shadow-sm flex flex-wrap gap-4 items-end justify-between">
-                    <div className="flex-1 min-w-[200px]">
+            {!trackingData && !selectedSelfShippedOrder && (
+                <div className="max-w-xl mx-auto mb-10 p-4 bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] rounded-xl shadow-sm flex flex-col sm:flex-row flex-wrap gap-4 items-end justify-between">
+                    <div className="flex-1 w-full sm:min-w-[150px]">
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Select Start Date</label>
                         <input
                             type="date"
@@ -241,10 +327,23 @@ export default function TrackingDashboard() {
                             onChange={(e) => setDateFrom(e.target.value)}
                         />
                     </div>
+                    <div className="flex-1 w-full sm:min-w-[150px]">
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Warehouse</label>
+                        <select
+                            className="form-input w-full p-2 text-sm bg-gray-50 dark:bg-[#16161f] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2a2a38] rounded-lg focus:ring-accent focus:border-accent transition-colors"
+                            value={warehouseFilter}
+                            onChange={(e) => setWarehouseFilter(e.target.value)}
+                        >
+                            <option value="">All Warehouses</option>
+                            {DELHIIVERY_WAREHOUSES.map((w: string) => (
+                                <option key={w} value={w}>{w}</option>
+                            ))}
+                        </select>
+                    </div>
                     <button
                         onClick={applyDateFilter}
-                        disabled={loading || !dateFrom}
-                        className="btn btn-secondary py-2 px-6 whitespace-nowrap bg-gray-100 hover:bg-gray-200 dark:bg-[#1c1c28] dark:hover:bg-[#2a2a38] text-gray-800 dark:text-gray-200"
+                        disabled={loading}
+                        className="btn w-full sm:w-auto btn-secondary py-2 px-6 whitespace-nowrap bg-gray-100 hover:bg-gray-200 dark:bg-[#1c1c28] dark:hover:bg-[#2a2a38] text-gray-800 dark:text-gray-200"
                     >
                         {loading ? 'Fetching...' : 'Fetch Orders'}
                     </button>
@@ -313,10 +412,76 @@ export default function TrackingDashboard() {
                             )
                         })}
                     </div>
+
+                    {(() => {
+                        const matchOrder = dbOrders.find(o => o.waybill === trackingData.Shipment.AWB || o.orderId === trackingData.Shipment.ReferenceNo);
+                        return matchOrder?.invoiceItems ? renderInvoiceItems(matchOrder.invoiceItems) : null;
+                    })()}
+
                 </div>
             ) : null}
 
-            {!trackingData && dbOrders.length > 0 && (
+            {/* Self-Shipped Results Area */}
+            {selectedSelfShippedOrder ? (
+                <div className="bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] rounded-xl p-6 shadow-xl dark:shadow-2xl animate-in fade-in slide-in-from-bottom-4 mb-12">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 dark:border-[#2a2a38] pb-4 mb-6">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Self-Shipped Order</h2>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Order ID: <span className="text-gray-700 dark:text-gray-300">{selectedSelfShippedOrder.orderId}</span></p>
+                        </div>
+                        <div className={`mt-4 md:mt-0 px-4 py-2 border rounded-full text-sm font-bold tracking-wider text-purple-600 bg-purple-100 border-purple-200 dark:text-purple-400 dark:bg-purple-900/20 dark:border-purple-800`}>
+                            {selectedSelfShippedOrder.selfShipmentStatus || 'Order Created'}
+                        </div>
+                    </div>
+
+                    <div className="mb-8">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order Status</label>
+                        <select
+                            className="form-input w-full md:w-1/2 p-3 text-sm bg-white dark:bg-[#16161f] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2a2a38] rounded-lg focus:ring-accent focus:border-accent transition-colors"
+                            value={selfShipStatusInput}
+                            onChange={(e) => setSelfShipStatusInput(e.target.value)}
+                        >
+                            <option value="Order Created">Order Created</option>
+                            <option value="Order shipped">Order shipped</option>
+                            <option value="Order Completed">Order Completed</option>
+                        </select>
+                    </div>
+
+                    <div className="mb-8">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Additional Notes</label>
+                        <textarea
+                            className="form-input w-full p-3 text-sm bg-white dark:bg-[#16161f] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2a2a38] rounded-lg focus:ring-accent focus:border-accent transition-colors"
+                            rows={4}
+                            maxLength={500}
+                            placeholder="Add tracking notes for self-shipped or pooja orders here..."
+                            value={selfShipNotesInput}
+                            onChange={(e) => setSelfShipNotesInput(e.target.value)}
+                        />
+                        <div className="text-right text-xs text-gray-400 mt-1">{selfShipNotesInput.length}/500 chars</div>
+                    </div>
+
+                    <div className="flex justify-end border-t border-gray-200 dark:border-[#2a2a38] pt-6 gap-3">
+                        <button
+                            className="btn bg-gray-200 hover:bg-gray-300 dark:bg-[#2a2a38] dark:hover:bg-[#3a3a4a] text-gray-800 dark:text-white py-2 px-6 rounded-lg font-medium transition-colors"
+                            onClick={() => setSelectedSelfShippedOrder(null)}
+                            disabled={updateSelfShipLoading}
+                        >
+                            Close
+                        </button>
+                        <button
+                            className="btn btn-primary py-2 px-6 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 min-w-[140px]"
+                            onClick={saveSelfShipment}
+                            disabled={updateSelfShipLoading}
+                        >
+                            {updateSelfShipLoading ? <span className="w-5 h-5 flex-shrink-0 border-2 border-white border-t-transparent rounded-full animate-spin"></span> : 'Save Details'}
+                        </button>
+                    </div>
+
+                    {renderInvoiceItems(selectedSelfShippedOrder.invoiceItems || [])}
+                </div>
+            ) : null}
+
+            {!trackingData && !selectedSelfShippedOrder && dbOrders.length > 0 && (
                 <div className="animate-in fade-in duration-500 mb-12">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Active Waybills</h3>
@@ -335,7 +500,10 @@ export default function TrackingDashboard() {
                                 ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 border border-green-200 dark:border-green-500/30'
                                 : 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30';
 
-                            if (isLiveLoading) {
+                            if (order.isSelfShipped) {
+                                displayStatus = order.selfShipmentStatus || 'Order Created';
+                                statusClasses = 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30';
+                            } else if (isLiveLoading) {
                                 displayStatus = 'LOADING...';
                                 statusClasses = 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 animate-pulse';
                             } else if (liveStatus) {
@@ -348,8 +516,17 @@ export default function TrackingDashboard() {
                                     key={idx}
                                     className="bg-white dark:bg-[#12121a] border border-gray-200 dark:border-[#2a2a38] hover:border-accent dark:hover:border-accent/50 p-5 rounded-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-accent/5 hover:bg-gray-50 dark:hover:bg-[#16161f] group flex flex-col h-full"
                                     onClick={() => {
-                                        setSearchQuery(order.waybill);
-                                        fetchTracking(order.waybill);
+                                        if (order.isSelfShipped) {
+                                            setSearchQuery(order.waybill || order.orderId || '');
+                                            setTrackingData(null);
+                                            setSelectedSelfShippedOrder(order);
+                                            setSelfShipStatusInput(order.selfShipmentStatus || 'Order Created');
+                                            setSelfShipNotesInput(order.selfShipmentNotes || '');
+                                        } else {
+                                            setSelectedSelfShippedOrder(null);
+                                            setSearchQuery(order.waybill);
+                                            fetchTracking(order.waybill);
+                                        }
                                     }}
                                 >
                                     <div className="flex justify-between items-start mb-3 gap-2">
@@ -361,8 +538,8 @@ export default function TrackingDashboard() {
                                         </span>
                                     </div>
                                     <div className="mb-4 flex-grow">
-                                        <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">Waybill Number</p>
-                                        <p className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-accent transition-colors">{order.waybill}</p>
+                                        <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider font-semibold">{order.isSelfShipped ? 'Order Identifier' : 'Waybill Number'}</p>
+                                        <p className="text-gray-900 dark:text-white font-bold text-lg group-hover:text-accent transition-colors break-all">{order.waybill || order.orderId}</p>
                                     </div>
                                     <div className="pt-3 border-t border-gray-100 dark:border-[#2a2a38] flex items-center justify-between">
                                         <div>
@@ -391,7 +568,7 @@ export default function TrackingDashboard() {
             )}
 
             {/* Recent Orders Area */}
-            {!trackingData && recentOrders.length > 0 && (
+            {!trackingData && !selectedSelfShippedOrder && recentOrders.length > 0 && (
                 <div className="animate-in fade-in duration-500 mb-12">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Your Recent Shipments</h3>
@@ -436,7 +613,7 @@ export default function TrackingDashboard() {
                 </div>
             )}
 
-            {!trackingData && recentOrders.length === 0 && dbOrders.length === 0 && (
+            {!trackingData && !selectedSelfShippedOrder && recentOrders.length === 0 && dbOrders.length === 0 && (
                 <div className="text-center py-12 text-gray-500 border border-dashed border-[#2a2a38] rounded-xl">
                     No recent orders found on this device or database. Create one from the <Link href="/" className="text-accent hover:underline">Create Order page</Link>.
                 </div>

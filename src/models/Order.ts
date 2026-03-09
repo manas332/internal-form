@@ -95,6 +95,16 @@ const OrderSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        selfShipmentStatus: {
+            type: String,
+            enum: ['Order Created', 'Order shipped', 'Order Completed'],
+            default: 'Order Created',
+        },
+        selfShipmentNotes: {
+            type: String,
+            default: '',
+            maxlength: 500,
+        },
         invoiceUrl: String,
     },
     { timestamps: true }

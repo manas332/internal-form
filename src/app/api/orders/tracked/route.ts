@@ -13,12 +13,21 @@ export async function GET(request: NextRequest) {
         const toDateStr = searchParams.get('toDate');
         const limitParam = searchParams.get('limit');
 
+        const warehouseParam = searchParams.get('warehouse');
+
         const query: any = {
             $or: [
                 { 'shipments.waybill': { $exists: true, $ne: '' } },
-                { 'waybill': { $exists: true, $ne: '' } }
+                { 'waybill': { $exists: true, $ne: '' } },
+                { selfShipped: true },
+                { status: 'SELF_SHIPPED' },
+                { 'shipments.vendor': 'SELF' }
             ]
         };
+
+        if (warehouseParam && warehouseParam !== 'all') {
+            query['shipments.warehouse'] = warehouseParam;
+        }
 
         if (fromDateStr || toDateStr) {
             query.createdAt = {};
@@ -55,15 +64,27 @@ export async function GET(request: NextRequest) {
             // Get the primary waybill (either top-level or first shipment's waybill)
             const waybill = order.waybill || (order.shipments && order.shipments.length > 0 ? order.shipments[0].waybill : '');
 
+            // Determine real orderId for linking
+            const realOrderId = order.orderId || order._id.toString();
+
+            // Determine if self shipped
+            const isSelfShipped = order.selfShipped === true ||
+                order.status === 'SELF_SHIPPED' ||
+                (order.shipments && order.shipments.some((s: any) => s.vendor === 'SELF'));
+
             return {
                 _id: order._id,
                 waybill: waybill,
-                orderId: order._id.toString(), // Mongoose ID
+                orderId: realOrderId,
                 customerName: order.customerDetails?.customer_name || 'Unknown',
                 status: order.status || 'SHIPPED',
                 createdAt: order.createdAt,
+                isSelfShipped,
+                selfShipmentStatus: order.selfShipmentStatus || 'Order Created',
+                selfShipmentNotes: order.selfShipmentNotes || '',
+                invoiceItems: order.invoiceItems || [],
             };
-        }).filter(o => o.waybill);
+        }).filter(o => o.waybill || o.isSelfShipped);
 
         return NextResponse.json({
             success: true,
