@@ -1,0 +1,12 @@
+Waybills collection: 365 UNUSED out of 365 total
+Orders collection: 0 UNUSED out of 35 total
+Sample Unused Waybill: {
+  "_id": "69a182c2cd4fb1de07e7a700",
+  "waybill": "44324210003566",
+  "__v": 0,
+  "createdAt": "2026-02-27T11:40:48.063Z",
+  "orderId": null,
+  "status": "UNUSED",
+  "updatedAt": "2026-02-27T11:40:48.063Z"
+}
+Sample Unused Order: null

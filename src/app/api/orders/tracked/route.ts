@@ -47,17 +47,20 @@ export async function GET(request: NextRequest) {
 
         // Determine limit
         let limit = 10;
-        if (limitParam) {
+        if (limitParam === 'all') {
+            limit = 0; // 0 means no limit in mongoose
+        } else if (limitParam) {
             limit = parseInt(limitParam, 10);
         } else if (fromDateStr || toDateStr) {
             limit = 50;
         }
 
         // Fetch orders with waybills
-        const ordersWithWaybills = await Order.find(query)
-            .sort({ createdAt: -1 })
-            .limit(limit)
-            .lean();
+        let orderQuery = Order.find(query).sort({ createdAt: -1 });
+        if (limit > 0) {
+            orderQuery = orderQuery.limit(limit);
+        }
+        const ordersWithWaybills = await orderQuery.lean();
 
         // Map to a cleaner format expected by tracking UI
         const mappedOrders = ordersWithWaybills.map((order: any) => {

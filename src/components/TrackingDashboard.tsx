@@ -33,13 +33,11 @@ export default function TrackingDashboard() {
     const [errorMsg, setErrorMsg] = useState('');
 
     const [warehouseFilter, setWarehouseFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
     const [selectedSelfShippedOrder, setSelectedSelfShippedOrder] = useState<DBWaybill | null>(null);
     const [updateSelfShipLoading, setUpdateSelfShipLoading] = useState(false);
     const [selfShipStatusInput, setSelfShipStatusInput] = useState('');
     const [selfShipNotesInput, setSelfShipNotesInput] = useState('');
-
-    // Fetch Live Statuses for DB Orders
-    const [liveStatuses, setLiveStatuses] = useState<Record<string, { status: string, error?: boolean }>>({});
 
     // 1. Initial Load: Fetch shipped orders containing waybills from DB
     useEffect(() => {
@@ -56,7 +54,7 @@ export default function TrackingDashboard() {
         fetchDbOrders();
     }, []);
 
-    const fetchDbOrders = async (queryParam = '') => {
+    const fetchDbOrders = async (queryParam = '?limit=all') => {
         try {
             const separator = queryParam.includes('?') ? '&' : '?';
             const res = await fetch(`/api/orders/tracked${queryParam}${separator}warehouse=${warehouseFilter}`);
@@ -71,99 +69,18 @@ export default function TrackingDashboard() {
         }
     };
 
-    useEffect(() => {
-        if (dbOrders.length === 0) return;
-
-        const fetchStatuses = async () => {
-            const waybillsToFetch = dbOrders.filter(o => !o.isSelfShipped && o.waybill).map(o => o.waybill);
-
-            if (waybillsToFetch.length === 0) return;
-
-            try {
-                const waybillsStr = waybillsToFetch.join(',');
-                const res = await fetch(`/api/delhivery/track-bulk?waybills=${waybillsStr}`);
-
-                if (!res.ok) throw new Error('Bulk fetch failed');
-
-                const responseData = await res.json();
-
-                if (responseData.success && Array.isArray(responseData.results)) {
-                    setLiveStatuses(prev => {
-                        const newStatuses = { ...prev };
-
-                        responseData.results.forEach((item: any) => {
-                            if (item.error || item.status !== 200 || !item.data?.ShipmentData?.length) {
-                                if (item.waybill && item.waybill !== 'UNKNOWN') {
-                                    newStatuses[item.waybill] = { status: 'UNKNOWN', error: true };
-                                }
-                                return;
-                            }
-
-                            const shipmentLine = item.data.ShipmentData[0]?.Shipment;
-                            if (shipmentLine) {
-                                const wb = shipmentLine.AWB;
-                                const statusObj = shipmentLine.CurrentStatus || shipmentLine.Status;
-                                if (statusObj?.Status) {
-                                    newStatuses[wb] = { status: statusObj.Status };
-                                } else {
-                                    newStatuses[wb] = { status: 'UNKNOWN', error: true };
-                                }
-                            }
-                        });
-
-                        return newStatuses;
-                    });
-                } else {
-                    throw new Error('Invalid bulk response data');
-                }
-            } catch (e) {
-                console.error('Failed to fetch bulk statuses', e);
-                setLiveStatuses(prev => {
-                    const newStatuses = { ...prev };
-                    waybillsToFetch.forEach(wb => {
-                        if (!newStatuses[wb]) newStatuses[wb] = { status: 'ERROR', error: true };
-                    });
-                    return newStatuses;
-                });
-            }
-        };
-
-        fetchStatuses();
-    }, [dbOrders]);
-
     const [dateFrom, setDateFrom] = useState('');
-    const [pageCount, setPageCount] = useState(1);
 
     const applyDateFilter = async () => {
         try {
             setLoading(true);
-            setLiveStatuses({}); // Clear old statuses
 
             // Read from DB using the fromDate filter natively if present
-            const queryParams = dateFrom ? `?fromDate=${dateFrom}` : ``;
+            const queryParams = dateFrom ? `?fromDate=${dateFrom}&limit=all` : `?limit=all`;
             await fetchDbOrders(queryParams);
-
-            // Reset pagination
-            setPageCount(1);
         } catch (err) {
             console.error('Failed to filter by start date', err);
             setErrorMsg('Failed to fetch orders by dates.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const loadMore = async () => {
-        try {
-            setLoading(true);
-            const currentTotal = dbOrders.length;
-            const fetchCount = currentTotal + 5; // Load 5 more
-
-            // Get from db with bumped limit
-            const queryParams = dateFrom ? `?fromDate=${dateFrom}&limit=${fetchCount}` : `?limit=${fetchCount}`;
-            await fetchDbOrders(queryParams);
-        } catch (err) {
-            console.error('Failed to load more', err);
         } finally {
             setLoading(false);
         }
@@ -340,10 +257,31 @@ export default function TrackingDashboard() {
                             ))}
                         </select>
                     </div>
+                    <div className="flex-1 w-full sm:min-w-[150px]">
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Status</label>
+                        <select
+                            className="form-input w-full p-2 text-sm bg-gray-50 dark:bg-[#16161f] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2a2a38] rounded-lg focus:ring-accent focus:border-accent transition-colors"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="all">All Statuses</option>
+                            <option value="MANIFESTED">Manifested</option>
+                            <option value="IN TRANSIT">In Transit</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="DISPATCHED">Dispatched</option>
+                            <option value="PICKED UP">Picked Up</option>
+                            <option value="OUT FOR DELIVERY">Out for Delivery</option>
+                            <option value="DELIVERED">Delivered</option>
+                            <option value="RTO">RTO</option>
+                            <option value="ORDER CREATED">Self: Order Created</option>
+                            <option value="ORDER SHIPPED">Self: Order shipped</option>
+                            <option value="ORDER COMPLETED">Self: Order Completed</option>
+                        </select>
+                    </div>
                     <button
                         onClick={applyDateFilter}
                         disabled={loading}
-                        className="btn w-full sm:w-auto btn-secondary py-2 px-6 whitespace-nowrap bg-gray-100 hover:bg-gray-200 dark:bg-[#1c1c28] dark:hover:bg-[#2a2a38] text-gray-800 dark:text-gray-200"
+                        className="btn w-full sm:w-auto btn-primary py-2 px-6 whitespace-nowrap"
                     >
                         {loading ? 'Fetching...' : 'Fetch Orders'}
                     </button>
@@ -354,6 +292,20 @@ export default function TrackingDashboard() {
                 <div className="form-error max-w-2xl mx-auto mb-8">
                     {errorMsg}
                 </div>
+            )}
+
+            {/* Back Button */}
+            {(trackingData || selectedSelfShippedOrder) && (
+                <button
+                    onClick={() => {
+                        setTrackingData(null);
+                        setSelectedSelfShippedOrder(null);
+                        setSearchQuery('');
+                    }}
+                    className="mb-4 flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 bg-white dark:bg-[#16161f] hover:text-accent dark:hover:text-accent hover:bg-gray-50 dark:hover:bg-[#1c1c28] border border-gray-200 dark:border-[#2a2a38] rounded-lg transition-all shadow-sm w-fit"
+                >
+                    ← Back to Orders
+                </button>
             )}
 
             {/* Tracking Results Area */}
@@ -490,10 +442,18 @@ export default function TrackingDashboard() {
                         </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-                        {dbOrders.map((order, idx) => {
+                        {dbOrders.filter(order => {
+                            if (statusFilter === 'all') return true;
+
+                            let currentStatus = order.status;
+
+                            if (order.isSelfShipped) {
+                                currentStatus = order.selfShipmentStatus || 'Order Created';
+                            }
+
+                            return currentStatus?.toUpperCase() === statusFilter;
+                        }).map((order, idx) => {
                             const isUnused = order.status === 'UNUSED';
-                            const liveStatus = liveStatuses[order.waybill]?.status;
-                            const isLiveLoading = !liveStatus && !liveStatuses[order.waybill]?.error;
 
                             let displayStatus = order.status;
                             let statusClasses = isUnused
@@ -503,12 +463,9 @@ export default function TrackingDashboard() {
                             if (order.isSelfShipped) {
                                 displayStatus = order.selfShipmentStatus || 'Order Created';
                                 statusClasses = 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30';
-                            } else if (isLiveLoading) {
-                                displayStatus = 'LOADING...';
-                                statusClasses = 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 animate-pulse';
-                            } else if (liveStatus) {
-                                displayStatus = liveStatus.length > 15 ? liveStatus.substring(0, 15) + '...' : liveStatus;
-                                statusClasses = getStatusColor(liveStatus);
+                            } else if (order.status) {
+                                displayStatus = displayStatus.length > 15 ? displayStatus.substring(0, 15) + '...' : displayStatus;
+                                statusClasses = getStatusColor(order.status);
                             }
 
                             return (
@@ -530,7 +487,7 @@ export default function TrackingDashboard() {
                                     }}
                                 >
                                     <div className="flex justify-between items-start mb-3 gap-2">
-                                        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide flex-shrink-0 ${statusClasses}`} title={liveStatus || order.status}>
+                                        <span className={`text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide flex-shrink-0 ${statusClasses}`} title={order.status}>
                                             {displayStatus}
                                         </span>
                                         <span className="text-gray-500 dark:text-gray-400 text-xs font-medium flex items-center gap-1 text-right flex-shrink-0">
@@ -553,16 +510,6 @@ export default function TrackingDashboard() {
                                 </div>
                             )
                         })}
-                    </div>
-
-                    <div className="flex justify-center mt-6">
-                        <button
-                            onClick={loadMore}
-                            disabled={loading}
-                            className="btn bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-[#1c1c28] dark:hover:bg-[#2a2a38] dark:text-gray-300 px-8 py-3 rounded-full font-semibold transition-all border border-gray-200 dark:border-gray-700 flex items-center gap-2 shadow-sm"
-                        >
-                            {loading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span> : '⟳ Load 5 More Waybills'}
-                        </button>
                     </div>
                 </div>
             )}
