@@ -41,7 +41,7 @@ export default function CustomerSearch({
         email: '',
         company_name: '',
         gst_no: '',
-        gst_treatment: 'business_gst' as GSTTreatment,
+        gst_treatment: 'consumer' as GSTTreatment,
         place_of_contact: '',
         phone: '',
         address: '',
@@ -158,6 +158,10 @@ export default function CustomerSearch({
 
     const handleCreateCustomer = async () => {
         if (!newCustomer.display_name.trim()) return;
+        if (newCustomer.gst_treatment === 'business_gst' && !newCustomer.gst_no.trim()) {
+            alert('GST Number is required for Registered Business.');
+            return;
+        }
 
         setCreating(true);
         try {
@@ -215,7 +219,7 @@ export default function CustomerSearch({
                     email: '',
                     company_name: '',
                     gst_no: '',
-                    gst_treatment: 'business_gst',
+                    gst_treatment: 'consumer',
                     place_of_contact: '',
                     phone: '',
                     address: '',
@@ -531,7 +535,7 @@ export default function CustomerSearch({
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label>GST Number</label>
+                                <label>GST Number{newCustomer.gst_treatment === 'business_gst' ? ' *' : ''}</label>
                                 <input
                                     type="text"
                                     className="form-input"
