@@ -278,6 +278,42 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             // Save to tracking history
             saveWaybillToHistory(generatedWaybill, createdInvoiceNumber, formData.customer_name);
 
+            // 3. Save Order to Database (for revenue + tracking UI)
+            const orderPayload = {
+                zohoInvoiceId: createdInvoiceId,
+                orderId: createdInvoiceNumber,
+                customerDetails: {
+                    customer_name: formData.customer_name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    country_code: formData.country_code,
+                    address: formData.address,
+                    city: formData.city,
+                    state: formData.state,
+                    country: formData.country,
+                    pincode: formData.pincode,
+                },
+                invoiceItems: finalInvoiceItems,
+                invoiceTotal: Number(zohoCalculatedTotal) || grandTotal,
+                salespersonName: formData.salesperson_name,
+                paymentMode: formData.payment_mode || 'Prepaid',
+                status: 'SHIPPED',
+                selfShipped: false,
+                waybill: generatedWaybill,
+                labelUrl: shipmentResult.packages[0]?.label || null,
+            };
+
+            const orderRes = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderPayload)
+            });
+            if (!orderRes.ok) {
+                const orderError = await orderRes.json();
+                console.warn('Failed to save to MongoDB:', orderError);
+                // We proceed anyway as Zoho invoice + shipment were created.
+            }
+
             // 3. Update state and proceed
             updateForm({
                 invoiceId: createdInvoiceId,

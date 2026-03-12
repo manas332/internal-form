@@ -104,6 +104,7 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
 
             const createdInvoiceId = invoiceData.invoice.invoice_id;
             const createdInvoiceNumber = invoiceData.invoice.invoice_number;
+            const zohoInvoiceTotal = Number(invoiceData.invoice.total) || 0;
 
             // 2. Save Order to Database
             const orderPayload = {
@@ -124,6 +125,7 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
                 // so the schedule-order wizard can see them even though we
                 // no longer send description to Zoho.
                 invoiceItems: finalInvoiceItems,
+                invoiceTotal: zohoInvoiceTotal || grandTotal,
                 salespersonName: formData.salesperson_name,
                 paymentMode: formData.payment_mode || 'Prepaid',
                 status: formData.isSelfShipped ? 'SELF_SHIPPED' : 'PENDING_SHIPPING',

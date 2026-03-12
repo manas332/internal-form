@@ -22,6 +22,7 @@ interface OrderData {
     _id: string;
     orderId: string;
     zohoInvoiceId: string;
+    invoiceTotal?: number | null;
     customerDetails?: {
         customer_name?: string;
         email?: string;
@@ -168,6 +169,9 @@ export default function TrackRevenue() {
     }
 
     function getOrderTotal(order: OrderData): number {
+        if (order.invoiceTotal != null && Number.isFinite(order.invoiceTotal)) {
+            return order.invoiceTotal;
+        }
         if (!order.invoiceItems) return 0;
         return order.invoiceItems.reduce((s, i) => s + (i.final_price || i.item_total || 0), 0);
     }

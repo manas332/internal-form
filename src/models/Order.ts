@@ -41,6 +41,17 @@ const OrderSchema = new mongoose.Schema(
                 carat_size: String,
             }
         ],
+        /**
+         * Final invoice total as calculated by Zoho (includes entity-level discounts,
+         * shipping/COD charge line items, and taxes as configured).
+         *
+         * This is used for accurate revenue reporting because invoice-level discounts
+         * are not reflected in individual line item totals.
+         */
+        invoiceTotal: {
+            type: Number,
+            default: null,
+        },
         salespersonName: {
             type: String,
             default: '',
