@@ -168,12 +168,23 @@ export default function TrackRevenue() {
         setExpandedPerson(prev => (prev === name ? null : name));
     }
 
-    function getOrderTotal(order: OrderData): number {
-        if (order.invoiceTotal != null && Number.isFinite(order.invoiceTotal)) {
-            return order.invoiceTotal;
-        }
+    function getOrderLineSum(order: OrderData): number {
         if (!order.invoiceItems) return 0;
         return order.invoiceItems.reduce((s, i) => s + (i.final_price || i.item_total || 0), 0);
+    }
+
+    function getOrderTotal(order: OrderData): number {
+        if (order.invoiceTotal != null && Number.isFinite(order.invoiceTotal)) return order.invoiceTotal;
+        return getOrderLineSum(order);
+    }
+
+    function getOrderDiscount(order: OrderData): number {
+        // Discount is entity-level in Zoho, so it won't reflect in line items.
+        // Show it as (sum of line totals) - (Zoho invoiceTotal).
+        if (order.invoiceTotal == null || !Number.isFinite(order.invoiceTotal)) return 0;
+        const before = getOrderLineSum(order);
+        const discount = before - order.invoiceTotal;
+        return discount > 0 ? discount : 0;
     }
 
     function toggleOrderExpand(orderId: string, e: React.MouseEvent) {
@@ -531,10 +542,35 @@ export default function TrackRevenue() {
                                                     </div>
                                                 )}
 
-                                                <div className="flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/30 mt-4 text-sm md:text-base">
-                                                    <span className="font-semibold text-indigo-900 dark:text-indigo-200">Order Total</span>
-                                                    <span className="font-bold text-indigo-700 dark:text-indigo-300">{formatCurrency(getOrderTotal(order))}</span>
-                                                </div>
+                                                {(() => {
+                                                    const before = getOrderLineSum(order);
+                                                    const discount = getOrderDiscount(order);
+                                                    const after = getOrderTotal(order);
+                                                    const showDiscount = discount > 0.01;
+
+                                                    return (
+                                                        <div className="mt-4 space-y-2">
+                                                            {showDiscount && (
+                                                                <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700/60 text-sm md:text-base">
+                                                                    <span className="font-medium text-gray-700 dark:text-gray-300">Total (before discount)</span>
+                                                                    <span className="font-semibold text-gray-900 dark:text-white">{formatCurrency(before)}</span>
+                                                                </div>
+                                                            )}
+                                                            {showDiscount && (
+                                                                <div className="flex justify-between items-center px-3 text-sm md:text-base">
+                                                                    <span className="font-medium text-green-700 dark:text-green-400">Discount</span>
+                                                                    <span className="font-semibold text-green-700 dark:text-green-400">- {formatCurrency(discount)}</span>
+                                                                </div>
+                                                            )}
+                                                            <div className="flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/30 text-sm md:text-base">
+                                                                <span className="font-semibold text-indigo-900 dark:text-indigo-200">
+                                                                    Order Total{showDiscount ? ' (after discount)' : ''}
+                                                                </span>
+                                                                <span className="font-bold text-indigo-700 dark:text-indigo-300">{formatCurrency(after)}</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                         )}
                                     </div>
