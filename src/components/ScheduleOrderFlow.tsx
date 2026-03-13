@@ -7,10 +7,13 @@ import PendingOrdersStep from './steps/PendingOrdersStep';
 import SchedulePreviewStep from './steps/SchedulePreviewStep';
 import ScheduleConfirmationStep from './steps/ScheduleConfirmationStep';
 
+import ScheduleEditItemsStep from './steps/ScheduleEditItemsStep';
+
 enum ScheduleStep {
     SELECT_ORDER = 1,
-    REVIEW = 2,
-    CONFIRMATION = 3,
+    EDIT_ITEMS = 2,
+    REVIEW = 3,
+    CONFIRMATION = 4,
 }
 
 export default function ScheduleOrderFlow() {
@@ -21,7 +24,7 @@ export default function ScheduleOrderFlow() {
         setFormData((prev) => ({ ...prev, ...updates }));
     };
 
-    const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 3) as ScheduleStep);
+    const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 4) as ScheduleStep);
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1) as ScheduleStep);
 
     const resetFlow = () => {
@@ -94,6 +97,8 @@ export default function ScheduleOrderFlow() {
         switch (currentStep) {
             case ScheduleStep.SELECT_ORDER:
                 return <PendingOrdersStep onSelectOrder={handleSelectOrder} />;
+            case ScheduleStep.EDIT_ITEMS:
+                return <ScheduleEditItemsStep formData={formData} updateForm={updateForm} onNext={nextStep} onPrev={prevStep} />;
             case ScheduleStep.REVIEW:
                 return <SchedulePreviewStep formData={formData} updateForm={updateForm} onNext={nextStep} onPrev={prevStep} />;
             case ScheduleStep.CONFIRMATION:
@@ -105,6 +110,7 @@ export default function ScheduleOrderFlow() {
 
     const steps = [
         { id: ScheduleStep.SELECT_ORDER, label: 'Select Order' },
+        { id: ScheduleStep.EDIT_ITEMS, label: 'Edit Items' },
         { id: ScheduleStep.REVIEW, label: 'Review & Ship' },
         { id: ScheduleStep.CONFIRMATION, label: 'Complete' },
     ];

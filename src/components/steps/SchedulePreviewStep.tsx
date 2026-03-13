@@ -389,6 +389,11 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     waybill: allWaybills[0] ?? null,
                     waybills: allWaybills,
                     shippingCost: createdShipmentsForOrder.reduce((sum, s) => sum + (s.shippingCost || 0), 0),
+                    invoiceItems: formData.invoice_items, // Persist edited items
+                    discount: formData.discount,
+                    discount_format_type: formData.discount_format_type,
+                    include_shipping: formData.include_shipping,
+                    include_cod: formData.include_cod,
                 }),
             });
 

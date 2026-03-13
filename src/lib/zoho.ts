@@ -142,6 +142,22 @@ export async function getInvoice(invoiceId: string) {
 }
 
 /**
+ * Update an existing invoice via Zoho Billing API.
+ */
+export async function updateInvoice(invoiceId: string, body: Record<string, unknown>) {
+    const headers = await zohoHeaders();
+
+    const res = await fetch(`${ZOHO_API_BASE}/invoices/${invoiceId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+    return { status: res.status, data };
+}
+
+/**
  * Fetch invoice PDF as an ArrayBuffer.
  */
 export async function getInvoicePdf(invoiceId: string): Promise<ArrayBuffer> {
