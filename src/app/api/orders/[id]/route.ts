@@ -70,14 +70,37 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
         // If invoiceItems were updated and we have a Zoho Invoice ID, push the update to Zoho
         let zohoUpdated = false;
+        console.log('[PATCH order] invoiceItems present:', !!rest.invoiceItems, '| zohoInvoiceId:', order.zohoInvoiceId ?? '(none)');
         if (rest.invoiceItems && Array.isArray(rest.invoiceItems) && order.zohoInvoiceId) {
+            console.log('[PATCH order] Attempting Zoho invoice update for', order.zohoInvoiceId);
             try {
-                // Map the frontend invoice items back to Zoho's invoice_items format
-                // Map the frontend invoice items back to Zoho's invoice_items format
+                // Map the frontend invoice items back to Zoho's invoice_items format.
+                // IMPORTANT: Always derive the pre-tax rate from final_price (tax-inclusive per-unit price)
+                // so we never re-send stale/wrong `price` values that may be in the DB from the original
+                // Zoho invoice creation. item_total is intentionally NOT forwarded — it is the pre-tax
+                // aggregate (qty × rate), not a per-unit field, and sending it causes Zoho to use it
+                // as an override that produces wildly wrong totals.
                 const zohoLineItems = rest.invoiceItems.map((item: InvoiceItem) => {
+                    // Cast to a wider type to safely read `tax_percentage`, which is stored in DB
+                    // items but not present in the frontend InvoiceItem TypeScript type.
+                    const itemAny = item as unknown as Record<string, unknown>;
+                    const taxPct = typeof itemAny.tax_percentage === 'number' ? itemAny.tax_percentage : 0;
+
+                    // Recompute pre-tax per-unit rate from final_price (tax-inclusive) so we don't
+                    // blindly use stale price stored in DB from an earlier Zoho sync.
+                    let pretaxRate: number = item.price ?? 0;
+                    if (item.final_price != null && item.final_price > 0) {
+                        if (taxPct > 0) {
+                            pretaxRate = item.final_price / (1 + taxPct / 100);
+                        } else {
+                            // No tax — pre-tax rate equals final_price
+                            pretaxRate = item.final_price;
+                        }
+                    }
+
                     const line: Record<string, unknown> = {
                         name: item.name,
-                        rate: item.price,
+                        rate: Math.round(pretaxRate * 100) / 100,
                         quantity: item.quantity,
                     };
                     
@@ -87,9 +110,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
                     if (item.tax_id && item.tax_id !== 'NO_TAX') line.tax_id = item.tax_id;
                     if (item.discount !== undefined) line.discount = item.discount;
                     if (item.unit) line.unit = item.unit;
-                    
-                    // Passing item_total can help bypass calculation mismatch errors in Zoho sometimes
-                    if (item.item_total !== undefined) line.item_total = item.item_total;
+                    // NOTE: item_total deliberately NOT sent to Zoho.
+                    // It is a pre-tax aggregate (qty × pre-tax rate), not a per-unit field.
+                    // Sending it causes Zoho to override the calculated total with wrong values.
 
                     return line;
                 });
@@ -123,12 +146,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
                 const result = await updateInvoice(order.zohoInvoiceId, invoicePatch);
                 
                 zohoUpdated = result.status === 200;
-                if (!zohoUpdated) {
-                    console.warn(`Zoho invoice update returned ${result.status}:`, result.data?.message);
+                if (zohoUpdated) {
+                    console.log('[PATCH order] Zoho invoice updated successfully:', order.zohoInvoiceId);
+                } else {
+                    console.error(`[PATCH order] Zoho invoice update FAILED — status ${result.status}:`, result.data?.message ?? result.data);
                 }
             } catch (err) {
-                 console.warn('Failed to update corresponding invoice in Zoho:', err);
+                console.error('[PATCH order] Exception while updating Zoho invoice:', err);
             }
+        } else if (rest.invoiceItems && !order.zohoInvoiceId) {
+            console.warn('[PATCH order] invoiceItems present but order has no zohoInvoiceId — skipping Zoho update');
         }
 
         return NextResponse.json({ success: true, order, zohoUpdated }, { status: 200 });
