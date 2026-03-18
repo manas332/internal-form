@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
-import { printDelhiveryLabel } from '@/lib/printLabel';
+import { downloadDelhiveryLabel } from '@/lib/printLabel';
 
 interface Props {
     formData: CombinedFormData;
@@ -50,7 +50,7 @@ export default function ConfirmationStep({ formData, onReset }: Props) {
         if (!formData.waybill) return;
         setDownloadingLabel(true);
         try {
-            await printDelhiveryLabel(formData.waybill);
+            await downloadDelhiveryLabel(formData.waybill);
         } catch (e) {
             console.error(e);
             alert(e instanceof Error ? e.message : 'Error printing label.');

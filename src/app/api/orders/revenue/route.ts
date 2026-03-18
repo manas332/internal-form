@@ -78,11 +78,11 @@ export async function GET(request: NextRequest) {
                 }
 
                 // Final fallback: sum line item totals (does NOT include invoice-level discounts)
-                const items = orderAny.invoiceItems as Array<{ item_total?: number; final_price?: number }> | undefined;
+                const items = orderAny.invoiceItems as Array<{ item_total?: number; tax_amount?: number }> | undefined;
                 let sum = 0;
                 if (items && Array.isArray(items)) {
                     for (const item of items) {
-                        sum += item.final_price || item.item_total || 0;
+                        sum += (item.item_total || 0) + (item.tax_amount || 0);
                     }
                 }
                 return { order, total: sum };

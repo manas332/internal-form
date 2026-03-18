@@ -5,7 +5,9 @@
  * When pdf=false, Delhivery returns the raw label data as JSON so it can
  * be rendered into a custom HTML layout.
  */
-export async function printDelhiveryLabel(waybill: string): Promise<void> {
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getLabelData(waybill: string): Promise<Record<string, any>> {
   const res = await fetch(`/api/delhivery/label?waybill=${waybill}&pdf_size=A4`);
   if (!res.ok) throw new Error('Failed to fetch label data');
   const data = await res.json();
@@ -20,7 +22,11 @@ export async function printDelhiveryLabel(waybill: string): Promise<void> {
   } else if (data && typeof data === 'object') {
     pkg = data;
   }
+  return pkg;
+}
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function generateLabelHtml(pkg: Record<string, any>, waybill: string): Promise<string> {
   // Helper: try multiple possible field names in order
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const get = (...keys: string[]): string => {
@@ -50,8 +56,7 @@ export async function printDelhiveryLabel(waybill: string): Promise<void> {
     hour12: true,
   });
 
-  // Fetch and embed the logo as a base64 data URI so it renders correctly
-  // in the detached print popup window (which can't load relative URLs)
+  // Fetch and embed the logo as a base64 data URI
   let logoDataUri = '';
   try {
     const logoRes = await fetch('/delhivery-logo.png');
@@ -72,7 +77,7 @@ export async function printDelhiveryLabel(waybill: string): Promise<void> {
     ? `<img class="logo" src="${logoDataUri}" alt="Delhivery" />`
     : `<span style="font-size:22px;font-weight:900;letter-spacing:2px;">DELHIVERY</span>`;
 
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8"/>
@@ -80,16 +85,16 @@ export async function printDelhiveryLabel(waybill: string): Promise<void> {
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #000; padding: 12px; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #000; padding: 12px; width: 100%; }
   /* Label takes half the page width, anchored top-left */
-  .label { width: 50%; border: 2px solid #000; float: left; }
+  .label { width: 400px; border: 2px solid #000; overflow: hidden; }
   .header { display: flex; justify-content: space-between; align-items: center;
             border-bottom: 2px solid #000; padding: 6px 12px; }
   .sort-code { font-size: 14px; font-weight: bold; letter-spacing: 1px; }
   .logo { height: 48px; width: auto; object-fit: contain; }
   .awb-row { padding: 8px 12px 2px; font-size: 13px; font-weight: bold; }
   .barcode-section { text-align: center; padding: 2px 12px 4px; }
-  .barcode-section svg { max-width: 100%; }
+  .barcode-section svg { max-width: 100%; height: auto; }
   .sort-bar { display: flex; justify-content: space-between;
               border-top: 2px solid #000; border-bottom: 2px solid #000;
               padding: 5px 12px; font-size: 12px; font-weight: bold; }
@@ -115,7 +120,7 @@ export async function printDelhiveryLabel(waybill: string): Promise<void> {
 </style>
 </head>
 <body>
-<div class="label">
+<div id="label-content" class="label">
   <div class="header">
     <span class="sort-code">${sortCode}</span>
     ${logoHtml}
@@ -152,7 +157,7 @@ export async function printDelhiveryLabel(waybill: string): Promise<void> {
   <div class="footer">Page 1 of 1</div>
 </div>
 <script>
-  window.onload = function() {
+  function renderBarcodes() {
     try {
       JsBarcode('#awb-barcode', '${awb}', {
         format: 'CODE128', width: 2, height: 60, displayValue: false
@@ -163,15 +168,115 @@ export async function printDelhiveryLabel(waybill: string): Promise<void> {
         format: 'CODE128', width: 1.5, height: 40, displayValue: false
       });
     } catch(e) { console.error('Order barcode error:', e); }` : ''}
-    setTimeout(function() { window.print(); }, 600);
+  }
+  window.onload = function() {
+    renderBarcodes();
+    if (window.isPrintMode) {
+      setTimeout(function() { window.print(); }, 600);
+    }
   };
 <\/script>
 </body>
 </html>`;
+}
+
+export async function printDelhiveryLabel(waybill: string): Promise<void> {
+  const pkg = await getLabelData(waybill);
+  const html = await generateLabelHtml(pkg, waybill);
+
+  const printHtml = html.replace('window.onload = function() {', 'window.isPrintMode = true; window.onload = function() {');
 
   const printWindow = window.open('', '_blank', 'width=794,height=1123');
   if (!printWindow) throw new Error('Popup blocked. Please allow popups for this site and try again.');
   printWindow.document.open();
-  printWindow.document.write(html);
+  printWindow.document.write(printHtml);
   printWindow.document.close();
+}
+
+export async function downloadDelhiveryLabel(waybill: string): Promise<void> {
+  if (typeof window === 'undefined') {
+    throw new Error('PDF generation can only run in the browser');
+  }
+
+  // Load html2pdf dynamically
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let html2pdf: any;
+  try {
+    const html2pdfModule = await import('html2pdf.js');
+    html2pdf = html2pdfModule.default || html2pdfModule;
+  } catch (e) {
+    console.warn('Failed to import html2pdf directly, falling back to window', e);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    html2pdf = (window as any).html2pdf;
+    if (!html2pdf) {
+        throw new Error('html2pdf library could not be loaded');
+    }
+  }
+
+  const pkg = await getLabelData(waybill);
+  const htmlStr = await generateLabelHtml(pkg, waybill);
+
+  // We need to create a hidden container to render the HTML so html2pdf can capture it
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.left = '-9999px';
+  container.style.top = '0';
+  container.innerHTML = htmlStr;
+  document.body.appendChild(container);
+
+  // We need to manually trigger barcode rendering because it's inside the script tag of the generated HTML
+  // but scripts aren't executed when setting innerHTML
+  const awb = waybill; // Simplified for this context
+  const orderId = pkg.refnum || pkg.order || pkg.reference_number || pkg.ref_id || pkg.order_id || pkg.ref;
+
+  // Dynamically import JsBarcode
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let JsBarcode: any;
+  try {
+    const JsBarcodeModule = await import('jsbarcode');
+    JsBarcode = JsBarcodeModule.default || JsBarcodeModule;
+  } catch (e) {
+    console.warn('Failed to import jsbarcode directly, falling back to window', e);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    JsBarcode = (window as any).JsBarcode;
+  }
+
+  if (JsBarcode) {
+    try {
+      JsBarcode(container.querySelector('#awb-barcode'), awb, {
+        format: 'CODE128', width: 2, height: 60, displayValue: false
+      });
+    } catch(e) { console.error('AWB barcode error:', e); }
+
+    if (orderId) {
+      try {
+        JsBarcode(container.querySelector('#order-barcode'), orderId, {
+          format: 'CODE128', width: 1.5, height: 40, displayValue: false
+        });
+      } catch(e) { console.error('Order barcode error:', e); }
+    }
+  } else {
+      console.error('JsBarcode not found, skipping barcodes');
+  }
+
+  const options = {
+    margin: 10,
+    filename: `label-${waybill}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  try {
+    const element = container.querySelector('#label-content');
+    if (!element) {
+        throw new Error('Label content element not found');
+    }
+    await html2pdf().set(options).from(element).save();
+  } catch (error) {
+    console.error('PDF generation error:', error);
+    throw new Error(`Failed to generate PDF: ${error instanceof Error ? error.message : String(error)}`);
+  } finally {
+    document.body.removeChild(container);
+  }
 }

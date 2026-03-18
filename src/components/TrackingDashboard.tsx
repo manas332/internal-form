@@ -177,14 +177,18 @@ export default function TrackingDashboard() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-[#2a2a38]">
-                            {items.map((item, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-[#1c1c28]/50">
-                                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">{item.name || item.item_id || '—'}</td>
-                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.quantity ?? '—'}</td>
-                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">₹{item.rate ?? 0}</td>
-                                    <td className="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">₹{item.item_total ?? 0}</td>
-                                </tr>
-                            ))}
+                            {items.map((item, idx) => {
+                                const taxInclusiveTotal = (item.item_total || 0) + (item.tax_amount || 0);
+                                const taxInclusiveRate = item.final_price || (item.quantity ? taxInclusiveTotal / item.quantity : 0);
+                                return (
+                                    <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-[#1c1c28]/50">
+                                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">{item.name || item.item_id || '—'}</td>
+                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.quantity ?? '—'}</td>
+                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300">₹{taxInclusiveRate.toFixed(2)}</td>
+                                        <td className="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">₹{taxInclusiveTotal.toFixed(2)}</td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

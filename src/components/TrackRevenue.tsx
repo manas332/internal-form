@@ -14,6 +14,7 @@ interface InvoiceItem {
     item_total?: number;
     final_price?: number;
     tax_percentage?: number;
+    tax_amount?: number;
     hsn_or_sac?: string;
     carat_size?: string;
 }
@@ -170,7 +171,7 @@ export default function TrackRevenue() {
 
     function getOrderLineSum(order: OrderData): number {
         if (!order.invoiceItems) return 0;
-        return order.invoiceItems.reduce((s, i) => s + (i.final_price || i.item_total || 0), 0);
+        return order.invoiceItems.reduce((s, i) => s + (i.item_total || 0) + (i.tax_amount || 0), 0);
     }
 
     function getOrderTotal(order: OrderData): number {
@@ -524,19 +525,23 @@ export default function TrackRevenue() {
                                                                 </tr>
                                                             </thead>
                                                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
-                                                                {order.invoiceItems.map((item, iIdx) => (
-                                                                    <tr key={iIdx} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
-                                                                        <td className="px-4 py-3">
-                                                                            <div className="font-medium text-gray-900 dark:text-gray-200">{item.name || '—'}</div>
-                                                                            {item.description && (
-                                                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{item.description}</div>
-                                                                            )}
-                                                                        </td>
-                                                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.quantity ?? '—'}</td>
-                                                                        <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.rate != null ? formatCurrency(item.rate) : '—'}</td>
-                                                                        <td className="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">{item.final_price != null ? formatCurrency(item.final_price) : (item.item_total != null ? formatCurrency(item.item_total) : '—')}</td>
-                                                                    </tr>
-                                                                ))}
+                                                                {order.invoiceItems.map((item, iIdx) => {
+                                                                    const taxInclusiveTotal = (item.item_total || 0) + (item.tax_amount || 0);
+                                                                    const taxInclusiveRate = item.final_price || (item.quantity ? taxInclusiveTotal / item.quantity : 0);
+                                                                    return (
+                                                                        <tr key={iIdx} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
+                                                                            <td className="px-4 py-3">
+                                                                                <div className="font-medium text-gray-900 dark:text-gray-200">{item.name || '—'}</div>
+                                                                                {item.description && (
+                                                                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{item.description}</div>
+                                                                                )}
+                                                                            </td>
+                                                                            <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.quantity ?? '—'}</td>
+                                                                            <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{formatCurrency(taxInclusiveRate)}</td>
+                                                                            <td className="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(taxInclusiveTotal)}</td>
+                                                                        </tr>
+                                                                    );
+                                                                })}
                                                             </tbody>
                                                         </table>
                                                     </div>

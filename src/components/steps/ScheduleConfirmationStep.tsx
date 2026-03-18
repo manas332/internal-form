@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
-import { printDelhiveryLabel } from '@/lib/printLabel';
+import { downloadDelhiveryLabel } from '@/lib/printLabel';
 
 interface Props {
     formData: CombinedFormData;
@@ -21,7 +21,7 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
     const handleDownloadLabel = async (wb: string) => {
         setDownloadingLabel(true);
         try {
-            await printDelhiveryLabel(wb);
+            await downloadDelhiveryLabel(wb);
         } catch (e) {
             console.error(e);
             alert(e instanceof Error ? e.message : 'Error printing label.');
