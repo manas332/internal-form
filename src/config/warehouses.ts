@@ -17,7 +17,8 @@ export const DELHIIVERY_WAREHOUSES = [
     'Baba',
     'khambat facility',
     'PRAYOSHA CRYSTALS',
-    'K V'
+    'K V',
+    'Keshav Agate'
 ] as const;
 
 export type DelhiveryWarehouse = typeof DELHIIVERY_WAREHOUSES[number];
