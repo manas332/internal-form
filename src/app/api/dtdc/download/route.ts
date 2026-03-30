@@ -104,7 +104,13 @@ export async function GET(request: NextRequest) {
                 
                 // Escape CSV commas
                 const destAddress = `"${order.customerDetails.address}, ${order.customerDetails.city}, ${order.customerDetails.state}"`;
-                const originAddress = `"${vDetails.address_line}"`;
+                
+                // Origin overrides for DTDC
+                const originName = 'DA Dharm Sathi Pvt Ltd'; // Always use company name
+                const isOffice = vendorName.toLowerCase() === 'office';
+                const originAddressLine = isOffice ? 'Greater Noida' : vDetails.address_line;
+                const originPincode = isOffice ? '201301' : vDetails.pincode;
+                const originAddress = `"${originAddressLine}"`;
                 
                 const row = [
                     order.orderId || '',
@@ -123,9 +129,9 @@ export async function GET(request: NextRequest) {
                     codAmountStr,
                     '', // In Favor Of
                     codModeStr,
-                    vDetails.facility_name, // Origin Name
+                    originName, // Origin Name - always DA Dharm Sathi Pvt Ltd
                     originAddress,
-                    vDetails.pincode
+                    originPincode
                 ];
 
                 const rowLine = row.join(',');
