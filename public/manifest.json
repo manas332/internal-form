@@ -1,0 +1,24 @@
+{
+  "name": "Invoice Generator — Internal Sales Tool",
+  "short_name": "Sales Tool",
+  "description": "Internal invoice generation form for the sales team. Create and download invoices via Zoho Billing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#7c3aed",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
