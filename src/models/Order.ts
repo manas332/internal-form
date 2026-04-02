@@ -89,6 +89,11 @@ const OrderSchema = new mongoose.Schema(
                     default: 0,
                 },
                 warehouse: String,
+                paymentMode: {
+                    type: String,
+                    enum: ['Prepaid', 'COD'],
+                    default: 'Prepaid',
+                },
                 items: [
                     {
                         lineIndex: Number, // index into invoiceItems[]

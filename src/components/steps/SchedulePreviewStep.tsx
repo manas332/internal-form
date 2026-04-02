@@ -255,6 +255,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 waybill?: string;
                 shippingCost: number;
                 warehouse: string;
+                paymentMode?: string;
                 items: { lineIndex: number; quantity: number }[];
             }[] = [];
 
@@ -353,6 +354,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     waybill: generatedWaybill,
                     shippingCost: shippingCosts[sh.id] || 0,
                     warehouse: sh.warehouse || (formData.warehouse as string),
+                    paymentMode: sh.payment_mode || 'Prepaid',
                     items: effectiveItems,
                 });
             }
@@ -367,6 +369,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     deliveryPartner: 'DTDC',
                     shippingCost: 0,
                     warehouse: sh.warehouse || (formData.warehouse as string),
+                    paymentMode: sh.payment_mode || 'Prepaid',
                     items: effectiveItems,
                 });
             }
@@ -382,6 +385,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                         deliveryPartner: 'SELF',
                         shippingCost: 0,
                         warehouse: sh.warehouse,
+                        paymentMode: sh.payment_mode || 'Prepaid',
                         items: effectiveItems,
                     });
                 }
