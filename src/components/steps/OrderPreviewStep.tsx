@@ -141,8 +141,8 @@ export default function OrderPreviewStep({ formData, updateForm, onNext, onPrev 
 
             if (!orderRes.ok) {
                 const orderError = await orderRes.json();
-                console.warn('Failed to save to MongoDB:', orderError);
-                // We proceed anyway as Zoho invoice was created. 
+                console.error('Failed to save to MongoDB:', orderError);
+                throw new Error(`Invoice created in Zoho (#${createdInvoiceNumber}), but failed to save to database: ${orderError.error || 'Unknown DB error'}. Please contact admin.`);
             }
 
             // 3. Update state and proceed

@@ -32,7 +32,7 @@ export const invoiceItemsStepSchema = z.object({
         unit: z.string().optional(),
         carat_size: z.number().optional(),
         final_price: z.number().optional(),
-        cost_price: z.number({ error: 'Cost Price is required' }).min(0, 'Cost Price must be 0 or more'),
+        cost_price: z.number({ error: 'Cost Price is required' }).gt(0, 'Cost Price is required — enter the purchase cost for this item'),
     }))
         .min(1, 'Add at least one item to the invoice')
         .superRefine((items, ctx) => {

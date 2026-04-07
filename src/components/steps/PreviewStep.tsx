@@ -349,8 +349,8 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             });
             if (!orderRes.ok) {
                 const orderError = await orderRes.json();
-                console.warn('Failed to save to MongoDB:', orderError);
-                // We proceed anyway as Zoho invoice + shipment were created.
+                console.error('Failed to save to MongoDB:', orderError);
+                throw new Error(`Invoice created in Zoho (#${createdInvoiceNumber}) & shipment created, but failed to save to database: ${orderError.error || 'Unknown DB error'}. Please contact admin.`);
             }
 
             // 3. Update state and proceed
