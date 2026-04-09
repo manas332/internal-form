@@ -309,15 +309,15 @@ export async function createPayment(body: {
 // ============================================================
 
 /**
- * Fetch all active items from Zoho Billing.
+ * Fetch a page of active items from Zoho Billing.
  */
-export async function fetchItems() {
+export async function fetchItems(page: number = 1) {
     const headers = await zohoHeaders();
 
     const params = new URLSearchParams({
         status: 'active',
-        // Fetch up to 200 items to power the dropdown
         per_page: '200',
+        page: page.toString(),
     });
 
     const res = await fetch(`${ZOHO_API_BASE}/items?${params.toString()}`, {
@@ -331,7 +331,32 @@ export async function fetchItems() {
     }
 
     const data = await res.json();
-    return { status: res.status, data: data.items || [] };
+    return {
+        status: res.status,
+        items: data.items || [],
+        hasMore: data.page_context?.has_more_page ?? false
+    };
+}
+
+/**
+ * Exhaustively fetch all active items from Zoho Billing by paginating.
+ */
+export async function fetchAllActiveItems() {
+    let allItems: any[] = [];
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+        const result = await fetchItems(page);
+        allItems = allItems.concat(result.items);
+        hasMore = result.hasMore;
+        page++;
+
+        // Safety break to prevent infinite loops (10,000 items max)
+        if (page > 50) break;
+    }
+
+    return allItems;
 }
 
 /**
