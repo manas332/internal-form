@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import { downloadDelhiveryLabel } from '@/lib/printLabel';
+import { WAREHOUSE_DETAILS, DelhiveryWarehouse } from '@/config/warehouses';
 
 interface Props {
     formData: CombinedFormData;
@@ -16,7 +17,9 @@ export default function ConfirmationStep({ formData, onReset }: Props) {
     const [pickupRequested, setPickupRequested] = useState(false);
 
     const [pickupDate, setPickupDate] = useState(new Date().toISOString().split('T')[0]);
-    const [pickupTime, setPickupTime] = useState('11:00:00');
+    const [pickupTime, setPickupTime] = useState(
+        WAREHOUSE_DETAILS[formData.warehouse as DelhiveryWarehouse]?.defaultPickupTime || '11:00:00'
+    );
     const [pickupError, setPickupError] = useState('');
 
     const downloadBlob = (blob: Blob, filename: string) => {

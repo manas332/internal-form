@@ -88,5 +88,10 @@
     "facility_name": "Surya",
     "address_line": "F-39, Dilshad Colony, F Block, Delhi , 110095",
     "pincode": "110095"
+  },
+  {
+    "facility_name": "Sonipat",
+    "address_line": "871, Sector-12, Sonipat",
+    "pincode": "131001"
   }
 ]

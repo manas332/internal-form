@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import { ShipmentData } from '@/types/delhivery';
+import { WAREHOUSE_DETAILS, DelhiveryWarehouse } from '@/config/warehouses';
 import stateCodesData from '@/data/state-codes.json';
 import { isInterstateOrder, get18PctTaxId } from '@/lib/tax';
 
@@ -83,10 +84,12 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
             setErrorMsg('');
             try {
                 // 1. Fetch Shipping Cost
+                const originPin = WAREHOUSE_DETAILS[formData.warehouse as DelhiveryWarehouse]?.pincode || '302001';
+
                 const costParams = new URLSearchParams({
                     md: formData.shipping_mode === 'Express' ? 'E' : 'S',
                     cgm: String(formData.weight),
-                    o_pin: '302001', // Example origin pin since we don't have it in the form. Assumed Jaipur for now based on facility. 
+                    o_pin: originPin,
                     d_pin: formData.pincode,
                     ss: 'Delivered',
                     pt: formData.payment_mode === 'Prepaid' ? 'Pre-paid' : 'COD'
@@ -102,9 +105,9 @@ export default function PreviewStep({ formData, updateForm, onNext, onPrev }: Pr
                 }
 
                 // 2. Fetch Expected TAT
-                // We need an origin pin for TAT as well. Defaulting to 302001.
+                // We need an origin pin for TAT as well.
                 const tatParams = new URLSearchParams({
-                    origin_pin: '302001',
+                    origin_pin: originPin,
                     destination_pin: formData.pincode,
                     mot: formData.shipping_mode === 'Express' ? 'E' : 'S'
                 });

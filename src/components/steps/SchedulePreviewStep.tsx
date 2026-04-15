@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
-import { DELHIIVERY_WAREHOUSES } from '@/config/warehouses';
+import { DELHIIVERY_WAREHOUSES, WAREHOUSE_DETAILS, DelhiveryWarehouse } from '@/config/warehouses';
 import { ShipmentData } from '@/types/delhivery';
 type PlannedShipment = NonNullable<CombinedFormData['plannedShipments']>[0];
 
@@ -140,11 +140,13 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 // Fetch shipping cost & TAT per shipment
                 await Promise.all(plannedShipments.map(async (sh) => {
                     try {
+                        const originPin = WAREHOUSE_DETAILS[sh.warehouse as DelhiveryWarehouse]?.pincode || '302001';
+
                         // 1. Fetch Shipping Cost for this shipment
                         const costParams = new URLSearchParams({
                             md: sh.shipping_mode === 'Express' ? 'E' : 'S',
                             cgm: String(sh.weight || formData.weight),
-                            o_pin: '302001',
+                            o_pin: originPin,
                             d_pin: formData.pincode,
                             ss: 'Delivered',
                             pt: (sh.payment_mode || formData.payment_mode) === 'Prepaid' ? 'Pre-paid' : 'COD'
@@ -160,7 +162,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
 
                         // 2. Fetch Expected TAT for this shipment
                         const tatParams = new URLSearchParams({
-                            origin_pin: '302001',
+                            origin_pin: originPin,
                             destination_pin: formData.pincode,
                             mot: sh.shipping_mode === 'Express' ? 'E' : 'S'
                         });
