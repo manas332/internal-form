@@ -61,7 +61,13 @@ export default function ScheduleEditItemsStep({ formData, updateForm, onNext, on
     ): Partial<InvoiceItem> => {
         const merged = { ...item, ...overrides };
         const qty = Number(merged.quantity) || 0;
-        const finalPricePerUnit = Number(merged.final_price) || 0;
+        
+        let finalPricePerUnit = Number(merged.final_price);
+        if (!finalPricePerUnit && finalPricePerUnit !== 0) {
+            const taxPerUnit = qty > 0 ? (Number(merged.tax_amount) || 0) / qty : 0;
+            finalPricePerUnit = (Number(merged.price) || 0) + taxPerUnit;
+        }
+
         const taxId = merged.tax_id ?? '';
 
         let preTaxRate = finalPricePerUnit;
@@ -80,6 +86,7 @@ export default function ScheduleEditItemsStep({ formData, updateForm, onNext, on
 
         return {
             ...overrides,
+            final_price: finalPricePerUnit,
             price: preTaxRate,
             tax_amount: totalTaxAmount,
             item_total: itemTotal,
@@ -168,11 +175,16 @@ export default function ScheduleEditItemsStep({ formData, updateForm, onNext, on
                 return;
             }
             if (item.quantity <= 0) {
+            if (item.quantity === undefined || item.quantity < 1) {
                 toast.error(`Item ${i + 1} Quantity must be greater than 0`);
                 return;
             }
             if (item.final_price === undefined || item.final_price < 0) {
                 toast.error(`Item ${i + 1} valid Final Price is required`);
+                return;
+            }
+            if (item.cost_price === undefined || item.cost_price === null || item.cost_price <= 0) {
+                toast.error(`Item ${i + 1} valid Cost Price is required`);
                 return;
             }
         }
@@ -300,4 +312,5 @@ export default function ScheduleEditItemsStep({ formData, updateForm, onNext, on
             </div>
         </div>
     );
+}
 }
