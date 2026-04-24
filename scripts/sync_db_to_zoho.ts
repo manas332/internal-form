@@ -66,11 +66,11 @@ function getISTDateString(): string {
 
 // ── Main ────────────────────────────────────────────────────────
 async function main() {
-    if (TARGET_ORDER_ID === 'INV-000XXX') {
-        console.error(red('\n❌ Please set TARGET_ORDER_ID in the script before running.\n'));
-        console.error('   Open scripts/sync_db_to_zoho.ts and change the value on line ~43.');
-        process.exit(1);
-    }
+    // if (TARGET_ORDER_ID === 'INV-000XXX') {
+    //     console.error(red('\n❌ Please set TARGET_ORDER_ID in the script before running.\n'));
+    //     console.error('   Open scripts/sync_db_to_zoho.ts and change the value on line ~43.');
+    //     process.exit(1);
+    // }
 
     console.log(bold(`\n🔄 Sync DB → Zoho: ${cyan(TARGET_ORDER_ID)}`));
     console.log(`   Mode: ${DRY_RUN ? yellow('DRY RUN (no changes)') : red('WRITE MODE')}${AUTO_PAY ? ' + ' + magenta('AUTO PAY') : ''}\n`);
