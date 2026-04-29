@@ -1,623 +1,448 @@
 /**
  * sync_db_to_zoho.ts
  *
- * Maps data from MongoDB to Zoho Billing for a single invoice.
- * Handles all Zoho invoice states: draft, open, paid, overdue, void, partially_paid.
- *
- * ┌──────────────────────────────────────────────────────────────────┐
- * │  HOW IT WORKS                                                    │
- * │                                                                  │
- * │  1. Reads the order from MongoDB by orderId                      │
- * │  2. Fetches the matching Zoho invoice                            │
- * │  3. Checks the Zoho invoice status                               │
- * │  4. Applies the appropriate update strategy:                     │
- * │                                                                  │
- * │     DRAFT  → Update line items & fields directly via PUT         │
- * │     OPEN   → Void → Re-create invoice with DB data              │
- * │     PAID   → Skip (warn user — refund needed first)              │
- * │     OVERDUE→ Same as OPEN (void + re-create)                     │
- * │     VOID   → Re-create invoice with DB data                      │
- * │     PARTIALLY_PAID → Skip (warn user)                            │
- * │     NOT FOUND → Create new invoice from DB data                  │
- * │                                                                  │
- * │  5. Optionally converts new invoice to Open & records payment    │
- * └──────────────────────────────────────────────────────────────────┘
+ * Modular, Production-Grade script to map data from MongoDB to Zoho Billing for a single invoice.
+ * Features a Transaction-like "Rename-Create-Cleanup" strategy to prevent data loss.
  *
  * Usage:
- *   npx tsx scripts/sync_db_to_zoho.ts                  # dry-run (default)
- *   npx tsx scripts/sync_db_to_zoho.ts --write          # actually push to Zoho
- *   npx tsx scripts/sync_db_to_zoho.ts --write --pay    # push + mark as paid
+ *   npx tsx scripts/sync_db_to_zoho.ts [INVOICE_NUMBER]           # dry-run
+ *   npx tsx scripts/sync_db_to_zoho.ts [INVOICE_NUMBER] --write   # actually push
+ *   npx tsx scripts/sync_db_to_zoho.ts [INVOICE_NUMBER] --write --pay
  */
 
 import { config } from 'dotenv';
 config({ path: '.env.local' });
 config({ path: '../.env.local' });
+import mongoose from 'mongoose';
 
-// ════════════════════════════════════════════════════════════════
-// ██  CONFIGURE THIS — Set the invoice/order ID to sync below  ██
-// ════════════════════════════════════════════════════════════════
+// ── Console Colors ──────────────────────────────────────────────
+const bold = (s: string) => `\x1b[1m${s}\x1b[0m`;
+const green = (s: string) => `\x1b[32m${s}\x1b[0m`;
+const red = (s: string) => `\x1b[31m${s}\x1b[0m`;
+const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`;
+const cyan = (s: string) => `\x1b[36m${s}\x1b[0m`;
+const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
+const magenta = (s: string) => `\x1b[35m${s}\x1b[0m`;
 
-const TARGET_ORDER_ID = 'INV-000270';  // ← Change this to your invoice number
-
-// ════════════════════════════════════════════════════════════════
-
-
-
-// ── CLI Flags ───────────────────────────────────────────────────
+// ── CLI Configuration ───────────────────────────────────────────
 const argv = process.argv.slice(2);
 const DRY_RUN = !argv.includes('--write');
 const AUTO_PAY = argv.includes('--pay');
+const invoiceArg = argv.find(arg => !arg.startsWith('--'));
+const TARGET_ORDER_ID = invoiceArg || 'INV-000270';
 
-// ── Console Colors ──────────────────────────────────────────────
-const bold   = (s: string) => `\x1b[1m${s}\x1b[0m`;
-const green  = (s: string) => `\x1b[32m${s}\x1b[0m`;
-const red    = (s: string) => `\x1b[31m${s}\x1b[0m`;
-const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`;
-const cyan   = (s: string) => `\x1b[36m${s}\x1b[0m`;
-const dim    = (s: string) => `\x1b[2m${s}\x1b[0m`;
-const magenta= (s: string) => `\x1b[35m${s}\x1b[0m`;
-
-// ── Timezone Helper ─────────────────────────────────────────────
-function getISTDateString(): string {
-    const date = new Date();
-    const istDate = new Date(date.getTime() + (330 * 60000));
-    return istDate.toISOString().split('T')[0];
-}
-
-// ── Main ────────────────────────────────────────────────────────
+// ── Main Entry ──────────────────────────────────────────────────
 async function main() {
-    // if (TARGET_ORDER_ID === 'INV-000XXX') {
-    //     console.error(red('\n❌ Please set TARGET_ORDER_ID in the script before running.\n'));
-    //     console.error('   Open scripts/sync_db_to_zoho.ts and change the value on line ~43.');
-    //     process.exit(1);
-    // }
-
     console.log(bold(`\n🔄 Sync DB → Zoho: ${cyan(TARGET_ORDER_ID)}`));
     console.log(`   Mode: ${DRY_RUN ? yellow('DRY RUN (no changes)') : red('WRITE MODE')}${AUTO_PAY ? ' + ' + magenta('AUTO PAY') : ''}\n`);
 
-    // Dynamic imports (dotenv must load first)
-    const [{ default: connectDB }, { default: Order }, zoho] = await Promise.all([
+    try {
+        const deps = await loadDependencies();
+        const { dbOrder, Order } = await fetchDbData(deps);
+        const { zohoInvoice, zohoStatus, taxMap, taxList } = await fetchZohoData(deps, dbOrder);
+        const zohoLineItems = buildZohoPayload(deps, dbOrder, zohoInvoice, taxMap, taxList);
+
+        await syncZoho(deps, dbOrder, Order, zohoInvoice, zohoStatus, zohoLineItems);
+
+        console.log(green('\n✅ Synchronization completed successfully.'));
+    } catch (error: any) {
+        console.error(red('\n❌ FATAL ERROR DURING SYNC:'));
+        console.error(error.stack || error.message || error);
+        process.exitCode = 1;
+    } finally {
+        console.log(dim('\nClosing connections...'));
+        try {
+            await mongoose.disconnect();
+        } catch (e) {
+            // Ignore disconnect errors
+        }
+        console.log(dim('Exiting.'));
+        process.exit(); // Force exit
+    }
+}
+
+// ── Modular Functions ───────────────────────────────────────────
+
+async function loadDependencies() {
+    console.log(dim('Loading dependencies...'));
+    const [{ default: connectDB }, { default: Order }, zoho, { getCorrectTaxId, isInterstateOrder }] = await Promise.all([
         import('../src/lib/mongodb'),
         import('../src/models/Order'),
         import('../src/lib/zoho'),
+        import('../src/lib/tax'),
     ]);
-
-    // ── Step 1: Fetch from Database ─────────────────────────────
-    console.log(dim('Connecting to MongoDB...'));
     await connectDB();
+    return { Order, zoho, getCorrectTaxId, isInterstateOrder };
+}
 
+async function fetchDbData({ Order }: any) {
+    console.log(dim('Fetching from MongoDB...'));
     const dbOrder = await Order.findOne({ orderId: TARGET_ORDER_ID }).lean() as Record<string, any> | null;
 
     if (!dbOrder) {
-        console.error(red(`\n❌ Order "${TARGET_ORDER_ID}" not found in MongoDB.`));
-        console.error('   Cannot sync to Zoho without DB data.');
-        process.exit(1);
+        throw new Error(`Order "${TARGET_ORDER_ID}" not found in MongoDB.`);
     }
 
     console.log(green('✅ Found order in Database'));
-    console.log(`   _id:            ${dbOrder._id}`);
     console.log(`   zohoInvoiceId:  ${dbOrder.zohoInvoiceId || dim('(none)')}`);
     console.log(`   invoiceTotal:   ₹${dbOrder.invoiceTotal ?? 'N/A'}`);
-    console.log(`   items:          ${dbOrder.invoiceItems?.length ?? 0}`);
-    console.log(`   salesperson:    ${dbOrder.salespersonName || 'N/A'}`);
-    console.log(`   paymentMode:    ${dbOrder.paymentMode || 'N/A'}`);
     console.log(`   status:         ${dbOrder.status}`);
+    
+    return { dbOrder, Order };
+}
 
-    // ── Step 2: Fetch from Zoho ─────────────────────────────────
+async function fetchZohoData({ zoho }: any, dbOrder: any) {
     console.log(dim('\nFetching from Zoho Billing...'));
-
     let zohoInvoice: Record<string, any> | null = null;
-    let zohoStatus = '';
 
-    // Try by Zoho ID first
     if (dbOrder.zohoInvoiceId) {
         try {
             const res = await zoho.getInvoice(dbOrder.zohoInvoiceId);
-            if (res.status === 200 && res.data?.invoice) {
-                zohoInvoice = res.data.invoice;
-            }
+            if (res.status === 200 && res.data?.invoice) zohoInvoice = res.data.invoice;
         } catch (err) {
-            console.warn(yellow('  ⚠ Failed to fetch by zohoInvoiceId, trying by invoice_number...'));
+            console.log(yellow('   ⚠ Failed to fetch by ID, falling back to number...'));
         }
     }
 
-    // Fallback: search by invoice_number
     if (!zohoInvoice) {
         const token = await zoho.getAccessToken();
         const orgId = process.env.ZOHO_ORG_ID!;
         const searchRes = await fetch(
             `https://www.zohoapis.in/billing/v1/invoices?invoice_number=${encodeURIComponent(TARGET_ORDER_ID)}`,
-            {
-                method: 'GET',
-                headers: {
-                    Authorization: `Zoho-oauthtoken ${token}`,
-                    'X-com-zoho-subscriptions-organizationid': orgId,
-                    'Content-Type': 'application/json',
-                },
-            }
+            { headers: { Authorization: `Zoho-oauthtoken ${token}`, 'X-com-zoho-subscriptions-organizationid': orgId } }
         );
         const searchData = await searchRes.json();
-        const invoices: any[] = searchData.invoices || [];
-
-        if (invoices.length > 0) {
-            const fullRes = await zoho.getInvoice(invoices[0].invoice_id);
-            if (fullRes.status === 200 && fullRes.data?.invoice) {
-                zohoInvoice = fullRes.data.invoice;
-            }
+        if (searchData.invoices?.length > 0) {
+            const fullRes = await zoho.getInvoice(searchData.invoices[0].invoice_id);
+            if (fullRes.status === 200 && fullRes.data?.invoice) zohoInvoice = fullRes.data.invoice;
         }
     }
 
+    const zohoStatus = zohoInvoice ? zohoInvoice.status : 'NOT_FOUND';
     if (zohoInvoice) {
-        zohoStatus = zohoInvoice.status;
-        console.log(green('✅ Found in Zoho'));
-        console.log(`   invoice_id:     ${zohoInvoice.invoice_id}`);
-        console.log(`   invoice_number: ${zohoInvoice.invoice_number}`);
-        console.log(`   status:         ${magenta(zohoStatus)}`);
-        console.log(`   total:          ₹${zohoInvoice.total}`);
-        console.log(`   balance:        ₹${zohoInvoice.balance}`);
-        console.log(`   customer_id:    ${zohoInvoice.customer_id}`);
-        console.log(`   items:          ${zohoInvoice.invoice_items?.length ?? 0}`);
+        console.log(green(`✅ Found in Zoho: ${magenta(zohoStatus)} (ID: ${zohoInvoice.invoice_id})`));
     } else {
         console.log(yellow('⚠ Invoice NOT found in Zoho — will create new.'));
-        zohoStatus = 'NOT_FOUND';
     }
 
-    // ── Step 2b: Fetch tax rates from Zoho ─────────────────────
-    // Build a tax_id → percentage map so we can back-calculate
-    // even when there's no existing Zoho invoice to read from.
+    // Fetch tax rates for back-calculation
     const taxMap = new Map<string, number>();
+    let taxList: any[] = [];
     try {
         const taxRes = await zoho.fetchTaxes();
-        const taxes: any[] = taxRes.data || [];
-        for (const t of taxes) {
-            if (t.tax_id && t.tax_percentage !== undefined) {
-                taxMap.set(t.tax_id, Number(t.tax_percentage));
-            }
-        }
-        console.log(dim(`   Loaded ${taxMap.size} tax rates from Zoho.`));
+        taxList = taxRes.data || [];
+        taxList.forEach((t: any) => {
+            if (t.tax_id && t.tax_percentage !== undefined) taxMap.set(t.tax_id, Number(t.tax_percentage));
+        });
     } catch (err) {
-        console.warn(yellow('   ⚠ Could not fetch tax rates from Zoho. Tax back-calculation may be inaccurate.'));
+        console.warn(yellow('   ⚠ Could not fetch tax rates. Calculations may be inaccurate.'));
     }
 
-    // ── Step 3: Build Zoho payload from DB data ─────────────────
-    console.log(bold('\n━━━ Building Zoho Payload from DB ━━━'));
+    return { zohoInvoice, zohoStatus, taxMap, taxList };
+}
 
-    const dbItems: any[] = dbOrder.invoiceItems || [];
-    const zohoItems: any[] = zohoInvoice?.invoice_items || [];
+function buildZohoPayload(deps: any, dbOrder: any, zohoInvoice: any, taxMap: Map<string, number>, taxList: any[]) {
+    console.log(bold('\n━━━ Building Payload ━━━'));
+    const { getCorrectTaxId, isInterstateOrder } = deps;
+    const isInterstate = isInterstateOrder(dbOrder.customerDetails?.state);
+    
+    const dbItems = dbOrder.invoiceItems || [];
+    const zohoItems = zohoInvoice?.invoice_items || [];
+    const zohoItemMap = new Map(zohoItems.map((zi: any) => [zi.item_id, zi]));
 
-    // Build a map of Zoho items by item_id to get actual tax_percentage
-    // (DB's tax_percentage is often 0 even when tax_id is set)
-    const zohoItemMap = new Map<string, any>();
-    for (const zi of zohoItems) {
-        if (zi.item_id) zohoItemMap.set(zi.item_id, zi);
-    }
-
-    // Map DB items → Zoho line_items format
-    // DB stores tax-INCLUDED final_price. Zoho expects tax-EXCLUDED rate.
-    // We use the ACTUAL tax% from Zoho's existing invoice to back-calculate.
-    //   e.g. final_price=270, tax=3% → rate = 270 / 1.03 = 262.14
-    const zohoLineItems = dbItems.map((item: any, idx: number) => {
+    return dbItems.map((item: any, idx: number) => {
         const qty = Number(item.quantity || 1);
         const dbFinalPrice = Number(item.final_price || 0);
+        
+        // Ensure tax_id is robustly calculated from HSN rules if available
+        let correctTaxId = 'NO_TAX';
+        if (item.hsn_or_sac) {
+            correctTaxId = getCorrectTaxId(item.hsn_or_sac, isInterstate);
+        } else if (item.tax_id && !['NO_TAX', '0', 'null'].includes(String(item.tax_id))) {
+            correctTaxId = item.tax_id; // Fallback to DB tax_id if no HSN match
+        }
 
-        // Get tax% from: Zoho invoice item (best) → tax map (fallback) → DB (last resort)
+        // If it's a 0% item (NO_TAX), we MUST pass the actual 0% tax ID to Zoho.
+        // Otherwise, Zoho applies the catalog item's default tax (e.g. 3%).
+        if (correctTaxId === 'NO_TAX') {
+            const zeroTaxes = taxList.filter((t: any) => Number(t.tax_percentage) === 0);
+            if (zeroTaxes.length > 0) {
+                const bestZero = zeroTaxes.find((t: any) => {
+                    const name = String(t.tax_name).toUpperCase();
+                    if (isInterstate) return name.includes('IGST');
+                    return name.includes('GST0') || name.includes('GROUP');
+                });
+                correctTaxId = bestZero ? bestZero.tax_id : zeroTaxes[0].tax_id;
+            }
+        }
+        
         const matchingZohoItem = zohoItemMap.get(item.item_id) || zohoItems[idx];
         const taxPct = Number(
-            matchingZohoItem?.tax_percentage
-            || (item.tax_id && taxMap.get(item.tax_id))
-            || item.tax_percentage
-            || 0
+            matchingZohoItem?.tax_percentage || (correctTaxId !== 'NO_TAX' && taxMap.get(correctTaxId)) || item.tax_percentage || 0
         );
         const taxMultiplier = 1 + (taxPct / 100);
 
-        // Back-calculate tax-excluded per-unit rate from DB's tax-included final_price
-        let rateExclTax: number;
-        if (dbFinalPrice > 0) {
-            // final_price is tax-included total for this line
-            // tax-excluded rate = final_price / (1 + tax%) / quantity
-            rateExclTax = Number((dbFinalPrice / taxMultiplier / qty).toFixed(2));
+        // ── CALCULATE TAX-EXCLUSIVE UNIT PRICE ──
+        // 1. item_total = tax-exclusive TOTAL for the entire line (unit_price * qty)
+        // 2. final_price = tax-inclusive UNIT PRICE
+        let rateExclTax = 0;
+        if (typeof item.item_total === 'number') {
+            rateExclTax = Number((item.item_total / qty).toFixed(2));
+        } else if (typeof item.final_price === 'number') {
+            rateExclTax = Number((item.final_price / taxMultiplier).toFixed(2));
         } else {
-            // Fallback to rate field if final_price is missing
-            const dbRate = Number(item.rate || 0);
-            rateExclTax = taxMultiplier > 1
-                ? Number((dbRate / taxMultiplier).toFixed(2))
-                : dbRate;
+            rateExclTax = Number((Number(item.rate || 0) / (taxMultiplier > 1 ? taxMultiplier : 1)).toFixed(2));
         }
 
-        // NOTE: Do NOT send item_id — Zoho overrides our custom rate with
-        // the catalog price when item_id is present. Without it, Zoho
-        // uses the rate we specify.
-        const lineItem: Record<string, any> = {
+        console.log(`   [${idx}] ${item.name} × ${qty} | Rate: ₹${rateExclTax} (Tax: ${taxPct}%)`);
+        
+        return {
             name: item.name,
             description: item.description || '',
             quantity: qty,
-            rate: rateExclTax,       // Zoho Books field name
-            price: rateExclTax,      // Zoho Billing/Subscriptions field name
+            rate: rateExclTax,
+            price: rateExclTax,
             hsn_or_sac: item.hsn_or_sac || '',
+            ...(correctTaxId !== 'NO_TAX' ? { tax_id: correctTaxId } : { tax_id: "" })
         };
-        if (item.tax_id) {
-            lineItem.tax_id = item.tax_id;
-        }
-        console.log(`   [${idx}] ${item.name} × ${qty}`);
-        console.log(`          DB final_price (tax-incl): ₹${dbFinalPrice}`);
-        console.log(`          Zoho rate (tax-excl): ₹${rateExclTax}  (tax: ${taxPct}%, multiplier: ${taxMultiplier})`);
-        console.log(`          Expected Zoho total: ₹${(rateExclTax * qty * taxMultiplier).toFixed(2)}`);
-        return lineItem;
     });
-
-    // ── Step 4: Execute based on status ─────────────────────────
-    console.log(bold(`\n━━━ Strategy for status: ${magenta(zohoStatus)} ━━━\n`));
-
-    switch (zohoStatus) {
-        // ─── DRAFT: Delete → Recreate with same invoice_number & date ──
-        // Subscription-linked invoices have can_edit_items=false and block
-        // all item modifications (PUT, DELETE lineitem, ADD lineitem).
-        // Only option: delete the draft and create a new standalone invoice,
-        // preserving the original invoice_number and invoice_date.
-        case 'draft': {
-            console.log(yellow('📝 DRAFT — Delete & recreate (subscription-linked, items locked).\n'));
-            console.log('   Step 1: Delete draft invoice');
-            console.log('   Step 2: Create new invoice with same number/date + correct rates');
-            if (AUTO_PAY) console.log('   Step 3: Convert to Open + Record payment');
-
-            // Preserve original invoice metadata
-            const origNumber = zohoInvoice!.invoice_number;
-            const origDate = zohoInvoice!.invoice_date || zohoInvoice!.date;
-            const origCustomerId = zohoInvoice!.customer_id;
-
-            if (DRY_RUN) {
-                console.log(yellow('\n🔍 DRY RUN — Would:'));
-                console.log(`   1. DELETE  https://www.zohoapis.in/billing/v1/invoices/${zohoInvoice!.invoice_id}`);
-                console.log(`   2. POST    https://www.zohoapis.in/billing/v1/invoices`);
-                console.log(`   Preserved: invoice_number=${origNumber}, invoice_date=${origDate}`);
-                console.log(`   Create payload:`);
-                const previewPayload: Record<string, any> = {
-                    customer_id: origCustomerId,
-                    invoice_number: origNumber,
-                    date: origDate,
-                    invoice_items: zohoLineItems,
-                    is_round_off_applied: true,
-                };
-                if (dbOrder.salespersonName) previewPayload.salesperson_name = dbOrder.salespersonName;
-                console.log(JSON.stringify(previewPayload, null, 2));
-                if (AUTO_PAY) console.log(`   3. Mark as paid (${dbOrder.paymentMode})`);
-            } else {
-                // Step 1: Delete the draft
-                console.log(dim('\nStep 1: Deleting draft invoice...'));
-                const delRes = await zoho.deleteInvoice(zohoInvoice!.invoice_id);
-                if (delRes.status !== 200 && delRes.status !== 201) {
-                    console.error(red(`❌ Failed to delete draft: ${JSON.stringify(delRes.data)}`));
-                    console.error(red('   Cannot proceed. Aborting.'));
-                    process.exit(1);
-                }
-                console.log(green(`✅ Draft deleted (${zohoInvoice!.invoice_id}).`));
-
-                // Step 2: Recreate with same invoice_number and date
-                console.log(dim('\nStep 2: Creating new invoice...'));
-                const createPayload: Record<string, any> = {
-                    customer_id: origCustomerId,
-                    invoice_number: origNumber,
-                    date: origDate,
-                    invoice_items: zohoLineItems,
-                    is_round_off_applied: true,
-                };
-                if (dbOrder.salespersonName) {
-                    createPayload.salesperson_name = dbOrder.salespersonName;
-                }
-
-                // Use direct fetch with ignore_auto_number_generation to preserve original invoice number
-                const token = await zoho.getAccessToken();
-                const orgId = process.env.ZOHO_ORG_ID!;
-                const createRes = await fetch(
-                    `https://www.zohoapis.in/billing/v1/invoices?ignore_auto_number_generation=true`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            Authorization: `Zoho-oauthtoken ${token}`,
-                            'X-com-zoho-subscriptions-organizationid': orgId,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(createPayload),
-                    }
-                );
-                const createData = await createRes.json();
-                if (!createRes.ok) {
-                    console.error(red(`❌ Failed to create invoice: ${JSON.stringify(createData)}`));
-                    return;
-                }
-
-                const newInv = createData.invoice;
-                console.log(green('✅ Invoice created!'));
-                console.log(`   invoice_id:     ${newInv.invoice_id}`);
-                console.log(`   invoice_number: ${newInv.invoice_number}`);
-                console.log(`   invoice_date:   ${newInv.date || newInv.invoice_date}`);
-                console.log(`   status:         ${newInv.status}`);
-                console.log(`   total:          ₹${newInv.total}`);
-                for (const it of newInv.invoice_items || []) {
-                    console.log(`     • ${it.name} — rate: ₹${it.price}, qty: ${it.quantity}, total: ₹${it.item_total}`);
-                }
-
-                // Update DB with new Zoho invoice ID
-                await Order.updateOne(
-                    { _id: dbOrder._id },
-                    { $set: { zohoInvoiceId: newInv.invoice_id } }
-                );
-                console.log(green(`   Updated DB zohoInvoiceId → ${newInv.invoice_id}`));
-
-                // Auto-pay if requested
-                if (AUTO_PAY) {
-                    await convertAndPay(zoho, newInv, dbOrder);
-                }
-            }
-            break;
-        }
-
-        // ─── OPEN / OVERDUE: Void → Re-create ──────────────────
-        case 'open':
-        case 'overdue': {
-            console.log(yellow(`📋 ${zohoStatus.toUpperCase()} — Must void and re-create.\n`));
-            console.log('   Step 1: Void current invoice');
-            console.log('   Step 2: Create new invoice with DB data');
-            if (AUTO_PAY) console.log('   Step 3: Convert to Open + Record payment');
-
-            if (DRY_RUN) {
-                console.log(yellow('\n🔍 DRY RUN — Would:'));
-                console.log(`   1. Void invoice ${zohoInvoice!.invoice_id}`);
-                console.log(`   2. Create new invoice with ${zohoLineItems.length} items`);
-                if (AUTO_PAY) console.log(`   3. Mark as paid (${dbOrder.paymentMode})`);
-            } else {
-                // Step 1: Void
-                console.log(dim('\nVoiding current invoice...'));
-                const voidRes = await zoho.voidInvoice(zohoInvoice!.invoice_id);
-                if (voidRes.status !== 200 && voidRes.status !== 201) {
-                    console.error(red(`❌ Failed to void: ${JSON.stringify(voidRes.data)}`));
-                    console.error(red('   Cannot proceed. Aborting.'));
-                    process.exit(1);
-                }
-                console.log(green('✅ Invoice voided.'));
-
-                // Step 2: Re-create
-                await createInvoiceFromDB(zoho, Order, dbOrder, zohoLineItems, zohoInvoice!.customer_id);
-            }
-            break;
-        }
-
-        // ─── PAID: Cannot modify — warn user ────────────────────
-        case 'paid': {
-            console.log(red('💰 PAID — Cannot modify a paid invoice.\n'));
-            console.log('   Options:');
-            console.log('   1. Issue a credit note for the difference');
-            console.log('   2. Delete the payment in Zoho → status reverts to Open → re-run this script');
-            console.log('   3. Void the invoice manually in Zoho → re-run this script');
-            console.log(dim('\n   No changes were made.'));
-            break;
-        }
-
-        // ─── PARTIALLY_PAID: Cannot modify safely ───────────────
-        case 'partially_paid': {
-            console.log(red('💳 PARTIALLY PAID — Cannot safely modify.\n'));
-            console.log('   A partial payment exists. To sync:');
-            console.log('   1. Delete the payment(s) in Zoho → status reverts to Open');
-            console.log('   2. Re-run this script');
-            console.log(dim('\n   No changes were made.'));
-            break;
-        }
-
-        // ─── VOID: Re-create from DB data ───────────────────────
-        case 'void': {
-            console.log(yellow('🚫 VOID — Invoice was voided. Creating new invoice from DB data.\n'));
-
-            if (DRY_RUN) {
-                console.log(yellow('🔍 DRY RUN — Would create new invoice with:'));
-                console.log(`   Items: ${zohoLineItems.length}`);
-                console.log(`   Customer: ${zohoInvoice!.customer_id}`);
-                if (AUTO_PAY) console.log(`   + Mark as paid (${dbOrder.paymentMode})`);
-            } else {
-                await createInvoiceFromDB(zoho, Order, dbOrder, zohoLineItems, zohoInvoice!.customer_id);
-            }
-            break;
-        }
-
-        // ─── NOT_FOUND: Create brand new ────────────────────────
-        case 'NOT_FOUND': {
-            console.log(yellow('🆕 NOT FOUND — Creating new invoice in Zoho from DB data.\n'));
-
-            // We need a customer_id — try to find by name
-            const customerName = dbOrder.customerDetails?.customer_name;
-            if (!customerName) {
-                console.error(red('❌ No customer name in DB. Cannot create invoice without a customer.'));
-                process.exit(1);
-            }
-
-            let customerId = '';
-            console.log(dim(`Searching Zoho for customer: "${customerName}"...`));
-            const custRes = await zoho.searchCustomers(customerName);
-            const customers = custRes.data?.customers || [];
-
-            if (customers.length > 0) {
-                customerId = customers[0].customer_id;
-                console.log(green(`✅ Found customer: ${customers[0].display_name} (${customerId})`));
-            } else {
-                console.log(yellow('⚠ Customer not found in Zoho. Creating new customer...'));
-
-                if (DRY_RUN) {
-                    console.log(yellow('🔍 DRY RUN — Would create customer + invoice.'));
-                    break;
-                }
-
-                const newCust = await zoho.createCustomer({
-                    display_name: customerName,
-                    email: dbOrder.customerDetails?.email || '',
-                    phone: dbOrder.customerDetails?.phone || '',
-                    billing_address: {
-                        street: dbOrder.customerDetails?.address || '',
-                        city: dbOrder.customerDetails?.city || '',
-                        state: dbOrder.customerDetails?.state || '',
-                        country: dbOrder.customerDetails?.country || 'India',
-                        zip: dbOrder.customerDetails?.pincode || '',
-                    },
-                });
-
-                if (newCust.status !== 201 && newCust.status !== 200) {
-                    console.error(red(`❌ Failed to create customer: ${JSON.stringify(newCust.data)}`));
-                    process.exit(1);
-                }
-                customerId = newCust.data.customer?.customer_id;
-                console.log(green(`✅ Customer created: ${customerId}`));
-            }
-
-            if (DRY_RUN) {
-                console.log(yellow('\n🔍 DRY RUN — Would create invoice with:'));
-                console.log(`   Customer: ${customerId}`);
-                console.log(`   Items: ${zohoLineItems.length}`);
-                if (AUTO_PAY) console.log(`   + Mark as paid (${dbOrder.paymentMode})`);
-            } else {
-                await createInvoiceFromDB(zoho, Order, dbOrder, zohoLineItems, customerId);
-            }
-            break;
-        }
-
-        // ─── UNKNOWN STATUS ─────────────────────────────────────
-        default: {
-            console.log(red(`❓ Unknown Zoho status: "${zohoStatus}"`));
-            console.log('   Not sure how to handle. No changes made.');
-            break;
-        }
-    }
-
-    console.log(dim('\n─────────────────────────────────────────'));
-    console.log('Done.\n');
-    process.exit(0);
 }
 
-// ── Helper: Create new invoice from DB data ─────────────────────
-async function createInvoiceFromDB(
-    zoho: any,
-    Order: any,
-    dbOrder: Record<string, any>,
-    zohoLineItems: Record<string, any>[],
-    customerId: string,
-) {
-    console.log(dim('\nCreating new invoice in Zoho...'));
+// ── Core Synchronization Logic ────────────────────────────────────
 
-    const invoicePayload: Record<string, any> = {
-        customer_id: customerId,
-        invoice_number: dbOrder.orderId,
-        invoice_items: zohoLineItems,
-        is_round_off_applied: true,
-        notes: 'Re-created from MongoDB data via sync script.',
-    };
+async function syncZoho(deps: any, dbOrder: any, Order: any, zohoInvoice: any, status: string, lineItems: any[]) {
+    console.log(bold(`\n━━━ Strategy: ${magenta(status.toUpperCase())} ━━━\n`));
 
-    if (dbOrder.salespersonName) {
-        invoicePayload.salesperson_name = dbOrder.salespersonName;
-    }
-
-    // Use direct fetch with ignore_auto_number_generation to preserve invoice number
-    const token = await zoho.getAccessToken();
-    const orgId = process.env.ZOHO_ORG_ID!;
-    const createRes = await fetch(
-        `https://www.zohoapis.in/billing/v1/invoices?ignore_auto_number_generation=true`,
-        {
-            method: 'POST',
-            headers: {
-                Authorization: `Zoho-oauthtoken ${token}`,
-                'X-com-zoho-subscriptions-organizationid': orgId,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(invoicePayload),
+    switch (status) {
+        case 'draft':
+        case 'open':
+        case 'overdue': {
+            await handleTransactionalReplacement(deps, dbOrder, Order, zohoInvoice, lineItems, status);
+            break;
         }
-    );
-    const createData = await createRes.json();
+        case 'paid':
+        case 'partially_paid': {
+            console.log(red(`❌ Cannot modify a ${status} invoice. Please void or delete payments in Zoho first.`));
+            break;
+        }
+        case 'void': {
+            console.log(yellow('🚫 Invoice is Void. Creating a new replacement.'));
+            if (!DRY_RUN) await createInvoiceFromDB(deps, Order, dbOrder, lineItems, zohoInvoice.customer_id, TARGET_ORDER_ID);
+            break;
+        }
+        case 'NOT_FOUND': {
+            const customerId = await resolveCustomer(deps.zoho, dbOrder);
+            if (!DRY_RUN) await createInvoiceFromDB(deps, Order, dbOrder, lineItems, customerId, TARGET_ORDER_ID);
+            break;
+        }
+        default:
+            console.log(red(`❓ Unknown status: ${status}. Aborting.`));
+    }
+}
 
-    if (!createRes.ok) {
-        console.error(red(`❌ Failed to create invoice: ${JSON.stringify(createData)}`));
+// ── Transactional Replacement (Rename -> Create -> Cleanup) ─────
+
+async function handleTransactionalReplacement(deps: any, dbOrder: any, Order: any, oldInvoice: any, lineItems: any[], status: string) {
+    const { zoho } = deps;
+    const oldInvoiceId = oldInvoice.invoice_id;
+    const origNumber = oldInvoice.invoice_number;
+    const origDate = oldInvoice.invoice_date || oldInvoice.date;
+    const renameSuffix = `-OLD-${Math.floor(Math.random() * 10000)}`;
+    const tempNumber = `${origNumber}${renameSuffix}`;
+
+    console.log(dim('Executing Transactional Replacement:'));
+    console.log(`   1. Rename old invoice to: ${tempNumber}`);
+    console.log(`   2. Create new invoice as: ${origNumber}`);
+    console.log(`   3. Cleanup (Delete/Void) old invoice`);
+
+    if (DRY_RUN) {
+        console.log(yellow('\n🔍 DRY RUN: Payload for new invoice'));
+        console.log(JSON.stringify({ invoice_number: origNumber, customer_id: oldInvoice.customer_id, invoice_items: lineItems.length + ' items' }, null, 2));
         return;
     }
 
-    const newInvoice = createData.invoice;
-    console.log(green(`✅ Invoice created!`));
-    console.log(`   invoice_id:     ${newInvoice.invoice_id}`);
-    console.log(`   invoice_number: ${newInvoice.invoice_number}`);
-    console.log(`   status:         ${newInvoice.status}`);
-    console.log(`   total:          ₹${newInvoice.total}`);
+    // Step 1: Rename
+    console.log(dim(`\nRenaming old invoice...`));
+    const token = await zoho.getAccessToken();
+    const orgId = process.env.ZOHO_ORG_ID!;
+    const headers = { Authorization: `Zoho-oauthtoken ${token}`, 'X-com-zoho-subscriptions-organizationid': orgId, 'Content-Type': 'application/json' };
 
-    // Update DB with new Zoho invoice ID
-    await Order.updateOne(
-        { _id: dbOrder._id },
-        { $set: { zohoInvoiceId: newInvoice.invoice_id } }
-    );
-    console.log(green(`   Updated DB zohoInvoiceId → ${newInvoice.invoice_id}`));
+    const renameRes = await fetch(`https://www.zohoapis.in/billing/v1/invoices/${oldInvoiceId}?ignore_auto_number_generation=true`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ invoice_number: tempNumber })
+    });
+    
+    if (!renameRes.ok) {
+        // If rename fails, we fallback to deleting/voiding first (unsafe but necessary if Zoho blocks rename)
+        console.log(yellow(`   ⚠ Rename failed (status ${renameRes.status}). Zoho might block edits on this invoice.`));
+        console.log(yellow(`   Falling back to direct Delete/Void -> Create.`));
+        
+        if (status === 'draft') {
+            await zoho.deleteInvoice(oldInvoiceId);
+        } else {
+            await zoho.voidInvoice(oldInvoiceId);
+        }
+        await createInvoiceFromDB(deps, Order, dbOrder, lineItems, oldInvoice.customer_id, origNumber, origDate);
+        return;
+    }
+    
+    console.log(green(`   ✅ Renamed to ${tempNumber}`));
 
-    // Auto-pay if requested
-    if (AUTO_PAY) {
-        await convertAndPay(zoho, newInvoice, dbOrder);
+    // Step 2: Create
+    console.log(dim(`Creating new replacement invoice...`));
+    let newInvoiceId = null;
+    try {
+        const createPayload: any = {
+            customer_id: oldInvoice.customer_id,
+            invoice_number: origNumber,
+            date: origDate,
+            invoice_items: lineItems,
+            is_round_off_applied: true,
+            notes: 'Re-created via transaction sync.'
+        };
+        if (dbOrder.salespersonName) createPayload.salesperson_name = dbOrder.salespersonName;
+
+        const createRes = await fetch(`https://www.zohoapis.in/billing/v1/invoices?ignore_auto_number_generation=true`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(createPayload)
+        });
+        
+        const createData = await createRes.json();
+        if (!createRes.ok) throw new Error(`Zoho Error: ${JSON.stringify(createData)}`);
+        
+        newInvoiceId = createData.invoice.invoice_id;
+        console.log(green(`   ✅ Created successfully (ID: ${newInvoiceId})`));
+
+        // Update DB
+        await Order.updateOne({ _id: dbOrder._id }, { $set: { zohoInvoiceId: newInvoiceId } });
+        console.log(green(`   ✅ DB updated`));
+
+        if (AUTO_PAY) await convertAndPay(zoho, createData.invoice, dbOrder);
+
+    } catch (err: any) {
+        // Step 2 Failed -> Rollback Step 1
+        console.error(red(`\n❌ Creation failed! Rolling back rename...`));
+        console.error(red(`   Reason: ${err.message}`));
+        
+        await fetch(`https://www.zohoapis.in/billing/v1/invoices/${oldInvoiceId}?ignore_auto_number_generation=true`, {
+            method: 'PUT', headers, body: JSON.stringify({ invoice_number: origNumber })
+        });
+        
+        console.log(green(`   🔄 Rollback complete. Original invoice restored.`));
+        throw new Error('Transaction aborted due to creation failure.');
+    }
+
+    // Step 3: Cleanup Old
+    console.log(dim(`Cleaning up old invoice...`));
+    if (status === 'draft') {
+        await zoho.deleteInvoice(oldInvoiceId);
+        console.log(green(`   ✅ Old Draft Deleted.`));
+    } else {
+        await zoho.voidInvoice(oldInvoiceId);
+        console.log(green(`   ✅ Old Invoice Voided.`));
     }
 }
 
-// ── Helper: Convert draft→open and record payment ───────────────
-async function convertAndPay(
-    zoho: any,
-    invoice: Record<string, any>,
-    dbOrder: Record<string, any>,
-) {
-    const invoiceId = invoice.invoice_id;
-    const currentStatus = invoice.status;
-    const paymentMode = dbOrder.paymentMode || 'Prepaid';
-    const total = Number(invoice.total);
+// ── Helpers ─────────────────────────────────────────────────────
 
-    console.log(dim(`\n💳 Auto-pay: ${invoiceId} (${paymentMode})...`));
+async function resolveCustomer(zoho: any, dbOrder: any) {
+    const customerName = dbOrder.customerDetails?.customer_name;
+    if (!customerName) throw new Error('No customer name in DB. Cannot create invoice.');
 
-    // Convert to open if draft
-    if (currentStatus === 'draft') {
-        console.log(dim('   Converting Draft → Open...'));
-        const token = await zoho.getAccessToken();
-        const orgId = process.env.ZOHO_ORG_ID!;
+    console.log(dim(`Searching Zoho for customer: "${customerName}"...`));
+    const custRes = await zoho.searchCustomers(customerName);
+    const customers = custRes.data?.customers || [];
 
-        const openRes = await fetch(
-            `https://www.zohoapis.in/billing/v1/invoices/${invoiceId}/converttoopen`,
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: `Zoho-oauthtoken ${token}`,
-                    'X-com-zoho-subscriptions-organizationid': orgId,
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+    if (customers.length > 0) return customers[0].customer_id;
 
-        if (!openRes.ok) {
-            const text = await openRes.text();
-            console.error(red(`   ❌ Failed to open: ${text}`));
-            return;
-        }
+    if (DRY_RUN) {
+        console.log(yellow('🔍 DRY RUN — Would create new customer.'));
+        return 'DRY_RUN_CUSTOMER_ID';
+    }
+
+    const newCust = await zoho.createCustomer({
+        display_name: customerName,
+        email: dbOrder.customerDetails?.email || '',
+        phone: dbOrder.customerDetails?.phone || '',
+        billing_address: {
+            street: dbOrder.customerDetails?.address || '',
+            city: dbOrder.customerDetails?.city || '',
+            state: dbOrder.customerDetails?.state || '',
+            country: dbOrder.customerDetails?.country || 'India',
+            zip: dbOrder.customerDetails?.pincode || '',
+        },
+    });
+
+    if (newCust.status !== 201 && newCust.status !== 200) {
+        throw new Error(`Failed to create customer: ${JSON.stringify(newCust.data)}`);
+    }
+    return newCust.data.customer.customer_id;
+}
+
+async function createInvoiceFromDB(deps: any, Order: any, dbOrder: any, lineItems: any[], customerId: string, invoiceNumber: string, invoiceDate?: string) {
+    console.log(dim('\nCreating new invoice directly...'));
+    const { zoho } = deps;
+
+    const payload: any = {
+        customer_id: customerId,
+        invoice_number: invoiceNumber,
+        invoice_items: lineItems,
+        is_round_off_applied: true,
+        notes: 'Created via sync script.',
+    };
+    if (invoiceDate) payload.date = invoiceDate;
+    if (dbOrder.salespersonName) payload.salesperson_name = dbOrder.salespersonName;
+
+    const token = await zoho.getAccessToken();
+    const orgId = process.env.ZOHO_ORG_ID!;
+    const createRes = await fetch(`https://www.zohoapis.in/billing/v1/invoices?ignore_auto_number_generation=true`, {
+        method: 'POST',
+        headers: { Authorization: `Zoho-oauthtoken ${token}`, 'X-com-zoho-subscriptions-organizationid': orgId, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    
+    const createData = await createRes.json();
+    if (!createRes.ok) throw new Error(`Failed to create invoice: ${JSON.stringify(createData)}`);
+
+    const newInv = createData.invoice;
+    console.log(green(`✅ Invoice created (ID: ${newInv.invoice_id})`));
+
+    await Order.updateOne({ _id: dbOrder._id }, { $set: { zohoInvoiceId: newInv.invoice_id } });
+    console.log(green(`   ✅ DB updated with new Zoho Invoice ID (${newInv.invoice_id})`));
+    
+    if (AUTO_PAY) await convertAndPay(zoho, newInv, dbOrder);
+}
+
+async function convertAndPay(zoho: any, invoice: any, dbOrder: any) {
+    console.log(dim(`\n💳 Auto-pay (${dbOrder.paymentMode || 'Prepaid'})...`));
+    const token = await zoho.getAccessToken();
+    const orgId = process.env.ZOHO_ORG_ID!;
+    const headers = { Authorization: `Zoho-oauthtoken ${token}`, 'X-com-zoho-subscriptions-organizationid': orgId, 'Content-Type': 'application/json' };
+
+    if (invoice.status === 'draft') {
+        const openRes = await fetch(`https://www.zohoapis.in/billing/v1/invoices/${invoice.invoice_id}/converttoopen`, { method: 'POST', headers });
+        if (!openRes.ok) throw new Error(`Failed to convert to Open: ${await openRes.text()}`);
         console.log(green('   ✅ Converted to Open.'));
     }
 
-    // Record payment
-    console.log(dim('   Recording payment...'));
-    const zohoPaymentMode = paymentMode === 'COD' ? 'others' : 'banktransfer';
-
+    const payMode = dbOrder.paymentMode === 'COD' ? 'others' : 'banktransfer';
     const payRes = await zoho.createPayment({
         customer_id: invoice.customer_id,
-        payment_mode: zohoPaymentMode,
-        amount: total,
-        date: getISTDateString(),
-        invoice_id: invoiceId,
-        reference_number: 'Sync Script - DB to Zoho',
-        description: `Payment recorded via sync_db_to_zoho.ts (${paymentMode})`,
+        payment_mode: payMode,
+        amount: Number(invoice.total),
+        date: new Date(Date.now() + 330 * 60000).toISOString().split('T')[0], // IST
+        invoice_id: invoice.invoice_id,
+        reference_number: 'Sync Script',
+        description: `Payment via sync script (${dbOrder.paymentMode})`,
     });
 
     if (payRes.status === 200 || payRes.status === 201) {
-        console.log(green(`   ✅ Payment recorded! ₹${total} via ${zohoPaymentMode}`));
-        console.log(`      Payment ID: ${payRes.data?.payment?.payment_id || 'N/A'}`);
+        console.log(green(`   ✅ Payment recorded! (₹${invoice.total})`));
     } else {
-        console.error(red(`   ❌ Payment failed: ${JSON.stringify(payRes.data)}`));
+        throw new Error(`Payment failed: ${JSON.stringify(payRes.data)}`);
     }
 }
 
-
-
-main().catch(err => {
-    console.error(red('Fatal error:'), err);
-    process.exit(1);
-});
+main();
