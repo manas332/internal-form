@@ -98,6 +98,10 @@ const OrderSchema = new mongoose.Schema(
                     enum: ['Prepaid', 'COD'],
                     default: 'Prepaid',
                 },
+                codAmount: {
+                    type: Number,
+                    default: null,
+                },
                 items: [
                     {
                         lineIndex: Number, // index into invoiceItems[]

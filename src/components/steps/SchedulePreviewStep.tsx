@@ -258,6 +258,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 shippingCost: number;
                 warehouse: string;
                 paymentMode?: string;
+                codAmount?: number;
                 items: { lineIndex: number; quantity: number }[];
             }[] = [];
 
@@ -357,6 +358,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     shippingCost: shippingCosts[sh.id] || 0,
                     warehouse: sh.warehouse || (formData.warehouse as string),
                     paymentMode: sh.payment_mode || 'Prepaid',
+                    codAmount: payload.cod_amount || undefined,
                     items: effectiveItems,
                 });
             }
@@ -372,6 +374,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     shippingCost: 0,
                     warehouse: sh.warehouse || (formData.warehouse as string),
                     paymentMode: sh.payment_mode || 'Prepaid',
+                    codAmount: sh.payment_mode === 'COD' && sh.cod_amount !== undefined && sh.cod_amount !== '' ? Number(sh.cod_amount) : undefined,
                     items: effectiveItems,
                 });
             }

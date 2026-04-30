@@ -84,17 +84,20 @@ export async function GET(request: NextRequest) {
                          }
                      }
                 }
-                const paymentMode = order.paymentMode || 'Prepaid'; // Note: shipment level payment mode wasn't added to schema directly but let's check order.paymentMode. Actually earlier we saved it in Delhivery but maybe not shipment.
+                const paymentMode = shipment.paymentMode || order.paymentMode || 'Prepaid';
 
                 let codAmountStr = '';
                 let codModeStr = '';
+                let declaredPriceStr = '';
                 
-                // For DTDC we will assume payment mode from the order level or calculate if there is an explicit COD
-                // Wait, if it's COD, we give COD Amount. The sample has ` ₹ 550.00 ` and `Cash`
                 if (paymentMode === 'COD') {
-                    const amt = totalAmount > 0 ? totalAmount : (order.invoiceTotal || 0);
-                    codAmountStr = `₹${amt.toFixed(2)}`;
-                    codModeStr = 'Cash';
+                    let amt = shipment.codAmount;
+                    if (amt === undefined || amt === null) {
+                        amt = totalAmount > 0 ? totalAmount : (order.invoiceTotal || 0);
+                    }
+                    codAmountStr = `${amt}`;
+                    codModeStr = 'CASH';
+                    declaredPriceStr = `${amt}`;
                 }
 
                 const weightKg = shipment.shippingCost ? (shipment.shippingCost / 1000).toFixed(2) : (200 / 1000).toFixed(2); 
@@ -117,7 +120,7 @@ export async function GET(request: NextRequest) {
                     '', // Consignment Number
                     'B2C SMART EXPRESS', // Service Type
                     'NON-DOCUMENT', // Courier Type
-                    '', // Declared Price (non-document)
+                    declaredPriceStr, // Declared Price (non-document)
                     '1', // Number of Pieces
                     'FALSE', // Risk Surcharge
                     '0.5', // Weight(KG) - falling back to 0.5 kg as standard
