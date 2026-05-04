@@ -88,12 +88,14 @@ export async function GET(request: NextRequest) {
 
                 let codAmountStr = '';
                 let codModeStr = '';
-                let declaredPriceStr = '';
+                
+                let defaultAmt = totalAmount > 0 ? totalAmount : (order.invoiceTotal || 0);
+                let declaredPriceStr = `${defaultAmt}`;
                 
                 if (paymentMode === 'COD') {
                     let amt = shipment.codAmount;
                     if (amt === undefined || amt === null) {
-                        amt = totalAmount > 0 ? totalAmount : (order.invoiceTotal || 0);
+                        amt = defaultAmt;
                     }
                     codAmountStr = `${amt}`;
                     codModeStr = 'CASH';
