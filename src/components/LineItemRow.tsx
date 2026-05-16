@@ -1,5 +1,6 @@
 'use client';
 
+import type { WheelEvent } from 'react';
 import type { InvoiceItem, ZohoItem, ZohoTax } from '@/types/invoice';
 import { getCorrectTaxId } from '@/lib/tax';
 
@@ -85,6 +86,10 @@ export default function LineItemRow({
     canRemove,
     readOnlyAllExceptCostPrice = false,
 }: LineItemRowProps) {
+    const preventWheelValueChange = (event: WheelEvent<HTMLInputElement>) => {
+        event.currentTarget.blur();
+    };
+
     const preTaxRate = Number(item.price) || 0;
     const qty = Number(item.quantity) || 0;
     const preTaxTotal = qty * preTaxRate;
@@ -207,11 +212,13 @@ export default function LineItemRow({
                     <label>Cost Price (₹) *</label>
                     <input
                         type="number"
-                        className="form-input"
+                        className="form-input no-spinner"
                         min="0"
                         step="0.01"
                         placeholder="0.00"
                         value={item.cost_price || ''}
+                        inputMode="decimal"
+                        onWheel={preventWheelValueChange}
                         onChange={(e) => {
                             const raw = e.target.value;
                             onChange(index, {
@@ -271,12 +278,14 @@ export default function LineItemRow({
                     <label>Final Price (₹) *</label>
                     <input
                         type="number"
-                        className="form-input"
+                        className="form-input no-spinner"
                         min="0"
                         step="0.01"
                         placeholder="0.00"
                         value={item.final_price !== undefined && item.final_price !== 0 ? item.final_price : ''}
                         disabled={readOnlyAllExceptCostPrice}
+                        inputMode="decimal"
+                        onWheel={preventWheelValueChange}
                         onChange={(e) => {
                             const raw = e.target.value;
                             onChange(index, { final_price: raw === '' ? undefined : Number(raw) });

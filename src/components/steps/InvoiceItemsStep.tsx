@@ -305,8 +305,10 @@ export default function InvoiceItemsStep({ formData, updateForm, onNext, onPrev 
                             <div className="relative">
                                 <input
                                     type="number"
-                                    className="form-input w-32 text-right py-1 pr-8"
+                                    className="form-input no-spinner w-32 text-right py-1 pr-8"
                                     value={formData.discount}
+                                    inputMode="decimal"
+                                    onWheel={(e) => e.currentTarget.blur()}
                                     onChange={(e) => updateForm({ discount: e.target.value })}
                                     placeholder="0.00"
                                     step="0.01"

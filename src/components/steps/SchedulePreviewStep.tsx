@@ -655,9 +655,11 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                     <div className="form-group">
                                         <label>Custom COD Amount (Optional)</label>
                                         <input
-                                            className="form-input"
+                                            className="form-input no-spinner"
                                             type="number"
                                             value={sh.cod_amount ?? ''}
+                                            inputMode="decimal"
+                                            onWheel={(e) => e.currentTarget.blur()}
                                             onChange={(e) => setPlannedShipments((prev) => prev.map((s) => s.id === sh.id ? { ...s, cod_amount: e.target.value === '' ? '' : Number(e.target.value) } : s))}
                                             placeholder="Leave empty for auto-calculate"
                                         />
