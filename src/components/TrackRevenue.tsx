@@ -31,6 +31,10 @@ interface OrderData {
         city?: string;
         state?: string;
     };
+    astrologerDetails?: {
+        astrologerName?: string;
+        astrologerNumber?: string;
+    };
     invoiceItems?: InvoiceItem[];
     salespersonName?: string;
     paymentMode?: string;
@@ -410,6 +414,12 @@ export default function TrackRevenue() {
                                                 <span className="font-mono text-base font-semibold text-gray-900 dark:text-white ml-5">{order.orderId}</span>
                                             </div>
                                             <div className="flex flex-row flex-wrap items-center gap-3">
+                                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                                    💰 {formatCurrency(getOrderTotal(order))}
+                                                </span>
+                                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                                    🔮 {order.astrologerDetails?.astrologerName?.trim() || '-'}
+                                                </span>
                                                 {order.customerDetails?.customer_name && (
                                                     <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
                                                         👤 {order.customerDetails.customer_name}
