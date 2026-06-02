@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
-import { downloadDelhiveryLabel } from '@/lib/printLabel';
+import { downloadDelhiveryLabel, downloadDTDCLabel } from '@/lib/printLabel';
 
 interface Props {
     formData: CombinedFormData;
@@ -21,7 +21,11 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
     const handleDownloadLabel = async (wb: string) => {
         setDownloadingLabel(true);
         try {
-            await downloadDelhiveryLabel(wb);
+            if (wb.includes('-DTDC')) {
+                await downloadDTDCLabel(wb);
+            } else {
+                await downloadDelhiveryLabel(wb);
+            }
         } catch (e) {
             console.error(e);
             alert(e instanceof Error ? e.message : 'Error printing label.');
@@ -101,7 +105,7 @@ export default function ScheduleConfirmationStep({ formData, onReset }: Props) {
                     <div key={wb} className="bg-[#16161f] p-5 rounded-xl border border-accent/30 flex flex-col justify-between">
                         <div>
                             <h4 className="text-accent text-xs uppercase tracking-wider mb-1">
-                                {displayWaybills.length > 1 ? `Package ${idx + 1}` : 'Delhivery Waybill'}
+                                {displayWaybills.length > 1 ? `Package ${idx + 1}` : (wb.includes('-DTDC') ? 'DTDC Waybill' : 'Delhivery Waybill')}
                             </h4>
                             <p className="text-lg font-mono font-bold text-white mb-4">{wb}</p>
                         </div>

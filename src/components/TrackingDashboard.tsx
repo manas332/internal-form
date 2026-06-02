@@ -102,12 +102,19 @@ export default function TrackingDashboard() {
         }
         setSelectedSelfShippedOrder(null);
 
-        // Auto-detect if it's waybill (usually purely numeric and long) or ref_id (alphanumeric like INV-X)
-        const isWaybill = /^\d{12,15}$/.test(query.trim());
-        const paramStr = isWaybill ? `waybill=${query.trim()}` : `ref_ids=${query.trim()}`;
+        // Check if it's a DTDC query
+        const isDTDC = query.trim().includes('-DTDC');
 
         try {
-            const res = await fetch(`/api/delhivery/track?${paramStr}`);
+            let res;
+            if (isDTDC) {
+                res = await fetch(`/api/dtdc/track?reference_number=${query.trim()}`);
+            } else {
+                // Auto-detect if it's waybill (usually purely numeric and long) or ref_id (alphanumeric like INV-X)
+                const isWaybill = /^\d{12,15}$/.test(query.trim());
+                const paramStr = isWaybill ? `waybill=${query.trim()}` : `ref_ids=${query.trim()}`;
+                res = await fetch(`/api/delhivery/track?${paramStr}`);
+            }
             const data = await res.json();
 
             if (!res.ok) throw new Error(data.error || 'Failed to fetch tracking data');
@@ -442,7 +449,7 @@ export default function TrackingDashboard() {
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Active Waybills</h3>
                         <span className="text-xs bg-accent/10 dark:bg-accent/20 text-accent px-3 py-1.5 rounded-full border border-accent/20 dark:border-accent/30 flex items-center gap-1.5 font-medium shadow-sm">
-                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(108,99,255,0.8)]"></span> Delhivery API
+                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(108,99,255,0.8)]"></span> Delhivery & DTDC API
                         </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">

@@ -364,17 +364,74 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
             }
 
             // Process DTDC shipments
-            const dtdcShipments = plannedShipments.filter((sh) => sh.deliveryPartner === 'DTDC');
-            for (const sh of dtdcShipments) {
+            const dtdcShipments = plannedShipments
+                .map((sh, index) => ({ sh, index }))
+                .filter(({ sh }) => sh.deliveryPartner === 'DTDC');
+
+            for (const { sh, index } of dtdcShipments) {
                 const effectiveItems = sh.items.filter((it) => it.quantity > 0);
                 if (effectiveItems.length === 0) continue;
+
+                let shipmentAmount = 0;
+                effectiveItems.forEach((it) => {
+                    const base = formData.invoice_items[it.lineIndex];
+                    const perUnitTotal = ((base.item_total || 0) + (base.tax_amount || 0)) / (base.quantity || 1);
+                    shipmentAmount += perUnitTotal * it.quantity;
+                });
+                const resolvedFinalPrice = shipmentAmount || grandTotal;
+                const sanitizedPhone = (formData.phone || '').replace(/\D/g, '').slice(-10);
+
+                const payload = {
+                    orderId: `${formData.orderId}-DTDC${index + 1}`,
+                    name: formData.customer_name,
+                    phone: sanitizedPhone,
+                    addressLine1: formData.address,
+                    addressLine2: "",
+                    pincode: formData.pincode,
+                    city: formData.city,
+                    state: formData.state,
+                    country: formData.country,
+                    paymentMode: sh.payment_mode,
+                    totalAmount: Number(resolvedFinalPrice.toFixed(2)),
+                    codAmount: sh.payment_mode === 'COD' 
+                        ? (sh.cod_amount !== undefined && sh.cod_amount !== '' ? Number(sh.cod_amount) : Number(resolvedFinalPrice.toFixed(2))) 
+                        : 0,
+                    productsDesc: sh.products_desc || "Spiritual Items",
+                    weight: sh.weight,
+                    length: sh.length,
+                    width: sh.width,
+                    height: sh.height,
+                    isFragile: sh.fragile,
+                    shippingMode: sh.shipping_mode
+                };
+
+                const shipmentRes = await fetch('/api/dtdc/shipment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const rawResult = await shipmentRes.json();
+
+                if (!shipmentRes.ok || !rawResult.success) {
+                    throw new Error(`DTDC Shipment ${index + 1} Failed: ${rawResult.error || 'Unknown error'}`);
+                }
+
+                const generatedWaybill = rawResult.waybill;
+
+                if (generatedWaybill) {
+                    allWaybills.push(generatedWaybill);
+                    saveWaybillToHistory(generatedWaybill, formData.orderId ?? '', formData.customer_name ?? '');
+                }
+
                 createdShipmentsForOrder.push({
-                    vendor: sh.warehouse || sh.vendor,
+                    vendor: sh.warehouse || sh.vendor || 'DTDC',
                     deliveryPartner: 'DTDC',
-                    shippingCost: 0,
+                    waybill: generatedWaybill,
+                    shippingCost: shippingCosts[sh.id] || 0,
                     warehouse: sh.warehouse || (formData.warehouse as string),
                     paymentMode: sh.payment_mode || 'Prepaid',
-                    codAmount: sh.payment_mode === 'COD' && sh.cod_amount !== undefined && sh.cod_amount !== '' ? Number(sh.cod_amount) : undefined,
+                    codAmount: payload.codAmount || undefined,
                     items: effectiveItems,
                 });
             }
@@ -418,11 +475,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
 
             let nextStatus = allShipped ? 'SHIPPED' : anyShipped ? 'PARTIALLY_SHIPPED' : 'PENDING_SHIPPING';
             const anySelf = createdShipmentsForOrder.some((s) => s.deliveryPartner === 'SELF');
-            const anyDTDC = createdShipmentsForOrder.some((s) => s.deliveryPartner === 'DTDC');
-
-            if (anyDTDC) {
-                nextStatus = 'DTDC_SCHEDULED';
-            }
+            // We no longer override status to DTDC_SCHEDULED for DTDC shipments since they are now fully integrated API shipments.
 
             // Persist shipments & status to the order
             await fetch(`/api/orders/${formData.orderId}`, {

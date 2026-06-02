@@ -280,3 +280,34 @@ export async function downloadDelhiveryLabel(waybill: string): Promise<void> {
     document.body.removeChild(container);
   }
 }
+
+export async function downloadDTDCLabel(referenceNumber: string): Promise<void> {
+  if (typeof window === 'undefined') {
+    throw new Error('Label download can only run in the browser');
+  }
+
+  const res = await fetch(`/api/dtdc/label?reference_number=${encodeURIComponent(referenceNumber)}`);
+  
+  if (!res.ok) {
+    let errorMsg = 'Failed to download DTDC label';
+    try {
+      const errorData = await res.json();
+      if (errorData.error) errorMsg = errorData.error;
+    } catch {
+      // Ignore
+    }
+    throw new Error(errorMsg);
+  }
+
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `DTDC-Label-${referenceNumber}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}

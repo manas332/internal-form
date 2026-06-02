@@ -53,3 +53,6 @@ pincode_test*
 zoho-*
 zoho_*
 package-lock.json
+
+# scripts
+scripts/
