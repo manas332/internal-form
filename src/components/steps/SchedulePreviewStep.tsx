@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CombinedFormData } from '@/types/wizard';
 import { DELHIIVERY_WAREHOUSES, WAREHOUSE_DETAILS, DelhiveryWarehouse } from '@/config/warehouses';
 import { ShipmentData } from '@/types/delhivery';
+import { SHIPPING_PROVIDERS } from '@/config/providers';
 type PlannedShipment = NonNullable<CombinedFormData['plannedShipments']>[0];
 
 interface Props {
@@ -34,6 +35,8 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 height: sh.height ?? formData.height ?? 10,
                 products_desc: sh.products_desc ?? formData.products_desc ?? '',
                 cod_amount: sh.cod_amount,
+                provider: sh.provider ?? '',
+                awb: sh.awb ?? '',
             }))
             : [
                 {
@@ -52,6 +55,8 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     height: formData.height || 10,
                     products_desc: formData.products_desc || '',
                     cod_amount: undefined,
+                    provider: '',
+                    awb: '',
                 },
             ]
     );
@@ -120,6 +125,8 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     height: formData.height || 10,
                     products_desc: formData.products_desc || '',
                     cod_amount: undefined,
+                    provider: '',
+                    awb: '',
                 },
             ];
         });
@@ -240,7 +247,16 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
             // Validate required shipping fields per Delhivery shipment
             for (let i = 0; i < plannedShipments.length; i++) {
                 const sh = plannedShipments[i];
-                if (sh.isSelfShipment || sh.deliveryPartner === 'SELF' || sh.deliveryPartner === 'DTDC') continue;
+                if (sh.isSelfShipment || sh.deliveryPartner === 'SELF') {
+                    if (!sh.provider) {
+                        throw new Error(`Shipment ${i + 1}: Shipping Provider is required for self-shipped items`);
+                    }
+                    if (!sh.awb || sh.awb.trim().length === 0) {
+                        throw new Error(`Shipment ${i + 1}: AWB is required for self-shipped items`);
+                    }
+                    continue;
+                }
+                if (sh.deliveryPartner === 'DTDC') continue;
                 const effectiveItems = sh.items.filter((it) => it.quantity > 0);
                 if (effectiveItems.length === 0) continue;
                 if (!sh.weight || sh.weight <= 0) {
@@ -420,6 +436,10 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
             const anySelf = createdShipmentsForOrder.some((s) => s.deliveryPartner === 'SELF');
             const anyDTDC = createdShipmentsForOrder.some((s) => s.deliveryPartner === 'DTDC');
 
+            const firstSelfShipment = plannedShipments.find(sh => sh.deliveryPartner === 'SELF' || sh.isSelfShipment);
+            const selfProvider = firstSelfShipment?.provider || '';
+            const selfAWB = firstSelfShipment?.awb || '';
+
             if (anyDTDC) {
                 nextStatus = 'DTDC_SCHEDULED';
             }
@@ -435,6 +455,8 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     waybill: allWaybills[0] ?? null,
                     waybills: allWaybills,
                     shippingCost: createdShipmentsForOrder.reduce((sum, s) => sum + (s.shippingCost || 0), 0),
+                    selfShipmentProvider: selfProvider,
+                    selfShipmentAWB: selfAWB,
                 }),
             });
 
@@ -589,6 +611,32 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                                             </label>
                                         </div>
                                     </div>
+                                )}
+                                {(sh.isSelfShipment || sh.deliveryPartner === 'SELF') && (
+                                    <>
+                                        <div className="form-group">
+                                            <label>Shipping Provider *</label>
+                                            <select
+                                                className="form-input"
+                                                value={sh.provider || ''}
+                                                onChange={(e) => setPlannedShipments((prev) => prev.map((s) => s.id === sh.id ? { ...s, provider: e.target.value } : s))}
+                                            >
+                                                <option value="">Select Provider</option>
+                                                {SHIPPING_PROVIDERS.map((p) => (
+                                                    <option key={p} value={p}>{p}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>AWB Number *</label>
+                                            <input
+                                                className="form-input"
+                                                value={sh.awb || ''}
+                                                onChange={(e) => setPlannedShipments((prev) => prev.map((s) => s.id === sh.id ? { ...s, awb: e.target.value } : s))}
+                                                placeholder="Enter AWB"
+                                            />
+                                        </div>
+                                    </>
                                 )}
                                 <div className="form-group">
                                     <label>Vendor / Origin</label>

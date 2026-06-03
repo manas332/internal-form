@@ -21,6 +21,8 @@ interface DBWaybill {
     isSelfShipped?: boolean;
     selfShipmentStatus?: string;
     selfShipmentNotes?: string;
+    selfShipmentProvider?: string;
+    selfShipmentAWB?: string;
     invoiceItems?: any[];
 }
 

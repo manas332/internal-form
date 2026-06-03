@@ -87,6 +87,8 @@ export interface CombinedFormData {
         height: number;
         products_desc: string;
         cod_amount?: number | '';
+        provider?: string;
+        awb?: string;
     }>;
 
     // --- Optional Shipping Overrides (removed from UI; kept in type for backward compat) ---

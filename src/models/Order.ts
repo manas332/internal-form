@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { SHIPPING_PROVIDERS } from '../config/providers';
 
 const OrderSchema = new mongoose.Schema(
     {
@@ -137,6 +138,15 @@ const OrderSchema = new mongoose.Schema(
             type: String,
             default: '',
             maxlength: 500,
+        },
+        selfShipmentProvider: {
+            type: String,
+            enum: [...SHIPPING_PROVIDERS, ''],
+            default: '',
+        },
+        selfShipmentAWB: {
+            type: String,
+            default: '',
         },
         invoiceUrl: String,
     },

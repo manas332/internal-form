@@ -63,7 +63,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         const safeSetParams: Record<string, unknown> = {};
         
         // Allowed root-level fields from the frontend
-        const allowedFields = ['status', 'selfShipped', 'waybill', 'waybills', 'shippingCost'];
+        const allowedFields = ['status', 'selfShipped', 'waybill', 'waybills', 'shippingCost', 'selfShipmentStatus', 'selfShipmentNotes', 'selfShipmentProvider', 'selfShipmentAWB'];
         for (const field of allowedFields) {
             if (rest[field] !== undefined) {
                 safeSetParams[field] = rest[field];
