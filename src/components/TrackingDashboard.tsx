@@ -40,6 +40,7 @@ export default function TrackingDashboard() {
     const [updateSelfShipLoading, setUpdateSelfShipLoading] = useState(false);
     const [selfShipStatusInput, setSelfShipStatusInput] = useState('');
     const [selfShipNotesInput, setSelfShipNotesInput] = useState('');
+    const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
     // 1. Initial Load: Fetch shipped orders containing waybills from DB
     useEffect(() => {
@@ -128,6 +129,33 @@ export default function TrackingDashboard() {
     };
 
     const handleSearchClick = () => fetchTracking(searchQuery);
+
+    const handleDownloadInvoice = async () => {
+        if (!searchQuery.trim()) return;
+        setDownloadingInvoice(true);
+        setErrorMsg('');
+        try {
+            const res = await fetch(`/api/invoices/${searchQuery.trim()}/pdf`);
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || 'Failed to download invoice');
+            }
+            
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `invoice-${searchQuery.trim()}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            setErrorMsg(err instanceof Error ? err.message : 'Unknown error');
+        } finally {
+            setDownloadingInvoice(false);
+        }
+    };
 
     const saveSelfShipment = async () => {
         if (!selectedSelfShippedOrder) return;
@@ -235,6 +263,15 @@ export default function TrackingDashboard() {
                 >
                     {loading ? <span className="btn-spinner border-2 border-white border-t-transparent flex-shrink-0 w-5 h-5 rounded-full" /> : '🔍'}
                     Search
+                </button>
+                <button
+                    className="btn bg-white dark:bg-[#16161f] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-[#2a2a38] hover:bg-gray-50 dark:hover:bg-[#1c1c28] px-6 text-lg flex items-center gap-2 transition-colors rounded-lg"
+                    onClick={handleDownloadInvoice}
+                    disabled={downloadingInvoice || !searchQuery.trim()}
+                    title="Download Invoice"
+                >
+                    {downloadingInvoice ? <span className="btn-spinner border-2 border-gray-400 dark:border-gray-500 border-t-transparent flex-shrink-0 w-5 h-5 rounded-full" /> : '📄'}
+                    Invoice
                 </button>
             </div>
 
