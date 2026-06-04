@@ -125,7 +125,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     height: formData.height || 10,
                     products_desc: formData.products_desc || '',
                     cod_amount: undefined,
-                    provider: '',
+                    provider: kind === 'SELF' ? (formData.selfShipmentProvider || '') : '',
                     awb: '',
                 },
             ];
@@ -276,6 +276,7 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                 warehouse: string;
                 paymentMode?: string;
                 codAmount?: number;
+                selfShipmentProvider?: string;
                 items: { lineIndex: number; quantity: number }[];
             }[] = [];
 
@@ -405,10 +406,13 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     if (effectiveItems.length === 0) return;
                     createdShipmentsForOrder.push({
                         vendor: 'SELF',
-                        deliveryPartner: 'SELF',
+                        deliveryPartner: sh.provider || 'SELF',
+                        waybill: sh.awb,
                         shippingCost: 0,
-                        warehouse: sh.warehouse,
+                        warehouse: sh.warehouse || (formData.warehouse as string),
                         paymentMode: sh.payment_mode || 'Prepaid',
+                        selfShipmentProvider: sh.provider || '',
+                        awb: sh.awb || '',
                         items: effectiveItems,
                     });
                 }
@@ -435,12 +439,8 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
             });
 
             let nextStatus = allShipped ? 'SHIPPED' : anyShipped ? 'PARTIALLY_SHIPPED' : 'PENDING_SHIPPING';
-            const anySelf = createdShipmentsForOrder.some((s) => s.deliveryPartner === 'SELF');
+            const anySelf = plannedShipments.some((s) => s.isSelfShipment || s.deliveryPartner === 'SELF');
             const anyDTDC = createdShipmentsForOrder.some((s) => s.deliveryPartner === 'DTDC');
-
-            const firstSelfShipment = plannedShipments.find(sh => sh.deliveryPartner === 'SELF' || sh.isSelfShipment);
-            const selfProvider = firstSelfShipment?.provider || '';
-            const selfAWB = firstSelfShipment?.awb || '';
 
             if (anyDTDC) {
                 nextStatus = 'DTDC_SCHEDULED';
@@ -457,8 +457,6 @@ export default function SchedulePreviewStep({ formData, updateForm, onNext, onPr
                     waybill: allWaybills[0] ?? null,
                     waybills: allWaybills,
                     shippingCost: createdShipmentsForOrder.reduce((sum, s) => sum + (s.shippingCost || 0), 0),
-                    selfShipmentProvider: selfProvider,
-                    selfShipmentAWB: selfAWB,
                 }),
             });
 

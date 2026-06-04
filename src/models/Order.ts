@@ -89,11 +89,16 @@ const OrderSchema = new mongoose.Schema(
                 vendor: String, // Maps to Warehouse/Origin from vendors.json
                 deliveryPartner: {
                     type: String,
-                    enum: ['Delhivery', 'DTDC', 'SELF'],
+                    enum: ['Delhivery', 'DTDC', 'SELF', ...SHIPPING_PROVIDERS],
                     default: 'Delhivery'
                 },
                 waybill: String, // optional for self-shipped / DTDC
                 awb: String, // optional for DTDC
+                selfShipmentProvider: {
+                    type: String,
+                    enum: [...SHIPPING_PROVIDERS, ''],
+                    default: '',
+                },
                 shippingCost: {
                     type: Number,
                     default: 0,
@@ -139,15 +144,6 @@ const OrderSchema = new mongoose.Schema(
             type: String,
             default: '',
             maxlength: 500,
-        },
-        selfShipmentProvider: {
-            type: String,
-            enum: [...SHIPPING_PROVIDERS, ''],
-            default: '',
-        },
-        selfShipmentAWB: {
-            type: String,
-            default: '',
         },
         invoiceUrl: String,
     },
