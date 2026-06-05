@@ -44,7 +44,8 @@ async function main() {
         {},
         {
             salespersonName: 1,
-            zohoInvoiceId: 1,
+            orderId: 1,
+            createdAt: 1,
             'customerDetails.customer_name': 1,
             'customerDetails.phone': 1,
             'customerDetails.address': 1,
@@ -52,7 +53,7 @@ async function main() {
             _id: 0
         }
     )
-        .sort({ salespersonName: 1, zohoInvoiceId: 1 })
+        .sort({ salespersonName: 1, orderId: 1 })
         .lean();
 
     console.log(`Found ${orders.length} orders`);
@@ -60,7 +61,8 @@ async function main() {
     // Build CSV
     const csvHeaders = [
         'Salesperson',
-        'zohoInvoiceId',
+        'orderId',
+        'invoiceDate',
         'customer name',
         'customer phone number',
         'customer address',
@@ -70,7 +72,17 @@ async function main() {
 
     for (const order of orders) {
         const salesperson = order.salespersonName || '';
-        const zohoInvoiceId = order.zohoInvoiceId || '';
+        const orderId = order.orderId || '';
+        
+        let invoiceDate = '';
+        if (order.createdAt) {
+            try {
+                invoiceDate = new Date(order.createdAt).toISOString().split('T')[0];
+            } catch (e) {
+                invoiceDate = String(order.createdAt);
+            }
+        }
+        
         const customerName = order.customerDetails?.customer_name || '';
         const customerPhone = order.customerDetails?.phone || '';
         const customerAddress = order.customerDetails?.address || '';
@@ -79,7 +91,8 @@ async function main() {
         csvRows.push(
             [
                 escapeCsv(salesperson),
-                escapeCsv(zohoInvoiceId),
+                escapeCsv(orderId),
+                escapeCsv(invoiceDate),
                 escapeCsv(customerName),
                 escapeCsv(customerPhone),
                 escapeCsv(customerAddress),
