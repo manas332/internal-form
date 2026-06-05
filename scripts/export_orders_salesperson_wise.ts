@@ -1,11 +1,11 @@
 /**
- * Export Invoice Numbers and Salesperson Names to CSV
+ * Export Orders Salesperson-wise to CSV
  *
- * Fetches all orders from MongoDB, extracts the invoice number (orderId)
- * and salesperson name, and writes them to a CSV file.
+ * Fetches all orders from MongoDB and writes the requested fields to a CSV file.
+ * Fields: Salesperson, zohoInvoiceId, customer name, customer phone number, customer addresss, invoiceTotal
  *
  * Usage:
- *   npx tsx scripts/export_invoice_salesperson.ts
+ *   npx tsx scripts/export_orders_salesperson_wise.ts
  */  
 
 import { config } from 'dotenv';
@@ -42,30 +42,56 @@ async function main() {
     // Fetch all orders, projecting only the fields we need
     const orders = await Order.find(
         {},
-        { orderId: 1, salespersonName: 1, _id: 0 }
+        {
+            salespersonName: 1,
+            zohoInvoiceId: 1,
+            'customerDetails.customer_name': 1,
+            'customerDetails.phone': 1,
+            'customerDetails.address': 1,
+            invoiceTotal: 1,
+            _id: 0
+        }
     )
-        .sort({ orderId: 1 })
+        .sort({ salespersonName: 1, zohoInvoiceId: 1 })
         .lean();
 
     console.log(`Found ${orders.length} orders`);
 
     // Build CSV
-    const csvHeaders = ['Invoice Number', 'Salesperson Name'];
+    const csvHeaders = [
+        'Salesperson',
+        'zohoInvoiceId',
+        'customer name',
+        'customer phone number',
+        'customer address',
+        'invoiceTotal'
+    ];
     const csvRows: string[] = [csvHeaders.join(',')];
 
     for (const order of orders) {
-        const invoiceNumber = order.orderId || '';
-        const salespersonName = order.salespersonName || '';
+        const salesperson = order.salespersonName || '';
+        const zohoInvoiceId = order.zohoInvoiceId || '';
+        const customerName = order.customerDetails?.customer_name || '';
+        const customerPhone = order.customerDetails?.phone || '';
+        const customerAddress = order.customerDetails?.address || '';
+        const invoiceTotal = order.invoiceTotal || 0;
 
         csvRows.push(
-            [escapeCsv(invoiceNumber), escapeCsv(salespersonName)].join(',')
+            [
+                escapeCsv(salesperson),
+                escapeCsv(zohoInvoiceId),
+                escapeCsv(customerName),
+                escapeCsv(customerPhone),
+                escapeCsv(customerAddress),
+                escapeCsv(invoiceTotal)
+            ].join(',')
         );
     }
 
     const csvContent = csvRows.join('\n');
     const outputPath = path.resolve(
         process.cwd(),
-        'invoice_salesperson_report.csv'
+        'orders_salesperson_wise.csv'
     );
     fs.writeFileSync(outputPath, csvContent, 'utf-8');
 
