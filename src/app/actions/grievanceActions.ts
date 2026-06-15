@@ -3,6 +3,7 @@
 import connectDB from '@/lib/mongodb';
 import Order from '@/models/Order';
 import Grievance from '@/models/Grievance';
+import { voidInvoice } from '@/lib/zoho';
 
 export async function submitGrievance(data: { salespersonName: string, orderId: string, grievanceType: string, explainIssue: string }) {
     try {
@@ -35,6 +36,17 @@ export async function submitGrievance(data: { salespersonName: string, orderId: 
                 { _id: order._id },
                 { $set: { status: 'RTO' } }
             );
+
+            if (order.zohoInvoiceId) {
+                try {
+                    const voidRes = await voidInvoice(order.zohoInvoiceId);
+                    if (voidRes.data?.code !== 0) {
+                        console.error('Zoho voidInvoice returned error:', voidRes.data);
+                    }
+                } catch (zohoErr) {
+                    console.error('Failed to void invoice in Zoho:', zohoErr);
+                }
+            }
         }
 
         return { success: true };
