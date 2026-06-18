@@ -167,13 +167,23 @@ export async function PUT(
         );
 
         if (!renameRes.ok) {
-            // Rename failed — fall back to direct void/delete then create (UNSAFE: no rollback possible)
-            console.warn(`Rename failed (${renameRes.status}). Falling back to void-then-create.`);
-            if (oldStatus === 'draft') {
-                await deleteInvoice(zohoInvoiceId);
-            } else {
-                await voidInvoice(zohoInvoiceId);
+            console.warn(`Rename failed (${renameRes.status}).`);
+
+            // If it's not a draft, voiding it won't free up the invoice number.
+            // So we cannot create a new invoice with the same number. We must abort.
+            if (oldStatus !== 'draft') {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: `Zoho rejected renaming the ${oldStatus} invoice (Status: ${renameRes.status}). Since it's not a draft, we cannot safely recreate it without renaming. Please void it manually in Zoho and create a new invoice.`
+                    },
+                    { status: 400 }
+                );
             }
+
+            // If it IS a draft, we can delete it, which frees the number.
+            console.warn(`Falling back to direct delete-then-create for draft invoice.`);
+            await deleteInvoice(zohoInvoiceId);
 
             // Old invoice is now gone. Attempt to create replacement with retry.
             const createOpts = {
