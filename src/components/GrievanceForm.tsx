@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { submitGrievance } from '@/app/actions/grievanceActions';
+import { submitGrievance } from '@/app/(dashboard)/actions/grievanceActions';
 
 export default function GrievanceForm({ onSuccess }: { onSuccess?: () => void }) {
     const [submitting, setSubmitting] = useState(false);

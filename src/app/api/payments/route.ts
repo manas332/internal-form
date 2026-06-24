@@ -4,7 +4,7 @@ import { createPayment } from '@/lib/zoho';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        console.log('POST /api/payments called with:', JSON.stringify(body, null, 2));
+        // console.log('POST /api/payments called with:', JSON.stringify(body, null, 2));
 
         // Validate required fields
         const required = ['customer_id', 'amount', 'date', 'invoice_id'];

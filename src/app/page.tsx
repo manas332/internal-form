@@ -1,10 +1,5 @@
-import CreateOrderFlow from '@/components/CreateOrderFlow';
+"use client";
 
 export default function Home() {
-  return (
-    <div className="app-container">
-      <CreateOrderFlow />
-    </div>
-  );
+  return <>Dashboard</>;
 }
-
