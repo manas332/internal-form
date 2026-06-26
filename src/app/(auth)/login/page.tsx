@@ -1,37 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useSession } from "next-auth/react";
-import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session } = useSession();
 
-  const login = useAuthStore((state) => state.login);
-
-  useEffect(() => {
-    if (!session?.user) return;
-    const email = session?.user?.email;
-
-    if (!email) return;
-
-    if (!email.endsWith("@humarapandit.com")) {
-      return;
-    }
-
-    login({
-      id: email,
-      name: session.user?.name ?? "",
-      email,
-    });
-  }, [session, login]);
-
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
-    signIn("google");
-    setIsLoading(false);
+    try {
+      await signIn("google", {
+        callbackUrl: "/admin",
+      });
+    } catch {
+      setIsLoading(false);
+    }
   };
 
   return (

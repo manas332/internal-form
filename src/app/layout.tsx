@@ -4,8 +4,7 @@ import Header from "@/components/Header";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
-import ProviderWrap from "@/components/ProviderWrap";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -73,13 +72,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           ></iframe>
         </noscript>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ProviderWrap>
+          <Providers>
             <Header />
             <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
               {children}
             </main>
             <Toaster position="top-center" richColors />
-          </ProviderWrap>
+          </Providers>
         </ThemeProvider>
         <script
           dangerouslySetInnerHTML={{
