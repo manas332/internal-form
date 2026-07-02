@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Order from '@/models/Order';
 import fs from 'fs';
 import path from 'path';
-import { withDb } from '@/lib/api-handler';
-import * as XLSX from 'xlsx';
+import { withDb, success, fail } from '@/lib/api-handler';
 
 export const GET = withDb(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
@@ -52,7 +51,7 @@ export const GET = withDb(async (request: NextRequest) => {
     'E-Way Bill', 'Order Service', 'Reseller Name'
   ];
 
-  const groupedRows: Record<string, any[][]> = {};
+  const groupedRows: Record<string, string[]> = {};
 
   for (const order of orders) {
     const sfShipments = (order.shipments || []).filter((s: any) => s.deliveryPartner === 'Shadowfax');
@@ -143,34 +142,19 @@ export const GET = withDb(async (request: NextRequest) => {
         ''
       ];
 
+      const rowLine = row.join(',');
+
       if (!groupedRows[vendorName]) {
-        groupedRows[vendorName] = [headers];
+        groupedRows[vendorName] = [headers.join(',')];
       }
-      groupedRows[vendorName].push(row);
+      groupedRows[vendorName].push(rowLine);
     }
   }
 
-  const wb = XLSX.utils.book_new();
+  const filesData = Object.keys(groupedRows).map(vendor => ({
+    filename: `Shadowfax_${vendor.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`,
+    content: groupedRows[vendor].join('\n')
+  }));
 
-  const vendorNames = Object.keys(groupedRows);
-  if (vendorNames.length === 0) {
-    const emptySheet = XLSX.utils.aoa_to_sheet([headers]);
-    XLSX.utils.book_append_sheet(wb, emptySheet, 'No Data');
-  } else {
-    for (const vendor of vendorNames) {
-      const sheetName = vendor.replace(/[\/\\?*\[\]:]/g, '').substring(0, 31);
-      const ws = XLSX.utils.aoa_to_sheet(groupedRows[vendor]);
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    }
-  }
-
-  const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
-
-  return new NextResponse(buffer, {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': `attachment; filename="Shadowfax_${new Date().toISOString().split('T')[0]}.xlsx"`,
-    },
-  });
+  return success({ files: filesData });
 });

@@ -2,6 +2,7 @@ import ScheduleOrderFlow from '@/components/ScheduleOrderFlow';
 import DTDCExportButton from '@/components/DTDCExportButton';
 import DTDCOuterSheetButton from '@/components/DTDCOuterSheetButton';
 import ShadowfaxExportButton from '@/components/ShadowfaxExportButton';
+import ShadowfaxOuterSheetButton from '@/components/ShadowfaxOuterSheetButton';
 import SyncDailyOrdersButton from '@/components/SyncDailyOrdersButton';
 
 export default function ScheduleOrderPage() {
@@ -14,6 +15,7 @@ export default function ScheduleOrderPage() {
                     <DTDCExportButton />
                     <DTDCOuterSheetButton />
                     <ShadowfaxExportButton />
+                    <ShadowfaxOuterSheetButton />
                 </div>
             </div>
             <ScheduleOrderFlow />

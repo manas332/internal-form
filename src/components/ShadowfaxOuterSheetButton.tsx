@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { shadowfaxService } from '@/services/shadowfax';
 
-export default function ShadowfaxExportButton() {
+export default function ShadowfaxOuterSheetButton() {
     const [isOpen, setIsOpen] = useState(false);
     
     const toLocalISOString = (date: Date) => {
@@ -33,7 +33,7 @@ export default function ShadowfaxExportButton() {
         setLoading(true);
         setErrorMsg('');
         try {
-            const blob = await shadowfaxService.download(
+            const blob = await shadowfaxService.downloadOuter(
                 new Date(startDate).toISOString(),
                 new Date(endDate).toISOString()
             );
@@ -47,7 +47,7 @@ export default function ShadowfaxExportButton() {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Shadowfax_${new Date().toISOString().split('T')[0]}.xlsx`;
+            a.download = `Shadowfax_Outer_${new Date().toISOString().split('T')[0]}.xlsx`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -64,10 +64,10 @@ export default function ShadowfaxExportButton() {
         <>
             <button 
                 onClick={() => { setEndDate(toLocalISOString(new Date())); setIsOpen(true); }}
-                className="btn btn-secondary py-2 px-4 text-sm font-semibold flex items-center gap-2 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800 dark:hover:bg-amber-900/50"
+                className="btn btn-secondary py-2 px-4 text-sm font-semibold flex items-center gap-2 bg-pink-50 text-pink-700 border border-pink-200 hover:bg-pink-100 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-800 dark:hover:bg-pink-900/50"
             >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                Download Shadowfax sheet
+                Shadowfax Outer sheet
             </button>
 
             {isOpen && (
@@ -75,10 +75,10 @@ export default function ShadowfaxExportButton() {
                     <div className="bg-white dark:bg-[#16161f] rounded-2xl shadow-xl w-full max-w-md p-6 border border-gray-200 dark:border-[#2a2a38] animate-in slide-in-from-bottom-4 zoom-in-95 duration-200">
                         <div className="flex justify-between items-center mb-5">
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                <span className="text-amber-500 bg-amber-50 dark:bg-amber-900/30 p-1.5 rounded-lg">
+                                <span className="text-pink-500 bg-pink-50 dark:bg-pink-900/30 p-1.5 rounded-lg">
                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                 </span>
-                                Shadowfax Export
+                                Shadowfax Outer Sheet Export
                             </h3>
                             <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -87,7 +87,7 @@ export default function ShadowfaxExportButton() {
                         
                         <div className="space-y-4 mb-6 text-sm">
                             <p className="text-gray-600 dark:text-gray-400">
-                                Select the time range to export scheduled Shadowfax orders. This will generate an Excel file with a separate sheet for each origin warehouse.
+                                Select the time range to export the Shadowfax Outer sheet for scheduled orders. This will generate an Excel file with a separate sheet for each origin warehouse.
                             </p>
                             
                             {errorMsg && (
